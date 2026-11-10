@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "../auth-client";
 import { getSafeDestination } from "../redirect-destination";
 
-const FIELD_CONTROL_CLASS_NAME = "h-12 px-3.5 caret-primary md:text-base";
-const FIELD_LABEL_CLASS_NAME = "text-base";
+const FIELD_CONTROL_CLASS_NAME =
+  "h-11 rounded-none border-0 border-b bg-transparent px-1 caret-primary focus-visible:border-primary focus-visible:shadow-[inset_0_-1px_0_var(--primary)] focus-visible:ring-0 md:text-base dark:bg-transparent";
+const FIELD_LABEL_CLASS_NAME = "text-sm text-muted-foreground";
 
 const INVALID_CREDENTIALS_STATUS = 401;
 const TOO_MANY_REQUESTS_STATUS = 429;
@@ -104,15 +105,11 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
           type="submit"
           disabled={isSubmitting}
           aria-busy={isSubmitting}
-          className="mt-2 h-13 w-full text-lg font-semibold"
+          className="mt-6 h-12 w-full rounded-full text-base font-semibold shadow-[0_10px_24px_-8px_rgb(0_85_145/0.55)] dark:shadow-none"
         >
           {isSubmitting ? "Ingresando…" : "Ingresar"}
         </Button>
-        <Button
-          type="button"
-          variant="link"
-          className="h-11 text-base underline"
-        >
+        <Button type="button" variant="link" className="h-11 text-base">
           ¿Olvidaste tu contraseña?
         </Button>
       </FieldGroup>

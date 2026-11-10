@@ -48,6 +48,16 @@ describe("SignInScreen", () => {
     expect(screen.getAllByText("*")).toHaveLength(2);
   });
 
+  it("RF-ACC-02: el ícono de persona es decorativo y no se anuncia", () => {
+    const { container } = render(<SignInScreen />);
+
+    const decorativeIcons = container.querySelectorAll(
+      '[aria-hidden="true"] svg',
+    );
+    expect(decorativeIcons.length).toBeGreaterThan(0);
+    expect(screen.queryByRole("img", { name: /usuario|persona/i })).toBeNull();
+  });
+
   it("RNF-17: muestra el logo del hospice", () => {
     render(<SignInScreen />);
 

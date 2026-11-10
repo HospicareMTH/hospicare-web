@@ -2,10 +2,7 @@ import { Analytics01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { Metadata } from "next";
 
-import {
-  HOME_DESTINATION,
-  SECTION_TINT_CLASS_NAMES,
-} from "@/components/shared/navigation";
+import { HOME_DESTINATION } from "@/components/shared/navigation";
 import { SectionSheet } from "@/components/shared/section-sheet";
 import {
   Empty,
@@ -13,7 +10,6 @@ import {
   EmptyHeader,
   EmptyMedia,
 } from "@/components/ui/empty";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Inicio",
@@ -23,23 +19,19 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <SectionSheet destination={HOME_DESTINATION}>
-      <Empty className="flex-1">
+      <Empty className="flex-1 rounded-xl border border-dashed border-input/60">
         <EmptyHeader>
           <EmptyMedia
             variant="icon"
-            className={cn(
-              "size-14 rounded-xl",
-              HOME_DESTINATION.color &&
-                SECTION_TINT_CLASS_NAMES[HOME_DESTINATION.color],
-            )}
+            className="size-12 rounded-full text-primary"
           >
             <HugeiconsIcon
               icon={Analytics01Icon}
-              className="size-7"
+              className="size-6"
               aria-hidden="true"
             />
           </EmptyMedia>
-          <EmptyDescription className="text-lg text-foreground">
+          <EmptyDescription className="text-base text-foreground">
             Todavía no hay reportes para mostrar.
           </EmptyDescription>
         </EmptyHeader>

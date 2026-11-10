@@ -23,26 +23,14 @@ export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
   HOME_DESTINATION,
 ];
 
-export const SECTION_FILL_CLASS_NAMES: Record<SectionColor, string> = {
-  blue: "bg-section-blue text-section-on-dark",
-  green: "bg-section-green text-section-on-dark",
-  ochre: "bg-section-ochre text-section-on-light",
-  plum: "bg-section-plum text-section-on-dark",
+export const SECTION_ICON_CLASS_NAMES: Record<SectionColor, string> = {
+  blue: "text-section-blue",
+  green: "text-section-green",
+  ochre: "text-section-ochre",
+  plum: "text-section-plum",
 };
 
-export const SECTION_STRIP_CLASS_NAMES: Record<SectionColor, string> = {
-  blue: "bg-section-blue",
-  green: "bg-section-green",
-  ochre: "bg-section-ochre",
-  plum: "bg-section-plum",
-};
-
-export const SECTION_TINT_CLASS_NAMES: Record<SectionColor, string> = {
-  blue: "bg-section-blue/12 text-section-blue",
-  green: "bg-section-green/12 text-section-green",
-  ochre: "bg-section-ochre/12 text-section-ochre",
-  plum: "bg-section-plum/12 text-section-plum",
-};
+export const NEUTRAL_ICON_CLASS_NAME = "text-sidebar-foreground";
 
 export function isCurrentDestination(
   destination: NavigationDestination,

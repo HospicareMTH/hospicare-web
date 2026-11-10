@@ -5,7 +5,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { SIDEBAR_ITEM_INTERACTION_CLASS_NAME } from "@/components/shared/app-shell";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,8 +16,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
 
 import { authClient } from "../auth-client";
 import { SIGN_IN_PATH } from "../routes";
@@ -28,6 +27,7 @@ const SIGN_OUT_ERROR_MESSAGE = "No pudimos cerrar la sesión. Probá de nuevo.";
 
 export function AccountMenu({ userName }: { userName: string }) {
   const router = useRouter();
+  const { isMobile } = useSidebar();
 
   async function signOut() {
     try {
@@ -53,28 +53,27 @@ export function AccountMenu({ userName }: { userName: string }) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className={cn(
-                "h-14 gap-3 text-base font-medium data-open:bg-white/12 data-open:text-sidebar-foreground data-open:hover:bg-white/12 data-open:hover:text-sidebar-foreground",
-                SIDEBAR_ITEM_INTERACTION_CLASS_NAME,
-              )}
+              className="gap-3 text-base font-medium data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center"
             >
-              <Avatar className="size-9">
-                <AvatarFallback className="bg-sidebar-primary font-semibold text-sidebar-primary-foreground">
+              <Avatar className="size-8 shrink-0 rounded-lg">
+                <AvatarFallback className="rounded-lg bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
                   {getUserInitials(userName)}
                 </AvatarFallback>
               </Avatar>
-              <span>{userName}</span>
+              <span className="group-data-[collapsible=icon]:hidden">
+                {userName}
+              </span>
               <HugeiconsIcon
                 icon={UnfoldMoreIcon}
-                className="ml-auto size-5"
+                className="ml-auto size-5 group-data-[collapsible=icon]:hidden"
                 aria-hidden="true"
               />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            side="top"
-            align="start"
-            className="w-(--radix-dropdown-menu-trigger-width)"
+            side={isMobile ? "bottom" : "right"}
+            align="end"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56"
           >
             <DropdownMenuItem
               onSelect={signOut}
