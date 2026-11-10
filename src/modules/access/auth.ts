@@ -13,7 +13,9 @@ import {
 import {
   CLIENT_IP_HEADER,
   isUserAccessRevoked,
+  PASSWORD_RESET_VALIDITY_SECONDS,
   recordFailedSignInAttempt,
+  sendPasswordResetMail,
 } from "./service";
 import { accounts, rateLimits, sessions, users, verifications } from "./tables";
 
@@ -24,6 +26,10 @@ const RATE_LIMIT_WINDOW_SECONDS = 60;
 const AUTH_REQUESTS_PER_WINDOW = 60;
 const SIGN_IN_ATTEMPTS_PER_WINDOW = 5;
 const SIGN_IN_ENDPOINT_PATH = "/sign-in/email";
+const SECONDS_PER_HOUR = 3_600;
+const PASSWORD_RESET_ATTEMPTS_PER_HOUR = 5;
+const PASSWORD_RESET_REQUEST_ENDPOINT_PATH = "/request-password-reset";
+const PASSWORD_RESET_ENDPOINT_PATH = "/reset-password";
 const INVALID_CREDENTIALS_STATUS_CODE = 401;
 const MINIMUM_SECRET_LENGTH = 32;
 
@@ -78,7 +84,11 @@ function createAuth() {
       disableSignUp: true,
       minPasswordLength: PASSWORD_MIN_LENGTH,
       maxPasswordLength: PASSWORD_MAX_LENGTH,
+      resetPasswordTokenExpiresIn: PASSWORD_RESET_VALIDITY_SECONDS,
+      revokeSessionsOnPasswordReset: true,
+      sendResetPassword: ({ user, url }) => sendPasswordResetMail(user, url),
     },
+    verification: { storeIdentifier: "hashed" },
     session: {
       expiresIn: SESSION_DURATION_SECONDS,
       updateAge: SESSION_RENEWAL_SECONDS,
@@ -92,6 +102,14 @@ function createAuth() {
         [SIGN_IN_ENDPOINT_PATH]: {
           window: RATE_LIMIT_WINDOW_SECONDS,
           max: SIGN_IN_ATTEMPTS_PER_WINDOW,
+        },
+        [PASSWORD_RESET_REQUEST_ENDPOINT_PATH]: {
+          window: SECONDS_PER_HOUR,
+          max: PASSWORD_RESET_ATTEMPTS_PER_HOUR,
+        },
+        [PASSWORD_RESET_ENDPOINT_PATH]: {
+          window: SECONDS_PER_HOUR,
+          max: PASSWORD_RESET_ATTEMPTS_PER_HOUR,
         },
       },
     },

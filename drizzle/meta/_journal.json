@@ -43,6 +43,13 @@
       "when": 1794339772415,
       "tag": "0005_invitations_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794351999101,
+      "tag": "0006_password_reset_audit",
+      "breakpoints": true
     }
   ]
 }

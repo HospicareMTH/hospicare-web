@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { Input } from "@/components/ui/input";
 
 import { authClient } from "../auth-client";
 import { getSafeDestination } from "../redirect-destination";
+import { PASSWORD_RECOVERY_PATH } from "../routes";
 import { ACCESS_REVOKED_ERROR_CODE } from "../schemas";
 import {
   PUBLIC_FIELD_CONTROL_CLASS_NAME,
@@ -121,8 +123,8 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
         >
           {isSubmitting ? "Ingresando…" : "Ingresar"}
         </Button>
-        <Button type="button" variant="link" className="h-11 text-base">
-          ¿Olvidaste tu contraseña?
+        <Button asChild variant="link" className="h-11 text-base">
+          <Link href={PASSWORD_RECOVERY_PATH}>¿Olvidaste tu contraseña?</Link>
         </Button>
       </FieldGroup>
     </form>

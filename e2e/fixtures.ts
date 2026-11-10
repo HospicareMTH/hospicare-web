@@ -15,7 +15,8 @@ import {
   getUserAccess,
   listRoles,
 } from "../src/modules/access/service";
-import { runInTransaction } from "../src/platform/database/client";
+import { verifications } from "../src/modules/access/tables";
+import { getDatabase, runInTransaction } from "../src/platform/database/client";
 
 export const FICTITIOUS_SUPER_USER = {
   name: "Ana Prueba",
@@ -111,4 +112,26 @@ export async function createInvitationWithKnownToken(
     }),
   );
   return token;
+}
+
+const PASSWORD_RESET_VALIDITY_MILLISECONDS = 30 * 60_000;
+
+// Replica el hash "hashed" de Better Auth para crear un enlace de recuperación conocido.
+export async function createPasswordResetLink(email: string): Promise<string> {
+  const userId = await findUserIdByEmail(email);
+  if (!userId) {
+    throw new Error("Falta el usuario ficticio en la base de pruebas.");
+  }
+  const token = randomBytes(24).toString("base64url");
+  await getDatabase()
+    .insert(verifications)
+    .values({
+      id: randomBytes(16).toString("hex"),
+      identifier: createHash("sha256")
+        .update(`reset-password:${token}`)
+        .digest("base64url"),
+      value: userId,
+      expiresAt: new Date(Date.now() + PASSWORD_RESET_VALIDITY_MILLISECONDS),
+    });
+  return `/api/auth/reset-password/${token}?callbackURL=%2Frestablecer-contrasena`;
 }

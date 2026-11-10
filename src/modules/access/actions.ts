@@ -7,8 +7,8 @@ import { requirePermission } from "./authorization";
 import {
   type AccessRevocationInput,
   accessRevocationSchema,
-  invitationAcceptanceSchema,
-  type InvitationAcceptanceInput,
+  newPasswordSchema,
+  type NewPasswordInput,
   invitationIdSchema,
   type InvitationInput,
   invitationInputSchema,
@@ -170,9 +170,9 @@ export async function revokeInvitationAction(
 }
 
 export async function acceptInvitationAction(
-  input: InvitationAcceptanceInput,
+  input: NewPasswordInput,
 ): Promise<ActionResult> {
-  const acceptance = invitationAcceptanceSchema.safeParse(input);
+  const acceptance = newPasswordSchema.safeParse(input);
   if (!acceptance.success) {
     return toInvalidResult(acceptance.error);
   }

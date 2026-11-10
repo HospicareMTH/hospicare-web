@@ -3,6 +3,8 @@ export { AccessRestricted } from "./access-restricted";
 export { AdminHome, AdminLayout } from "./admin-layout";
 export { AuthenticatedShell } from "./authenticated-shell";
 export { InvitationsScreen } from "./invitations-screen";
+export { PasswordRecoveryScreen } from "./password-recovery-screen";
+export { PasswordResetScreen } from "./password-reset-screen";
 export { RolesScreen } from "./roles-screen";
 export { SessionLoadingScreen } from "./session-loading-screen";
 export { SignInScreen } from "./sign-in-screen";

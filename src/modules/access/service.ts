@@ -382,6 +382,32 @@ export async function isUserAccessRevoked(userId: string): Promise<boolean> {
   return record !== null && isAccessRevoked(record, new Date());
 }
 
+const PASSWORD_RESET_VALIDITY_MINUTES = 30;
+export const PASSWORD_RESET_VALIDITY_SECONDS =
+  PASSWORD_RESET_VALIDITY_MINUTES * 60;
+
+type PasswordResetRecipient = { id: string; name: string; email: string };
+
+export async function sendPasswordResetMail(
+  recipient: PasswordResetRecipient,
+  resetUrl: string,
+): Promise<void> {
+  if (await isUserAccessRevoked(recipient.id)) {
+    return;
+  }
+  try {
+    await sendMail({
+      to: recipient.email,
+      subject: "Recuperá tu contraseña de Hospicare",
+      text: `Hola ${recipient.name}: creá una contraseña nueva desde este enlace, que vence en ${PASSWORD_RESET_VALIDITY_MINUTES} minutos: ${resetUrl}. Si no lo pediste, ignorá este correo.`,
+      actionUrl: resetUrl,
+    });
+  } catch (error) {
+    // Se registra sin propagar: un error visible revelaría que el correo tiene cuenta.
+    console.error("No se pudo enviar el correo de recuperación.", error);
+  }
+}
+
 export type UserListItem = {
   id: string;
   name: string;

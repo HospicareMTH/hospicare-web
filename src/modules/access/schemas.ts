@@ -262,7 +262,7 @@ export const accessRevocationSchema = z.object({
 export type AccessRevocationInput = z.input<typeof accessRevocationSchema>;
 export type AccessRevocation = z.output<typeof accessRevocationSchema>;
 
-export const invitationAcceptanceSchema = z
+export const newPasswordSchema = z
   .object({
     token: z.string().min(1, { error: "El enlace no es válido." }),
     password: z
@@ -280,6 +280,4 @@ export const invitationAcceptanceSchema = z
     path: ["passwordConfirmation"],
   });
 
-export type InvitationAcceptanceInput = z.input<
-  typeof invitationAcceptanceSchema
->;
+export type NewPasswordInput = z.input<typeof newPasswordSchema>;

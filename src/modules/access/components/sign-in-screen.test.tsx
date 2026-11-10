@@ -36,8 +36,8 @@ describe("SignInScreen", () => {
     render(<SignInScreen />);
 
     expect(
-      screen.getByRole("button", { name: "¿Olvidaste tu contraseña?" }),
-    ).toBeInTheDocument();
+      screen.getByRole("link", { name: "¿Olvidaste tu contraseña?" }),
+    ).toHaveAttribute("href", "/recuperar-contrasena");
   });
 
   it("RF-UX-02: marca correo y contraseña como obligatorios", () => {
