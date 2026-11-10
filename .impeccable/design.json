@@ -1,0 +1,542 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T00:46:35.238Z",
+  "title": "Design System: Hospicare",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Azul Madre Teresa",
+        "canonical": "oklch(44.0% 0.120 248.6)",
+        "tonalRamp": [
+          "oklch(15% 0.053 248.6)",
+          "oklch(27% 0.073 248.6)",
+          "oklch(39% 0.093 248.6)",
+          "oklch(51% 0.114 248.6)",
+          "oklch(63% 0.107 248.6)",
+          "oklch(75% 0.087 248.6)",
+          "oklch(87% 0.066 248.6)",
+          "oklch(95% 0.053 248.6)"
+        ]
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "Texto sobre Azul",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "ring": {
+        "role": "primary",
+        "displayName": "Foco Azul",
+        "canonical": "oklch(44.0% 0.120 248.6)",
+        "tonalRamp": [
+          "oklch(15% 0.053 248.6)",
+          "oklch(27% 0.073 248.6)",
+          "oklch(39% 0.093 248.6)",
+          "oklch(51% 0.114 248.6)",
+          "oklch(63% 0.107 248.6)",
+          "oklch(75% 0.087 248.6)",
+          "oklch(87% 0.066 248.6)",
+          "oklch(95% 0.053 248.6)"
+        ]
+      },
+      "section-blue": {
+        "role": "secondary",
+        "displayName": "Solapa Azul",
+        "canonical": "oklch(44.0% 0.120 248.6)",
+        "tonalRamp": [
+          "oklch(15% 0.053 248.6)",
+          "oklch(27% 0.073 248.6)",
+          "oklch(39% 0.093 248.6)",
+          "oklch(51% 0.114 248.6)",
+          "oklch(63% 0.107 248.6)",
+          "oklch(75% 0.087 248.6)",
+          "oklch(87% 0.066 248.6)",
+          "oklch(95% 0.053 248.6)"
+        ]
+      },
+      "section-green": {
+        "role": "secondary",
+        "displayName": "Solapa Verde",
+        "canonical": "oklch(53.2% 0.093 162.4)",
+        "tonalRamp": [
+          "oklch(15% 0.041 162.4)",
+          "oklch(27% 0.057 162.4)",
+          "oklch(39% 0.072 162.4)",
+          "oklch(51% 0.088 162.4)",
+          "oklch(63% 0.083 162.4)",
+          "oklch(75% 0.067 162.4)",
+          "oklch(87% 0.051 162.4)",
+          "oklch(95% 0.041 162.4)"
+        ]
+      },
+      "section-ochre": {
+        "role": "secondary",
+        "displayName": "Solapa Ocre",
+        "canonical": "oklch(62.9% 0.127 69.9)",
+        "tonalRamp": [
+          "oklch(15% 0.056 69.9)",
+          "oklch(27% 0.077 69.9)",
+          "oklch(39% 0.099 69.9)",
+          "oklch(51% 0.120 69.9)",
+          "oklch(63% 0.113 69.9)",
+          "oklch(75% 0.092 69.9)",
+          "oklch(87% 0.070 69.9)",
+          "oklch(95% 0.056 69.9)"
+        ]
+      },
+      "section-plum": {
+        "role": "secondary",
+        "displayName": "Solapa Ciruela",
+        "canonical": "oklch(48.7% 0.140 3.5)",
+        "tonalRamp": [
+          "oklch(15% 0.061 3.5)",
+          "oklch(27% 0.085 3.5)",
+          "oklch(39% 0.108 3.5)",
+          "oklch(51% 0.132 3.5)",
+          "oklch(63% 0.124 3.5)",
+          "oklch(75% 0.101 3.5)",
+          "oklch(87% 0.077 3.5)",
+          "oklch(95% 0.061 3.5)"
+        ]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Rojo de Señal",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": [
+          "oklch(15% 0.108 27.3)",
+          "oklch(27% 0.149 27.3)",
+          "oklch(39% 0.190 27.3)",
+          "oklch(51% 0.231 27.3)",
+          "oklch(63% 0.218 27.3)",
+          "oklch(75% 0.176 27.3)",
+          "oklch(87% 0.135 27.3)",
+          "oklch(95% 0.108 27.3)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Fondo Base",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Tinta Azulada",
+        "canonical": "oklch(26.7% 0.028 248.9)",
+        "tonalRamp": [
+          "oklch(15% 0.012 248.9)",
+          "oklch(27% 0.017 248.9)",
+          "oklch(39% 0.022 248.9)",
+          "oklch(51% 0.026 248.9)",
+          "oklch(63% 0.025 248.9)",
+          "oklch(75% 0.020 248.9)",
+          "oklch(87% 0.015 248.9)",
+          "oklch(95% 0.012 248.9)"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Hoja Blanca",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Mesa Celeste",
+        "canonical": "oklch(96.1% 0.009 242.8)",
+        "tonalRamp": [
+          "oklch(15% 0.004 242.8)",
+          "oklch(27% 0.006 242.8)",
+          "oklch(39% 0.007 242.8)",
+          "oklch(51% 0.009 242.8)",
+          "oklch(63% 0.008 242.8)",
+          "oklch(75% 0.007 242.8)",
+          "oklch(87% 0.005 242.8)",
+          "oklch(95% 0.004 242.8)"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Trazo de Campo",
+        "canonical": "oklch(64.3% 0.039 245.9)",
+        "tonalRamp": [
+          "oklch(15% 0.017 245.9)",
+          "oklch(27% 0.024 245.9)",
+          "oklch(39% 0.030 245.9)",
+          "oklch(51% 0.037 245.9)",
+          "oklch(63% 0.035 245.9)",
+          "oklch(75% 0.028 245.9)",
+          "oklch(87% 0.022 245.9)",
+          "oklch(95% 0.017 245.9)"
+        ]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Azul Madre Teresa, oscuro",
+        "canonical": "oklch(71.0% 0.119 243.9)",
+        "tonalRamp": [
+          "oklch(15% 0.052 243.9)",
+          "oklch(27% 0.072 243.9)",
+          "oklch(39% 0.092 243.9)",
+          "oklch(51% 0.112 243.9)",
+          "oklch(63% 0.105 243.9)",
+          "oklch(75% 0.086 243.9)",
+          "oklch(87% 0.066 243.9)",
+          "oklch(95% 0.052 243.9)"
+        ]
+      },
+      "primary-foreground-dark": {
+        "role": "primary",
+        "displayName": "Texto sobre Azul, oscuro",
+        "canonical": "oklch(24.3% 0.058 249.8)",
+        "tonalRamp": [
+          "oklch(15% 0.025 249.8)",
+          "oklch(27% 0.035 249.8)",
+          "oklch(39% 0.045 249.8)",
+          "oklch(51% 0.055 249.8)",
+          "oklch(63% 0.051 249.8)",
+          "oklch(75% 0.042 249.8)",
+          "oklch(87% 0.032 249.8)",
+          "oklch(95% 0.025 249.8)"
+        ]
+      },
+      "ring-dark": {
+        "role": "primary",
+        "displayName": "Foco Azul, oscuro",
+        "canonical": "oklch(71.0% 0.119 243.9)",
+        "tonalRamp": [
+          "oklch(15% 0.052 243.9)",
+          "oklch(27% 0.072 243.9)",
+          "oklch(39% 0.092 243.9)",
+          "oklch(51% 0.112 243.9)",
+          "oklch(63% 0.105 243.9)",
+          "oklch(75% 0.086 243.9)",
+          "oklch(87% 0.066 243.9)",
+          "oklch(95% 0.052 243.9)"
+        ]
+      },
+      "section-blue-dark": {
+        "role": "secondary",
+        "displayName": "Solapa Azul, oscuro",
+        "canonical": "oklch(56.0% 0.131 249.2)",
+        "tonalRamp": [
+          "oklch(15% 0.057 249.2)",
+          "oklch(27% 0.079 249.2)",
+          "oklch(39% 0.101 249.2)",
+          "oklch(51% 0.123 249.2)",
+          "oklch(63% 0.116 249.2)",
+          "oklch(75% 0.094 249.2)",
+          "oklch(87% 0.072 249.2)",
+          "oklch(95% 0.057 249.2)"
+        ]
+      },
+      "section-green-dark": {
+        "role": "secondary",
+        "displayName": "Solapa Verde, oscuro",
+        "canonical": "oklch(62.0% 0.106 162.4)",
+        "tonalRamp": [
+          "oklch(15% 0.047 162.4)",
+          "oklch(27% 0.064 162.4)",
+          "oklch(39% 0.082 162.4)",
+          "oklch(51% 0.100 162.4)",
+          "oklch(63% 0.094 162.4)",
+          "oklch(75% 0.076 162.4)",
+          "oklch(87% 0.058 162.4)",
+          "oklch(95% 0.047 162.4)"
+        ]
+      },
+      "section-ochre-dark": {
+        "role": "secondary",
+        "displayName": "Solapa Ocre, oscuro",
+        "canonical": "oklch(69.8% 0.132 72.8)",
+        "tonalRamp": [
+          "oklch(15% 0.058 72.8)",
+          "oklch(27% 0.080 72.8)",
+          "oklch(39% 0.103 72.8)",
+          "oklch(51% 0.125 72.8)",
+          "oklch(63% 0.117 72.8)",
+          "oklch(75% 0.095 72.8)",
+          "oklch(87% 0.073 72.8)",
+          "oklch(95% 0.058 72.8)"
+        ]
+      },
+      "section-plum-dark": {
+        "role": "secondary",
+        "displayName": "Solapa Ciruela, oscuro",
+        "canonical": "oklch(56.5% 0.149 2.0)",
+        "tonalRamp": [
+          "oklch(15% 0.065 2.0)",
+          "oklch(27% 0.090 2.0)",
+          "oklch(39% 0.115 2.0)",
+          "oklch(51% 0.140 2.0)",
+          "oklch(63% 0.132 2.0)",
+          "oklch(75% 0.107 2.0)",
+          "oklch(87% 0.082 2.0)",
+          "oklch(95% 0.065 2.0)"
+        ]
+      },
+      "destructive-dark": {
+        "role": "tertiary",
+        "displayName": "Rojo de Señal, oscuro",
+        "canonical": "oklch(0.704 0.191 22.216)",
+        "tonalRamp": [
+          "oklch(15% 0.084 22.2)",
+          "oklch(27% 0.116 22.2)",
+          "oklch(39% 0.148 22.2)",
+          "oklch(51% 0.180 22.2)",
+          "oklch(63% 0.170 22.2)",
+          "oklch(75% 0.138 22.2)",
+          "oklch(87% 0.105 22.2)",
+          "oklch(95% 0.084 22.2)"
+        ]
+      },
+      "background-dark": {
+        "role": "neutral",
+        "displayName": "Fondo Base, oscuro",
+        "canonical": "oklch(24.3% 0.026 249.0)",
+        "tonalRamp": [
+          "oklch(15% 0.012 249.0)",
+          "oklch(27% 0.016 249.0)",
+          "oklch(39% 0.020 249.0)",
+          "oklch(51% 0.025 249.0)",
+          "oklch(63% 0.023 249.0)",
+          "oklch(75% 0.019 249.0)",
+          "oklch(87% 0.015 249.0)",
+          "oklch(95% 0.012 249.0)"
+        ]
+      },
+      "foreground-dark": {
+        "role": "neutral",
+        "displayName": "Tinta Clara",
+        "canonical": "oklch(96.2% 0.009 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.004 247.9)",
+          "oklch(27% 0.005 247.9)",
+          "oklch(39% 0.007 247.9)",
+          "oklch(51% 0.008 247.9)",
+          "oklch(63% 0.008 247.9)",
+          "oklch(75% 0.006 247.9)",
+          "oklch(87% 0.005 247.9)",
+          "oklch(95% 0.004 247.9)"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Hoja, oscuro",
+        "canonical": "oklch(27.5% 0.029 246.9)",
+        "tonalRamp": [
+          "oklch(15% 0.013 246.9)",
+          "oklch(27% 0.017 246.9)",
+          "oklch(39% 0.022 246.9)",
+          "oklch(51% 0.027 246.9)",
+          "oklch(63% 0.025 246.9)",
+          "oklch(75% 0.021 246.9)",
+          "oklch(87% 0.016 246.9)",
+          "oklch(95% 0.013 246.9)"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Mesa, oscuro",
+        "canonical": "oklch(20.9% 0.025 249.1)",
+        "tonalRamp": [
+          "oklch(15% 0.011 249.1)",
+          "oklch(27% 0.015 249.1)",
+          "oklch(39% 0.019 249.1)",
+          "oklch(51% 0.023 249.1)",
+          "oklch(63% 0.022 249.1)",
+          "oklch(75% 0.018 249.1)",
+          "oklch(87% 0.014 249.1)",
+          "oklch(95% 0.011 249.1)"
+        ]
+      },
+      "input-dark": {
+        "role": "neutral",
+        "displayName": "Trazo de Campo, oscuro",
+        "canonical": "oklch(1 0 0 / 35%)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de la hoja."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Rótulo del botón principal."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rótulos de campo y enlace de recuperación."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto que la persona escribe en un campo."
+      }
+    },
+    "shadows": [
+      {
+        "name": "hoja-apoyada",
+        "value": "0 14px 34px rgb(11 59 102 / 0.1)",
+        "purpose": "Solo en la hoja; se define en la propia pantalla y todavía no es un token."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transicion-de-estado",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Valor por defecto de Tailwind en botones y campos de shadcn/ui."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de la hoja, a todo el ancho.",
+      "html": "<button class=\"ds-btn-primary\">Ingresar</button>",
+      "css": ".ds-btn-primary { width: 100%; height: 52px; padding: 0 10px; border: 1px solid transparent; border-radius: var(--radius); background: var(--primary); background-clip: padding-box; color: var(--primary-foreground); font-size: 1.125rem; font-weight: 600; outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: color-mix(in oklab, var(--primary) 80%, transparent); background-clip: padding-box; } .ds-btn-primary:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Botón enlace",
+      "kind": "button",
+      "refersTo": "button-link",
+      "description": "Acción secundaria en forma de enlace, subrayada de forma permanente.",
+      "html": "<button class=\"ds-btn-link\">¿Olvidaste tu contraseña?</button>",
+      "css": ".ds-btn-link { height: 44px; padding: 0 10px; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--primary); font-size: 1rem; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-link:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); } .ds-btn-link:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Campo con rótulo obligatorio",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Rótulo compartido con asterisco y control de 48 px.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-email\">Correo electrónico<span class=\"ds-field-required\" aria-hidden=\"true\">*</span></label><input class=\"ds-input\" id=\"ds-email\" type=\"email\" required></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; } .ds-field-label { display: flex; gap: 8px; color: var(--foreground); font-size: 1rem; font-weight: 500; line-height: 1.5; } .ds-field-required { color: var(--destructive); } .ds-input { width: 100%; height: 48px; padding: 4px 14px; border: 1px solid var(--input); border-radius: var(--radius); background: transparent; color: var(--foreground); caret-color: var(--primary); font-size: 1rem; outline: none; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-input:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }"
+    },
+    {
+      "name": "Hoja",
+      "kind": "card",
+      "refersTo": "sheet",
+      "description": "Superficie blanca apoyada sobre la mesa celeste.",
+      "html": "<div class=\"ds-sheet\"><h1 class=\"ds-sheet-title\">Iniciar sesión</h1></div>",
+      "css": ".ds-sheet { width: 100%; max-width: 480px; padding: 44px; border-radius: calc(var(--radius) * 1.4); background: var(--card); color: var(--card-foreground); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 14px 34px rgb(11 59 102 / 0.1); } .ds-sheet-title { margin: 0; text-align: center; font-size: 1.5rem; font-weight: 600; line-height: 1.333; }"
+    },
+    {
+      "name": "Solapas de carpeta",
+      "kind": "custom",
+      "refersTo": "folder-tab-blue",
+      "description": "Cuatro solapas de color que asoman del borde derecho; sin sección asignada.",
+      "html": "<div class=\"ds-folder\"><div class=\"ds-folder-tabs\" aria-hidden=\"true\"><span class=\"ds-tab ds-tab-blue\"></span><span class=\"ds-tab ds-tab-green\"></span><span class=\"ds-tab ds-tab-ochre\"></span><span class=\"ds-tab ds-tab-plum\"></span></div><div class=\"ds-folder-sheet\"></div></div>",
+      "css": ".ds-folder { position: relative; width: 240px; height: 480px; margin-right: 40px; } .ds-folder-tabs { position: absolute; top: 56px; right: -40px; display: flex; flex-direction: column; gap: 12px; } .ds-tab { display: block; width: 56px; height: 96px; border-radius: 0 var(--radius) var(--radius) 0; } .ds-tab-blue { background: var(--section-blue); } .ds-tab-green { background: var(--section-green); } .ds-tab-ochre { background: var(--section-ochre); } .ds-tab-plum { background: var(--section-plum); } .ds-folder-sheet { position: relative; height: 100%; border-radius: calc(var(--radius) * 1.4); background: var(--card); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 14px 34px rgb(11 59 102 / 0.1); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La carpeta de historia clínica",
+    "overview": "Hospicare se apoya en un objeto que el equipo del hospice ya conoce: la carpeta de papel con hojas y solapas de color. La hoja blanca descansa sobre una mesa celeste muy clara, y las solapas asoman por su borde derecho. El sistema rechaza tanto el formulario gris intercambiable como la portada emotiva de ONG.\n\nEl azul institucional del logo ordena la interacción: acción principal, enlace y foco. Las solapas aportan el único color adicional y todavía no tienen significado asignado; ver la decisión pendiente en Colors. El resto es neutro con un leve tinte azul, para que nada decorativo compita con el dato clínico.\n\nLa base técnica es shadcn/ui en estilo radix-nova con IBM Plex Sans e íconos HugeIcons. CLAUDE.md, sección 7, manda sobre componentes, tipografía e íconos. Lo registrado aquí proviene de la única superficie construida, el inicio de sesión; las pantallas autenticadas todavía no tienen evidencia propia.",
+    "keyCharacteristics": [
+      "Mesa celeste, hoja blanca y cuatro solapas de color.",
+      "Una sola familia tipográfica, con tres pesos.",
+      "Un solo azul para actuar, enlazar y enfocar.",
+      "Dos radios: controles y hoja.",
+      "Controles planos; la profundidad pertenece a la hoja."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Azul Único",
+        "body": "Acción principal, enlace y foco usan siempre el azul institucional; ningún color de solapa cumple esas funciones.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de las Solapas sin Dueño",
+        "body": "Ninguna superficie asocia un color de solapa con una sección hasta que esa asignación esté decidida.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de Mesa y Hoja",
+        "body": "La página es el plano más bajo y la hoja se recorta por encima, en modo claro y en modo oscuro.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Familia Única",
+        "body": "Todo el producto usa IBM Plex Sans, en los pesos cargados 400, 500 y 600.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de la Hoja Apoyada",
+        "body": "La sombra describe una hoja sobre la mesa; filas, celdas y controles no la llevan.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla de las Dos Curvas",
+        "body": "Los controles llevan la curva chica y la superficie contenedora la grande; no se introducen radios fuera de la escala.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** partir siempre de `src/components/ui/` y seguir el orden de CLAUDE.md, sección 7, antes de crear un componente.",
+      "**Do** usar tokens semánticos y la escala de radios de `globals.css`.",
+      "**Do** resolver cada pantalla en modo claro y oscuro con sus tokens `-dark` equivalentes.",
+      "**Do** marcar todo campo obligatorio con el rótulo compartido y sumar `required` al control.",
+      "**Do** usar el logo azul en modo claro y el blanco en modo oscuro.",
+      "**Do** usar íconos HugeIcons, y Sonner para los resultados de operaciones."
+    ],
+    "donts": [
+      "**Don't** asignar un color de solapa a una sección sin la decisión pendiente resuelta.",
+      "**Don't** usar un color de solapa para acción, enlace o foco.",
+      "**Don't** convertir las tarjetas en el patrón dominante de las pantallas de trabajo.",
+      "**Don't** usar `<select>` nativo ni `<input type=\"date\">`.",
+      "**Don't** reemplazar variantes y tokens de shadcn/ui por estilos propios, ni modificar `src/components/ui/` sin aprobación.",
+      "**Don't** extender las alturas del acceso a pantallas de trabajo sin decidirlo antes."
+    ]
+  }
+}

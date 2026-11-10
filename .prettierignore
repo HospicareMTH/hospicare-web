@@ -1,0 +1,12 @@
+.claude
+.impeccable
+.next
+bun.lock
+CLAUDE.md
+PRODUCT.md
+docs
+next-env.d.ts
+playwright-report
+public
+src/components/ui
+test-results
