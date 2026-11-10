@@ -10,3 +10,4 @@ playwright-report
 public
 src/components/ui
 test-results
+drizzle

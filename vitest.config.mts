@@ -1,7 +1,14 @@
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
+
+const TEST_ENVIRONMENT_FILE = ".env.test.local";
+
+if (existsSync(TEST_ENVIRONMENT_FILE)) {
+  process.loadEnvFile(TEST_ENVIRONMENT_FILE);
+}
 
 export default defineConfig({
   plugins: [react()],
