@@ -27,7 +27,6 @@ import { cn } from "@/lib/utils";
 
 import {
   isCurrentDestination,
-  NAVIGATION_DESTINATIONS,
   type NavigationDestination,
   NEUTRAL_ICON_CLASS_NAME,
   SECTION_ICON_CLASS_NAMES,
@@ -100,10 +99,15 @@ function SidebarBrand() {
   );
 }
 
-function SidebarNavigation({ pathname }: { pathname: string }) {
+type NavigationProps = {
+  destinations: NavigationDestination[];
+  pathname: string;
+};
+
+function SidebarNavigation({ destinations, pathname }: NavigationProps) {
   return (
     <SidebarMenu>
-      {NAVIGATION_DESTINATIONS.map((destination) => (
+      {destinations.map((destination) => (
         <SidebarMenuItem key={destination.href}>
           <SidebarMenuButton
             asChild
@@ -126,7 +130,7 @@ function SidebarNavigation({ pathname }: { pathname: string }) {
   );
 }
 
-function MobileNavigation({ pathname }: { pathname: string }) {
+function MobileNavigation({ destinations, pathname }: NavigationProps) {
   const { setOpenMobile } = useSidebar();
 
   return (
@@ -134,27 +138,27 @@ function MobileNavigation({ pathname }: { pathname: string }) {
       aria-label="Navegación principal"
       className="fixed inset-x-0 bottom-0 z-20 flex border-t border-sidebar-border bg-sidebar pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      {NAVIGATION_DESTINATIONS.filter(
-        (destination) => destination.isInMobileBar,
-      ).map((destination) => (
-        <Link
-          key={destination.href}
-          href={destination.href}
-          aria-current={
-            isCurrentDestination(destination, pathname) ? "page" : undefined
-          }
-          className={MOBILE_ITEM_CLASS_NAME}
-        >
-          <span className={MOBILE_ITEM_SURFACE_CLASS_NAME}>
-            <HugeiconsIcon
-              icon={destination.icon}
-              className={cn("size-6", getIconClassName(destination))}
-              aria-hidden="true"
-            />
-            {destination.label}
-          </span>
-        </Link>
-      ))}
+      {destinations
+        .filter((destination) => destination.isInMobileBar)
+        .map((destination) => (
+          <Link
+            key={destination.href}
+            href={destination.href}
+            aria-current={
+              isCurrentDestination(destination, pathname) ? "page" : undefined
+            }
+            className={MOBILE_ITEM_CLASS_NAME}
+          >
+            <span className={MOBILE_ITEM_SURFACE_CLASS_NAME}>
+              <HugeiconsIcon
+                icon={destination.icon}
+                className={cn("size-6", getIconClassName(destination))}
+                aria-hidden="true"
+              />
+              {destination.label}
+            </span>
+          </Link>
+        ))}
       <button
         type="button"
         onClick={() => setOpenMobile(true)}
@@ -174,10 +178,12 @@ function MobileNavigation({ pathname }: { pathname: string }) {
 }
 
 export function AppShell({
+  destinations,
   accountMenu,
   isSidebarOpenByDefault,
   children,
 }: {
+  destinations: NavigationDestination[];
   accountMenu: ReactNode;
   isSidebarOpenByDefault: boolean;
   children: ReactNode;
@@ -196,7 +202,10 @@ export function AppShell({
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
-              <SidebarNavigation pathname={pathname} />
+              <SidebarNavigation
+                destinations={destinations}
+                pathname={pathname}
+              />
             </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>{accountMenu}</SidebarFooter>
@@ -220,7 +229,7 @@ export function AppShell({
             {children}
           </main>
         </SidebarInset>
-        <MobileNavigation pathname={pathname} />
+        <MobileNavigation destinations={destinations} pathname={pathname} />
       </SidebarProvider>
     </TooltipProvider>
   );

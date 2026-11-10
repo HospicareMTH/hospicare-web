@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AppShell, TOGGLE_SIDEBAR_LABEL } from "./app-shell";
+import { HOME_DESTINATION } from "./navigation";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
@@ -10,6 +11,7 @@ vi.mock("next/navigation", () => ({
 function renderShell({ isSidebarOpenByDefault = true } = {}) {
   return render(
     <AppShell
+      destinations={[HOME_DESTINATION]}
       accountMenu={null}
       isSidebarOpenByDefault={isSidebarOpenByDefault}
     >

@@ -11,9 +11,11 @@ import {
 
 export function SectionSheet({
   destination,
+  title = destination.label,
   children,
 }: {
   destination: NavigationDestination;
+  title?: string;
   children: ReactNode;
 }) {
   const { color } = destination;
@@ -29,7 +31,7 @@ export function SectionSheet({
           )}
           aria-hidden="true"
         />
-        {destination.label}
+        {title}
       </h1>
       {children}
     </section>

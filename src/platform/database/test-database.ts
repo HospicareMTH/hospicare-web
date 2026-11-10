@@ -14,6 +14,12 @@ const RESETTABLE_TABLES = [
   "users",
 ];
 
+// Repite la siembra de drizzle/0003 para devolver los roles de sistema a su estado inicial.
+const SEED_ROLE_PERMISSIONS_SQL = `
+  INSERT INTO "role_permissions" ("role_id", "permission")
+  SELECT "id", 'documentation.app.view' FROM "roles" WHERE "system_key" = 'user'
+`;
+
 export function assertTestDatabase(databaseUrl: string | undefined): void {
   if (!databaseUrl) {
     return;
@@ -58,6 +64,9 @@ export function migrateTestDatabase(): Promise<void> {
 export function resetTestDatabase(): Promise<void> {
   const tableList = RESETTABLE_TABLES.map((table) => `"${table}"`).join(", ");
   return withMigrationPool(async (pool) => {
+    await pool.query(`TRUNCATE "user_roles", "role_permissions"`);
+    await pool.query(`DELETE FROM "roles" WHERE "system_key" IS NULL`);
+    await pool.query(SEED_ROLE_PERMISSIONS_SQL);
     await pool.query(`TRUNCATE ${tableList} RESTART IDENTITY CASCADE`);
   });
 }

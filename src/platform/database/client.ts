@@ -37,6 +37,19 @@ export function runInTransaction<Result>(
   return getDatabase().transaction(work);
 }
 
+export function runInTransactionAs<Result>(
+  actorUserId: string,
+  work: (transaction: DatabaseTransaction) => Promise<Result>,
+): Promise<Result> {
+  return runInTransaction(async (transaction) => {
+    // Los triggers del registro de actividad leen al responsable de esta variable.
+    await transaction.execute(
+      sql`select set_config('hospicare.actor_user_id', ${actorUserId}, true)`,
+    );
+    return work(transaction);
+  });
+}
+
 export async function checkDatabaseConnection(): Promise<void> {
   await getDatabase().execute(sql`select 1`);
 }

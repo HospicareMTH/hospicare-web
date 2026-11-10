@@ -1,4 +1,4 @@
-import { Home01Icon } from "@hugeicons/core-free-icons";
+import { Home01Icon, UserShield01Icon } from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 
 export type SectionColor = "blue" | "green" | "ochre" | "plum";
@@ -9,6 +9,7 @@ export type NavigationDestination = {
   icon: IconSvgElement;
   color: SectionColor | null;
   isInMobileBar: boolean;
+  requiredPermission: string | null;
 };
 
 export const HOME_DESTINATION: NavigationDestination = {
@@ -17,10 +18,21 @@ export const HOME_DESTINATION: NavigationDestination = {
   icon: Home01Icon,
   color: "blue",
   isInMobileBar: true,
+  requiredPermission: null,
+};
+
+export const ADMINISTRATION_DESTINATION: NavigationDestination = {
+  label: "Administración",
+  href: "/admin/roles",
+  icon: UserShield01Icon,
+  color: null,
+  isInMobileBar: false,
+  requiredPermission: "admin.roles.view",
 };
 
 export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
   HOME_DESTINATION,
+  ADMINISTRATION_DESTINATION,
 ];
 
 export const SECTION_ICON_CLASS_NAMES: Record<SectionColor, string> = {
@@ -39,7 +51,6 @@ export function isCurrentDestination(
   if (destination.href === "/") {
     return pathname === "/";
   }
-  return (
-    pathname === destination.href || pathname.startsWith(`${destination.href}/`)
-  );
+  const sectionPath = destination.href.split("/").slice(0, 2).join("/");
+  return pathname === sectionPath || pathname.startsWith(`${sectionPath}/`);
 }

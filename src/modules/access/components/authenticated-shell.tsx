@@ -2,8 +2,9 @@ import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/shared/app-shell";
+import { NAVIGATION_DESTINATIONS } from "@/components/shared/navigation";
 
-import { requireSession } from "../session";
+import { filterAllowedDestinations, getCurrentUser } from "../authorization";
 import { AccountMenu } from "./account-menu";
 
 const SIDEBAR_STATE_COOKIE_NAME = "sidebar_state";
@@ -14,7 +15,7 @@ export async function AuthenticatedShell({
 }: {
   children: ReactNode;
 }) {
-  const session = await requireSession();
+  const { name, access } = await getCurrentUser();
   const cookieStore = await cookies();
   const isSidebarOpenByDefault =
     cookieStore.get(SIDEBAR_STATE_COOKIE_NAME)?.value !==
@@ -22,7 +23,8 @@ export async function AuthenticatedShell({
 
   return (
     <AppShell
-      accountMenu={<AccountMenu userName={session.user.name} />}
+      destinations={filterAllowedDestinations(access, NAVIGATION_DESTINATIONS)}
+      accountMenu={<AccountMenu userName={name} />}
       isSidebarOpenByDefault={isSidebarOpenByDefault}
     >
       {children}

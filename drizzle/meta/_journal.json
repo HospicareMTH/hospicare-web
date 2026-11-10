@@ -15,6 +15,20 @@
       "when": 1794282022103,
       "tag": "0001_audit_triggers_and_seeds",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794334378551,
+      "tag": "0002_role_permissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794334385405,
+      "tag": "0003_role_permissions_audit_and_seed",
+      "breakpoints": true
     }
   ]
 }

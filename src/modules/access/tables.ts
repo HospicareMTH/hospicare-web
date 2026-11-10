@@ -1,11 +1,14 @@
+import { sql } from "drizzle-orm";
 import {
   bigint,
   boolean,
   index,
   integer,
   pgTable,
+  primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -83,14 +86,30 @@ export const rateLimits = pgTable("rate_limits", {
   lastRequest: bigint({ mode: "number" }).notNull(),
 });
 
-export const roles = pgTable("roles", {
-  id: uuid().primaryKey().defaultRandom(),
-  systemKey: text().unique(),
-  name: text().notNull().unique(),
-  description: text(),
-  createdAt: createdAt(),
-  updatedAt: updatedAt(),
-});
+export const roles = pgTable(
+  "roles",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    systemKey: text().unique(),
+    name: text().notNull(),
+    description: text(),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [uniqueIndex("roles_name_unique").on(sql`lower(${table.name})`)],
+);
+
+export const rolePermissions = pgTable(
+  "role_permissions",
+  {
+    roleId: uuid()
+      .notNull()
+      .references(() => roles.id, { onDelete: "cascade" }),
+    permission: text().notNull(),
+    createdAt: createdAt(),
+  },
+  (table) => [primaryKey({ columns: [table.roleId, table.permission] })],
+);
 
 export const userRoles = pgTable(
   "user_roles",
