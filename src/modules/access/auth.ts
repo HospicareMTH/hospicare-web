@@ -1,12 +1,20 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { createAuthMiddleware, isAPIError } from "better-auth/api";
+import { APIError, createAuthMiddleware, isAPIError } from "better-auth/api";
 import { z } from "zod";
 
 import { getDatabase } from "@/platform/database/client";
 
-import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "./schemas";
-import { CLIENT_IP_HEADER, recordFailedSignInAttempt } from "./service";
+import {
+  ACCESS_REVOKED_ERROR_CODE,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+} from "./schemas";
+import {
+  CLIENT_IP_HEADER,
+  isUserAccessRevoked,
+  recordFailedSignInAttempt,
+} from "./service";
 import { accounts, rateLimits, sessions, users, verifications } from "./tables";
 
 const SECONDS_PER_DAY = 86_400;
@@ -91,6 +99,20 @@ function createAuth() {
       ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },
     },
     hooks: { after: recordFailedSignInMiddleware },
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (session) => {
+            if (await isUserAccessRevoked(session.userId)) {
+              throw new APIError("FORBIDDEN", {
+                code: ACCESS_REVOKED_ERROR_CODE,
+                message: "Tu acceso está suspendido.",
+              });
+            }
+          },
+        },
+      },
+    },
   });
 }
 

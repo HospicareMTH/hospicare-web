@@ -5,38 +5,51 @@ import { z } from "zod";
 
 import { requirePermission } from "./authorization";
 import {
+  type AccessRevocationInput,
+  accessRevocationSchema,
+  invitationAcceptanceSchema,
+  type InvitationAcceptanceInput,
+  invitationIdSchema,
+  type InvitationInput,
+  invitationInputSchema,
   roleDetailsSchema,
   type RoleDetailsInput,
   roleIdSchema,
   rolePermissionsSchema,
+  userIdSchema,
 } from "./schemas";
 import {
+  acceptInvitation,
   assignRolePermissions,
+  createInvitation,
   createRole,
   deleteRole,
-  type RoleOperationResult,
+  type OperationResult,
+  restoreUserAccess,
+  revokeInvitation,
+  revokeUserAccess,
   updateRole,
 } from "./service";
 
-export type RoleActionResult =
-  | RoleOperationResult
+export type ActionResult =
+  | OperationResult
   | { status: "invalid"; fieldErrors: Record<string, string[] | undefined> };
 
-function toInvalidResult(error: z.ZodError): RoleActionResult {
+function toInvalidResult(error: z.ZodError): ActionResult {
   return { status: "invalid", fieldErrors: z.flattenError(error).fieldErrors };
 }
 
 const INVALID_REQUEST_MESSAGE =
   "El pedido no es válido. Actualizá la pantalla.";
 
-function toRejectedResult(error: z.ZodError): RoleActionResult {
+function toRejectedResult(error: z.ZodError): ActionResult {
   return {
     status: "rejected",
     message: error.issues[0]?.message ?? INVALID_REQUEST_MESSAGE,
   };
 }
 
-function refreshOnSuccess(result: RoleOperationResult): RoleOperationResult {
+function refreshOnSuccess(result: OperationResult): OperationResult {
   if (result.status === "success") {
     refresh();
   }
@@ -45,7 +58,7 @@ function refreshOnSuccess(result: RoleOperationResult): RoleOperationResult {
 
 export async function createRoleAction(
   input: RoleDetailsInput,
-): Promise<RoleActionResult> {
+): Promise<ActionResult> {
   const { access } = await requirePermission("admin.roles.create");
   const details = roleDetailsSchema.safeParse(input);
   if (!details.success) {
@@ -57,7 +70,7 @@ export async function createRoleAction(
 export async function updateRoleAction(
   roleId: string,
   input: RoleDetailsInput,
-): Promise<RoleActionResult> {
+): Promise<ActionResult> {
   const { access } = await requirePermission("admin.roles.update");
   const parsedRoleId = roleIdSchema.safeParse(roleId);
   if (!parsedRoleId.success) {
@@ -75,7 +88,7 @@ export async function updateRoleAction(
 export async function assignRolePermissionsAction(
   roleId: string,
   permissions: string[],
-): Promise<RoleActionResult> {
+): Promise<ActionResult> {
   const { access } = await requirePermission("admin.roles.assign_permissions");
   const parsedRoleId = roleIdSchema.safeParse(roleId);
   if (!parsedRoleId.success) {
@@ -94,13 +107,74 @@ export async function assignRolePermissionsAction(
   );
 }
 
-export async function deleteRoleAction(
-  roleId: string,
-): Promise<RoleActionResult> {
+export async function deleteRoleAction(roleId: string): Promise<ActionResult> {
   const { access } = await requirePermission("admin.roles.delete");
   const parsedRoleId = roleIdSchema.safeParse(roleId);
   if (!parsedRoleId.success) {
     return toRejectedResult(parsedRoleId.error);
   }
   return refreshOnSuccess(await deleteRole(access, parsedRoleId.data));
+}
+
+export async function revokeUserAccessAction(
+  userId: string,
+  input: AccessRevocationInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admin.users.revoke");
+  const parsedUserId = userIdSchema.safeParse(userId);
+  if (!parsedUserId.success) {
+    return toRejectedResult(parsedUserId.error);
+  }
+  const revocation = accessRevocationSchema.safeParse(input);
+  if (!revocation.success) {
+    return toInvalidResult(revocation.error);
+  }
+  return refreshOnSuccess(
+    await revokeUserAccess(access, parsedUserId.data, revocation.data),
+  );
+}
+
+export async function restoreUserAccessAction(
+  userId: string,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admin.users.revoke");
+  const parsedUserId = userIdSchema.safeParse(userId);
+  if (!parsedUserId.success) {
+    return toRejectedResult(parsedUserId.error);
+  }
+  return refreshOnSuccess(await restoreUserAccess(access, parsedUserId.data));
+}
+
+export async function createInvitationAction(
+  input: InvitationInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admin.invitations.create");
+  const invitation = invitationInputSchema.safeParse(input);
+  if (!invitation.success) {
+    return toInvalidResult(invitation.error);
+  }
+  return refreshOnSuccess(await createInvitation(access, invitation.data));
+}
+
+export async function revokeInvitationAction(
+  invitationId: string,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admin.invitations.delete");
+  const parsedInvitationId = invitationIdSchema.safeParse(invitationId);
+  if (!parsedInvitationId.success) {
+    return toRejectedResult(parsedInvitationId.error);
+  }
+  return refreshOnSuccess(
+    await revokeInvitation(access, parsedInvitationId.data),
+  );
+}
+
+export async function acceptInvitationAction(
+  input: InvitationAcceptanceInput,
+): Promise<ActionResult> {
+  const acceptance = invitationAcceptanceSchema.safeParse(input);
+  if (!acceptance.success) {
+    return toInvalidResult(acceptance.error);
+  }
+  return acceptInvitation(acceptance.data.token, acceptance.data.password);
 }

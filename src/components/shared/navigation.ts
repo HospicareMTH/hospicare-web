@@ -9,7 +9,7 @@ export type NavigationDestination = {
   icon: IconSvgElement;
   color: SectionColor | null;
   isInMobileBar: boolean;
-  requiredPermission: string | null;
+  requiredPermissions: string[];
 };
 
 export const HOME_DESTINATION: NavigationDestination = {
@@ -18,16 +18,20 @@ export const HOME_DESTINATION: NavigationDestination = {
   icon: Home01Icon,
   color: "blue",
   isInMobileBar: true,
-  requiredPermission: null,
+  requiredPermissions: [],
 };
 
 export const ADMINISTRATION_DESTINATION: NavigationDestination = {
   label: "Administración",
-  href: "/admin/roles",
+  href: "/admin",
   icon: UserShield01Icon,
   color: null,
   isInMobileBar: false,
-  requiredPermission: "admin.roles.view",
+  requiredPermissions: [
+    "admin.roles.view",
+    "admin.users.view",
+    "admin.invitations.view",
+  ],
 };
 
 export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
@@ -51,6 +55,7 @@ export function isCurrentDestination(
   if (destination.href === "/") {
     return pathname === "/";
   }
-  const sectionPath = destination.href.split("/").slice(0, 2).join("/");
-  return pathname === sectionPath || pathname.startsWith(`${sectionPath}/`);
+  return (
+    pathname === destination.href || pathname.startsWith(`${destination.href}/`)
+  );
 }

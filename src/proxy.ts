@@ -19,6 +19,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|iniciar-sesion|.*\\.(?:svg|png|jpg|jpeg|ico|webp|webmanifest|txt|xml)$).*)",
+    "/((?!api|_next/static|_next/image|iniciar-sesion|registro|invitaciones/aceptar|.*\\.(?:svg|png|jpg|jpeg|ico|webp|webmanifest|txt|xml)$).*)",
   ],
 };

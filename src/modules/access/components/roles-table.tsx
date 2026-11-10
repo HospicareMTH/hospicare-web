@@ -1,39 +1,16 @@
 "use client";
 
 import {
-  ArrowDown01Icon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-  ArrowUp01Icon,
-  ArrowUpDownIcon,
   Delete02Icon,
   Key01Icon,
-  MoreVerticalIcon,
   PencilEdit02Icon,
   PlusSignIcon,
-  Search01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import Form from "next/form";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -44,16 +21,15 @@ import {
 } from "@/components/ui/table";
 
 import type { Permission } from "../permissions";
-import {
-  formatRoleSort,
-  type RoleListQuery,
-  type RoleSortKey,
-} from "../schemas";
-import type { RoleListItem, RolePage } from "../service";
+import { DEFAULT_ROLE_SORT, type RoleListQuery } from "../schemas";
+import type { ListPage, RoleListItem } from "../service";
+import { ActionTableRow, type RowAction } from "./action-table-row";
 import { DeleteRoleDialog } from "./delete-role-dialog";
+import { ListFooter, ListToolbar, SortableHead } from "./list-controls";
 import { RoleDetailsDialog } from "./role-details-dialog";
 import { RolePermissionsDialog } from "./role-permissions-dialog";
-import { DIALOG_BUTTON_CLASS_NAME, FIELD_CONTROL_CLASS_NAME } from "./styles";
+import { DIALOG_BUTTON_CLASS_NAME } from "./styles";
+import { TableFrame } from "./table-frame";
 
 type RoleAbilities = {
   canCreate: boolean;
@@ -68,148 +44,11 @@ type OpenDialog =
   | { kind: "permissions"; role: RoleListItem }
   | { kind: "delete"; role: RoleListItem };
 
-type RoleAction = {
-  label: string;
-  icon: IconSvgElement;
-  isDestructive: boolean;
-  open: () => void;
-};
-
-const DEFAULT_SORT = formatRoleSort({ key: "name", isDescending: false });
-const FIRST_PAGE = 1;
 const ALL_PERMISSIONS_LABEL = "Todos";
-
-function buildListHref(pathname: string, query: RoleListQuery): string {
-  const searchParams = new URLSearchParams();
-  if (query.search) {
-    searchParams.set("buscar", query.search);
-  }
-  const sort = formatRoleSort(query.sort);
-  if (sort !== DEFAULT_SORT) {
-    searchParams.set("orden", sort);
-  }
-  if (query.page > FIRST_PAGE) {
-    searchParams.set("pagina", String(query.page));
-  }
-  const queryString = searchParams.toString();
-  return queryString ? `${pathname}?${queryString}` : pathname;
-}
+const COLUMN_COUNT = 5;
 
 function describeRoleCount(count: number): string {
   return count === 1 ? "1 rol" : `${count} roles`;
-}
-
-function SortableHead({
-  label,
-  sortKey,
-  query,
-  className,
-}: {
-  label: string;
-  sortKey: RoleSortKey;
-  query: RoleListQuery;
-  className?: string;
-}) {
-  const pathname = usePathname();
-  const isActive = query.sort.key === sortKey;
-  const isDescending = isActive && query.sort.isDescending;
-  const href = buildListHref(pathname, {
-    ...query,
-    sort: { key: sortKey, isDescending: isActive && !query.sort.isDescending },
-    page: FIRST_PAGE,
-  });
-  const icon = !isActive
-    ? ArrowUpDownIcon
-    : isDescending
-      ? ArrowDown01Icon
-      : ArrowUp01Icon;
-
-  return (
-    <TableHead
-      aria-sort={
-        isActive ? (isDescending ? "descending" : "ascending") : "none"
-      }
-      className={className}
-    >
-      <Button
-        asChild
-        variant="ghost"
-        className="-ml-2 h-9 px-2 text-sm font-semibold text-foreground"
-      >
-        <Link href={href} scroll={false}>
-          {label}
-          <HugeiconsIcon
-            icon={icon}
-            data-icon="inline-end"
-            className={isActive ? "text-primary" : "text-muted-foreground"}
-            aria-hidden="true"
-          />
-        </Link>
-      </Button>
-    </TableHead>
-  );
-}
-
-function PaginationControls({
-  rolePage,
-  query,
-}: {
-  rolePage: RolePage;
-  query: RoleListQuery;
-}) {
-  const pathname = usePathname();
-  if (rolePage.pageCount <= FIRST_PAGE) {
-    return null;
-  }
-
-  const previousPage = rolePage.page - 1;
-  const nextPage = rolePage.page + 1;
-
-  return (
-    <nav aria-label="Páginas de roles" className="flex items-center gap-2">
-      <Button
-        asChild={previousPage >= FIRST_PAGE}
-        variant="outline"
-        disabled={previousPage < FIRST_PAGE}
-        className={DIALOG_BUTTON_CLASS_NAME}
-      >
-        {previousPage >= FIRST_PAGE ? (
-          <Link
-            href={buildListHref(pathname, { ...query, page: previousPage })}
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
-            Anterior
-          </Link>
-        ) : (
-          <>
-            <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
-            Anterior
-          </>
-        )}
-      </Button>
-      <span className="px-1 text-sm text-muted-foreground tabular-nums">
-        Página {rolePage.page} de {rolePage.pageCount}
-      </span>
-      <Button
-        asChild={nextPage <= rolePage.pageCount}
-        variant="outline"
-        disabled={nextPage > rolePage.pageCount}
-        className={DIALOG_BUTTON_CLASS_NAME}
-      >
-        {nextPage <= rolePage.pageCount ? (
-          <Link href={buildListHref(pathname, { ...query, page: nextPage })}>
-            Siguiente
-            <HugeiconsIcon icon={ArrowRight01Icon} aria-hidden="true" />
-          </Link>
-        ) : (
-          <>
-            Siguiente
-            <HugeiconsIcon icon={ArrowRight01Icon} aria-hidden="true" />
-          </>
-        )}
-      </Button>
-    </nav>
-  );
 }
 
 export function RolesTable({
@@ -219,19 +58,18 @@ export function RolesTable({
   ownRoleId,
   abilities,
 }: {
-  rolePage: RolePage;
+  rolePage: ListPage<RoleListItem>;
   query: RoleListQuery;
   heldPermissions: Permission[];
   ownRoleId: string | null;
   abilities: RoleAbilities;
 }) {
-  const pathname = usePathname();
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState<OpenDialog | null>(null);
   const closeDialog = () => setOpenDialog(null);
 
-  function getRoleActions(role: RoleListItem): RoleAction[] {
-    const actions: RoleAction[] = [];
+  function getRoleActions(role: RoleListItem): RowAction[] {
+    const actions: RowAction[] = [];
     if (abilities.canUpdate && !role.isSystemRole) {
       actions.push({
         label: "Editar",
@@ -257,188 +95,98 @@ export function RolesTable({
     return actions;
   }
 
+  const sortProps = { sort: query.sort, defaultSort: DEFAULT_ROLE_SORT };
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Form
-          action={pathname}
-          role="search"
-          className="flex w-full items-center gap-2 sm:max-w-md"
-        >
-          {formatRoleSort(query.sort) !== DEFAULT_SORT && (
-            <input
-              type="hidden"
-              name="orden"
-              value={formatRoleSort(query.sort)}
-            />
-          )}
-          <Input
-            type="search"
-            name="buscar"
-            defaultValue={query.search}
-            aria-label="Buscar roles"
-            placeholder="Buscar roles"
-            className={FIELD_CONTROL_CLASS_NAME}
-          />
-          <Button
-            type="submit"
-            variant="outline"
-            className={DIALOG_BUTTON_CLASS_NAME}
-          >
-            <HugeiconsIcon
-              icon={Search01Icon}
-              data-icon="inline-start"
-              aria-hidden="true"
-            />
-            Buscar
-          </Button>
-        </Form>
-        {abilities.canCreate && (
-          <Button
-            onClick={() => setOpenDialog({ kind: "create" })}
-            className={DIALOG_BUTTON_CLASS_NAME}
-          >
-            <HugeiconsIcon
-              icon={PlusSignIcon}
-              data-icon="inline-start"
-              aria-hidden="true"
-            />
-            Nuevo rol
-          </Button>
-        )}
-      </div>
+      <ListToolbar
+        search={query.search}
+        searchLabel="Buscar roles"
+        action={
+          abilities.canCreate && (
+            <Button
+              onClick={() => setOpenDialog({ kind: "create" })}
+              className={DIALOG_BUTTON_CLASS_NAME}
+            >
+              <HugeiconsIcon
+                icon={PlusSignIcon}
+                data-icon="inline-start"
+                aria-hidden="true"
+              />
+              Nuevo rol
+            </Button>
+          )
+        }
+      />
 
-      <div className="overflow-hidden rounded-xl border">
+      <TableFrame>
         <Table className="text-base">
           <TableHeader className="bg-muted/60">
             <TableRow className="hover:bg-transparent">
-              <SortableHead label="Nombre" sortKey="name" query={query} />
-              <TableHead className="hidden font-semibold text-foreground md:table-cell">
+              <SortableHead label="Nombre" sortKey="name" {...sortProps} />
+              <TableHead className="hidden font-semibold text-foreground @3xl:table-cell">
                 Descripción
               </TableHead>
               <SortableHead
                 label="Permisos"
                 sortKey="permissions"
-                query={query}
-                className="hidden sm:table-cell"
+                className="hidden @lg:table-cell"
+                {...sortProps}
               />
-              <SortableHead label="Usuarios" sortKey="users" query={query} />
+              <SortableHead label="Usuarios" sortKey="users" {...sortProps} />
               <TableHead className="w-14">
                 <span className="sr-only">Acciones</span>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rolePage.roles.length === 0 && (
+            {rolePage.items.length === 0 && (
               <TableRow className="hover:bg-transparent">
                 <TableCell
-                  colSpan={5}
+                  colSpan={COLUMN_COUNT}
                   className="h-24 text-center whitespace-normal text-muted-foreground"
                 >
                   Ningún rol coincide con “{query.search}”.
                 </TableCell>
               </TableRow>
             )}
-            {rolePage.roles.map((role) => {
-              const isSelected = role.id === selectedRoleId;
-              const actions = getRoleActions(role);
-              return (
-                <ContextMenu key={role.id}>
-                  <ContextMenuTrigger asChild>
-                    <TableRow
-                      aria-selected={isSelected}
-                      data-state={isSelected ? "selected" : undefined}
-                      onClick={() => setSelectedRoleId(role.id)}
-                      onContextMenu={() => setSelectedRoleId(role.id)}
-                      className="h-14 data-[state=selected]:bg-primary/10"
-                    >
-                      <TableCell className="font-medium whitespace-normal">
-                        <span className="flex flex-wrap items-center gap-2">
-                          {role.name}
-                          {role.isSystemRole && (
-                            <Badge variant="secondary">De sistema</Badge>
-                          )}
-                        </span>
-                      </TableCell>
-                      <TableCell className="hidden max-w-md truncate text-muted-foreground md:table-cell">
-                        {role.description}
-                      </TableCell>
-                      <TableCell className="hidden tabular-nums sm:table-cell">
-                        {role.isSuperUserRole
-                          ? ALL_PERMISSIONS_LABEL
-                          : role.permissions.length}
-                      </TableCell>
-                      <TableCell className="tabular-nums">
-                        {role.userCount}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-10"
-                              aria-label={`Acciones de ${role.name}`}
-                            >
-                              <HugeiconsIcon
-                                icon={MoreVerticalIcon}
-                                className="size-5"
-                                aria-hidden="true"
-                              />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {actions.map((action) => (
-                              <DropdownMenuItem
-                                key={action.label}
-                                variant={
-                                  action.isDestructive
-                                    ? "destructive"
-                                    : "default"
-                                }
-                                onSelect={action.open}
-                                className="h-10 text-base"
-                              >
-                                <HugeiconsIcon
-                                  icon={action.icon}
-                                  aria-hidden="true"
-                                />
-                                {action.label}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent>
-                    {actions.map((action) => (
-                      <ContextMenuItem
-                        key={action.label}
-                        variant={
-                          action.isDestructive ? "destructive" : "default"
-                        }
-                        onSelect={action.open}
-                        className="h-10 text-base"
-                      >
-                        <HugeiconsIcon icon={action.icon} aria-hidden="true" />
-                        {action.label}
-                      </ContextMenuItem>
-                    ))}
-                  </ContextMenuContent>
-                </ContextMenu>
-              );
-            })}
+            {rolePage.items.map((role) => (
+              <ActionTableRow
+                key={role.id}
+                actions={getRoleActions(role)}
+                actionsLabel={`Acciones de ${role.name}`}
+                isSelected={role.id === selectedRoleId}
+                onSelect={() => setSelectedRoleId(role.id)}
+              >
+                <TableCell className="font-medium whitespace-normal">
+                  <span className="flex flex-wrap items-center gap-2">
+                    {role.name}
+                    {role.isSystemRole && (
+                      <Badge variant="secondary">De sistema</Badge>
+                    )}
+                  </span>
+                </TableCell>
+                <TableCell className="hidden max-w-md truncate text-muted-foreground @3xl:table-cell">
+                  {role.description}
+                </TableCell>
+                <TableCell className="hidden tabular-nums @lg:table-cell">
+                  {role.isSuperUserRole
+                    ? ALL_PERMISSIONS_LABEL
+                    : role.permissions.length}
+                </TableCell>
+                <TableCell className="tabular-nums">{role.userCount}</TableCell>
+              </ActionTableRow>
+            ))}
           </TableBody>
         </Table>
-      </div>
+      </TableFrame>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">
-          {describeRoleCount(rolePage.totalCount)}
-        </p>
-        <PaginationControls rolePage={rolePage} query={query} />
-      </div>
+      <ListFooter
+        totalLabel={describeRoleCount(rolePage.totalCount)}
+        page={rolePage.page}
+        pageCount={rolePage.pageCount}
+        paginationLabel="Páginas de roles"
+      />
 
       {openDialog?.kind === "create" && (
         <RoleDetailsDialog role={null} onClose={closeDialog} />

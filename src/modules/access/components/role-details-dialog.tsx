@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createRoleAction, updateRoleAction } from "../actions";
 import { ROLE_DESCRIPTION_MAX_LENGTH, ROLE_NAME_MAX_LENGTH } from "../schemas";
 import type { RoleListItem } from "../service";
-import { runRoleAction } from "./run-role-action";
+import { runAction } from "./run-action";
 import { DIALOG_BUTTON_CLASS_NAME, FIELD_CONTROL_CLASS_NAME } from "./styles";
 
 type FieldErrors = Record<string, string[] | undefined>;
@@ -54,7 +54,7 @@ export function RoleDetailsDialog({
     };
 
     startSaving(async () => {
-      const result = await runRoleAction(
+      const result = await runAction(
         () =>
           role ? updateRoleAction(role.id, input) : createRoleAction(input),
         isEditing ? "Cambios guardados." : "Rol creado.",

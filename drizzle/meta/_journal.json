@@ -29,6 +29,20 @@
       "when": 1794334385405,
       "tag": "0003_role_permissions_audit_and_seed",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794339765700,
+      "tag": "0004_invitations_and_access_revocation",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794339772415,
+      "tag": "0005_invitations_audit",
+      "breakpoints": true
     }
   ]
 }

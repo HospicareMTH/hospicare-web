@@ -1,13 +1,21 @@
 import { randomUUID } from "node:crypto";
 
-import { and, asc, count, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, asc, count, eq, gt, inArray, ne, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
   getDatabase,
 } from "@/platform/database/client";
 
-import { accounts, rolePermissions, roles, userRoles, users } from "./tables";
+import {
+  accounts,
+  invitations,
+  rolePermissions,
+  roles,
+  sessions,
+  userRoles,
+  users,
+} from "./tables";
 
 export const SUPER_USER_SYSTEM_KEY = "super_user";
 export const USER_SYSTEM_KEY = "user";
@@ -264,3 +272,253 @@ export async function deleteRole(
 ): Promise<void> {
   await transaction.delete(roles).where(eq(roles.id, roleId));
 }
+
+export async function hasInvitationWithRole(
+  transaction: DatabaseTransaction,
+  roleId: string,
+): Promise<boolean> {
+  const [invitation] = await transaction
+    .select({ id: invitations.id })
+    .from(invitations)
+    .where(eq(invitations.roleId, roleId))
+    .limit(1);
+  return invitation !== undefined;
+}
+
+export type AccessRevocationRecord = {
+  accessRevokedAt: Date | null;
+  accessRevokedUntil: Date | null;
+};
+
+export async function findAccessRevocation(
+  userId: string,
+): Promise<AccessRevocationRecord | null> {
+  const [user] = await getDatabase()
+    .select({
+      accessRevokedAt: users.accessRevokedAt,
+      accessRevokedUntil: users.accessRevokedUntil,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  return user ?? null;
+}
+
+export type LockedUser = AccessRevocationRecord & {
+  id: string;
+  roleSystemKey: string | null;
+};
+
+export async function lockUser(
+  transaction: DatabaseTransaction,
+  userId: string,
+): Promise<LockedUser | null> {
+  const [user] = await transaction
+    .select({
+      id: users.id,
+      accessRevokedAt: users.accessRevokedAt,
+      accessRevokedUntil: users.accessRevokedUntil,
+      roleSystemKey: roles.systemKey,
+    })
+    .from(users)
+    .leftJoin(userRoles, eq(userRoles.userId, users.id))
+    .leftJoin(roles, eq(roles.id, userRoles.roleId))
+    .where(eq(users.id, userId))
+    .for("update", { of: users });
+  return user ?? null;
+}
+
+type AccessRevocationChange = {
+  revokedAt: Date;
+  revokedUntil: Date | null;
+  reason: string;
+  revokedByUserId: string;
+};
+
+export async function updateAccessRevocation(
+  transaction: DatabaseTransaction,
+  userId: string,
+  change: AccessRevocationChange | null,
+): Promise<void> {
+  await transaction
+    .update(users)
+    .set({
+      accessRevokedAt: change?.revokedAt ?? null,
+      accessRevokedUntil: change?.revokedUntil ?? null,
+      accessRevocationReason: change?.reason ?? null,
+      accessRevokedByUserId: change?.revokedByUserId ?? null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+}
+
+export async function deleteUserSessions(
+  transaction: DatabaseTransaction,
+  userId: string,
+): Promise<void> {
+  await transaction.delete(sessions).where(eq(sessions.userId, userId));
+}
+
+export type UserSummary = AccessRevocationRecord & {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  accessRevocationReason: string | null;
+  roleName: string | null;
+  roleSystemKey: string | null;
+};
+
+export async function listUsers(): Promise<UserSummary[]> {
+  return getDatabase()
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      emailVerified: users.emailVerified,
+      accessRevokedAt: users.accessRevokedAt,
+      accessRevokedUntil: users.accessRevokedUntil,
+      accessRevocationReason: users.accessRevocationReason,
+      roleName: roles.name,
+      roleSystemKey: roles.systemKey,
+    })
+    .from(users)
+    .leftJoin(userRoles, eq(userRoles.userId, users.id))
+    .leftJoin(roles, eq(roles.id, userRoles.roleId));
+}
+
+export async function hasPendingInvitation(
+  transaction: DatabaseTransaction,
+  email: string,
+  now: Date,
+): Promise<boolean> {
+  const [invitation] = await transaction
+    .select({ id: invitations.id })
+    .from(invitations)
+    .where(
+      and(
+        eq(invitations.email, email),
+        eq(invitations.status, "pending"),
+        gt(invitations.expiresAt, now),
+      ),
+    )
+    .limit(1);
+  return invitation !== undefined;
+}
+
+type NewInvitation = {
+  name: string;
+  email: string;
+  roleId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  invitedByUserId: string;
+};
+
+export async function insertInvitation(
+  transaction: DatabaseTransaction,
+  invitation: NewInvitation,
+): Promise<string> {
+  const [inserted] = await transaction
+    .insert(invitations)
+    .values(invitation)
+    .returning({ id: invitations.id });
+  if (!inserted) {
+    throw new Error("No se pudo crear la invitación.");
+  }
+  return inserted.id;
+}
+
+export type LockedInvitation = {
+  id: string;
+  name: string;
+  email: string;
+  roleId: string;
+  status: "pending" | "accepted" | "revoked";
+  expiresAt: Date;
+};
+
+const invitationColumns = {
+  id: invitations.id,
+  name: invitations.name,
+  email: invitations.email,
+  roleId: invitations.roleId,
+  status: invitations.status,
+  expiresAt: invitations.expiresAt,
+};
+
+export async function lockInvitation(
+  transaction: DatabaseTransaction,
+  invitationId: string,
+): Promise<LockedInvitation | null> {
+  const [invitation] = await transaction
+    .select(invitationColumns)
+    .from(invitations)
+    .where(eq(invitations.id, invitationId))
+    .for("update");
+  return invitation ?? null;
+}
+
+export async function lockInvitationByTokenHash(
+  transaction: DatabaseTransaction,
+  tokenHash: string,
+): Promise<LockedInvitation | null> {
+  const [invitation] = await transaction
+    .select(invitationColumns)
+    .from(invitations)
+    .where(eq(invitations.tokenHash, tokenHash))
+    .for("update");
+  return invitation ?? null;
+}
+
+export type InvitationPreview = LockedInvitation & { roleName: string };
+
+export async function findInvitationByTokenHash(
+  tokenHash: string,
+): Promise<InvitationPreview | null> {
+  const [invitation] = await getDatabase()
+    .select({ ...invitationColumns, roleName: roles.name })
+    .from(invitations)
+    .innerJoin(roles, eq(roles.id, invitations.roleId))
+    .where(eq(invitations.tokenHash, tokenHash))
+    .limit(1);
+  return invitation ?? null;
+}
+
+export async function markInvitationAccepted(
+  transaction: DatabaseTransaction,
+  invitationId: string,
+  acceptedUserId: string,
+): Promise<void> {
+  await transaction
+    .update(invitations)
+    .set({ status: "accepted", acceptedUserId, updatedAt: new Date() })
+    .where(eq(invitations.id, invitationId));
+}
+
+export async function markInvitationRevoked(
+  transaction: DatabaseTransaction,
+  invitationId: string,
+  revokedByUserId: string | null,
+): Promise<void> {
+  const now = new Date();
+  await transaction
+    .update(invitations)
+    .set({ status: "revoked", revokedAt: now, revokedByUserId, updatedAt: now })
+    .where(eq(invitations.id, invitationId));
+}
+
+export type InvitationSummary = InvitationPreview & { createdAt: Date };
+
+export async function listInvitations(): Promise<InvitationSummary[]> {
+  return getDatabase()
+    .select({
+      ...invitationColumns,
+      roleName: roles.name,
+      createdAt: invitations.createdAt,
+    })
+    .from(invitations)
+    .innerJoin(roles, eq(roles.id, invitations.roleId));
+}
+
+export type RoleOption = { id: string; name: string };

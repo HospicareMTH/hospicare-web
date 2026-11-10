@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 
-import { ADMINISTRATION_DESTINATION } from "@/components/shared/navigation";
-import { SectionSheet } from "@/components/shared/section-sheet";
-
 import { requirePermission } from "../authorization";
-import { parseRoleListQuery } from "../schemas";
+import { parseRoleListQuery, type SearchParams } from "../schemas";
 import { hasPermission, searchRoles } from "../service";
+import { LoadingStatus } from "./loading-status";
 import { RolesTable } from "./roles-table";
 
-type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-
-async function RolesContent({ searchParams }: { searchParams: SearchParams }) {
+async function RolesContent({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   const { access } = await requirePermission("admin.roles.view");
   const query = parseRoleListQuery(await searchParams);
   const rolePage = await searchRoles(query);
@@ -34,18 +34,14 @@ async function RolesContent({ searchParams }: { searchParams: SearchParams }) {
   );
 }
 
-export function RolesScreen({ searchParams }: { searchParams: SearchParams }) {
+export function RolesScreen({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   return (
-    <SectionSheet destination={ADMINISTRATION_DESTINATION} title="Roles">
-      <Suspense
-        fallback={
-          <p role="status" className="text-base text-muted-foreground">
-            Cargando roles…
-          </p>
-        }
-      >
-        <RolesContent searchParams={searchParams} />
-      </Suspense>
-    </SectionSheet>
+    <Suspense fallback={<LoadingStatus label="Cargando roles…" />}>
+      <RolesContent searchParams={searchParams} />
+    </Suspense>
   );
 }

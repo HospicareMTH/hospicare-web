@@ -64,7 +64,9 @@ export function migrateTestDatabase(): Promise<void> {
 export function resetTestDatabase(): Promise<void> {
   const tableList = RESETTABLE_TABLES.map((table) => `"${table}"`).join(", ");
   return withMigrationPool(async (pool) => {
-    await pool.query(`TRUNCATE "user_roles", "role_permissions"`);
+    await pool.query(
+      `TRUNCATE "invitations", "user_roles", "role_permissions"`,
+    );
     await pool.query(`DELETE FROM "roles" WHERE "system_key" IS NULL`);
     await pool.query(SEED_ROLE_PERMISSIONS_SQL);
     await pool.query(`TRUNCATE ${tableList} RESTART IDENTITY CASCADE`);

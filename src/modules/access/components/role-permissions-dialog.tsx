@@ -25,7 +25,7 @@ import {
 import { assignRolePermissionsAction } from "../actions";
 import { PERMISSION_GROUPS, type Permission } from "../permissions";
 import type { RoleListItem } from "../service";
-import { runRoleAction } from "./run-role-action";
+import { runAction } from "./run-action";
 import { DIALOG_BUTTON_CLASS_NAME } from "./styles";
 
 type PermissionGroup = (typeof PERMISSION_GROUPS)[number];
@@ -105,7 +105,7 @@ export function RolePermissionsDialog({
 
   function save() {
     startSaving(async () => {
-      const result = await runRoleAction(
+      const result = await runAction(
         () => assignRolePermissionsAction(role.id, [...selected]),
         "Permisos guardados.",
       );

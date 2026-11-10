@@ -1,9 +1,12 @@
+import { createHash, randomBytes } from "node:crypto";
+
 import { expect, type Page } from "@playwright/test";
 import { hashPassword } from "better-auth/crypto";
 
 import type { Permission } from "../src/modules/access";
 import {
   findUserIdByEmail,
+  insertInvitation,
   insertUserWithPassword,
 } from "../src/modules/access/repository";
 import {
@@ -25,8 +28,12 @@ export async function signIn(
   password = FICTITIOUS_SUPER_USER.password,
   email = FICTITIOUS_SUPER_USER.email,
 ) {
-  await page.getByLabel("Correo electrónico").fill(email);
-  await page.getByLabel("Contraseña").fill(password);
+  await page
+    .getByRole("textbox", { name: "Correo electrónico", exact: true })
+    .fill(email);
+  await page
+    .getByRole("textbox", { name: "Contraseña", exact: true })
+    .fill(password);
   await page.getByRole("button", { name: "Ingresar" }).click();
 }
 
@@ -82,4 +89,26 @@ export async function assignPermissions(
   permissions: Permission[],
 ) {
   await assignRolePermissions(await getSuperUserAccess(), roleId, permissions);
+}
+
+const INVITATION_VALIDITY_MILLISECONDS = 7 * 86_400_000;
+
+export async function createInvitationWithKnownToken(
+  name: string,
+  email: string,
+): Promise<string> {
+  const superUser = await getSuperUserAccess();
+  const token = randomBytes(32).toString("base64url");
+  const roleId = await findRoleId("Usuario");
+  await runInTransaction((transaction) =>
+    insertInvitation(transaction, {
+      name,
+      email,
+      roleId,
+      tokenHash: createHash("sha256").update(token).digest("hex"),
+      expiresAt: new Date(Date.now() + INVITATION_VALIDITY_MILLISECONDS),
+      invitedByUserId: superUser.userId,
+    }),
+  );
+  return token;
 }

@@ -17,6 +17,23 @@ export const PERMISSION_GROUPS = [
     ],
   },
   {
+    key: "users",
+    label: "Usuarios",
+    permissions: [
+      { key: "admin.users.view", label: "Ver" },
+      { key: "admin.users.revoke", label: "Revocar y restaurar accesos" },
+    ],
+  },
+  {
+    key: "invitations",
+    label: "Invitaciones",
+    permissions: [
+      { key: "admin.invitations.view", label: "Ver" },
+      { key: "admin.invitations.create", label: "Invitar" },
+      { key: "admin.invitations.delete", label: "Revocar" },
+    ],
+  },
+  {
     key: "documentation",
     label: "Documentación",
     permissions: [{ key: "documentation.app.view", label: "Ver" }],

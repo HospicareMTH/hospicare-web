@@ -20,8 +20,9 @@ test("RF-ROL-04 a RF-ROL-07: el Super user crea un rol, le asigna permisos y lo 
   await page.goto(ROLES_PATH);
   await signIn(page);
   await expect(
-    page.getByRole("heading", { level: 1, name: "Roles" }),
-  ).toBeVisible();
+    page.getByRole("link", { name: "Roles", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("table")).toBeVisible();
 
   await page.getByRole("button", { name: "Nuevo rol" }).click();
   await page.getByLabel("Nombre").fill("Asistencia espiritual");
@@ -79,7 +80,8 @@ test("CA-04, RF-ACC-07: un cambio de permisos rige en la próxima pantalla sin v
   await page.reload();
 
   await expect(
-    page.getByRole("heading", { level: 1, name: "Roles" }),
-  ).toBeVisible();
+    page.getByRole("link", { name: "Roles", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("table")).toBeVisible();
   await expect(page.getByRole("button", { name: "Nuevo rol" })).toHaveCount(0);
 });

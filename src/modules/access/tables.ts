@@ -4,12 +4,14 @@ import {
   boolean,
   index,
   integer,
+  pgEnum,
   pgTable,
   primaryKey,
   text,
   timestamp,
   uniqueIndex,
   uuid,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 
 const createdAt = () =>
@@ -25,6 +27,12 @@ export const users = pgTable("users", {
   image: text(),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
+  accessRevokedAt: timestamp({ withTimezone: true }),
+  accessRevokedUntil: timestamp({ withTimezone: true }),
+  accessRevocationReason: text(),
+  accessRevokedByUserId: text().references((): AnyPgColumn => users.id, {
+    onDelete: "set null",
+  }),
 });
 
 export const sessions = pgTable(
@@ -124,4 +132,38 @@ export const userRoles = pgTable(
     updatedAt: updatedAt(),
   },
   (table) => [index().on(table.roleId)],
+);
+
+export const invitationStatus = pgEnum("invitation_status", [
+  "pending",
+  "accepted",
+  "revoked",
+]);
+
+export const invitations = pgTable(
+  "invitations",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    email: text().notNull(),
+    name: text().notNull(),
+    roleId: uuid()
+      .notNull()
+      .references(() => roles.id, { onDelete: "restrict" }),
+    tokenHash: text().notNull().unique(),
+    status: invitationStatus().notNull().default("pending"),
+    expiresAt: timestamp({ withTimezone: true }).notNull(),
+    invitedByUserId: text().references(() => users.id, {
+      onDelete: "set null",
+    }),
+    acceptedUserId: text().references(() => users.id, {
+      onDelete: "set null",
+    }),
+    revokedAt: timestamp({ withTimezone: true }),
+    revokedByUserId: text().references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [index().on(table.email), index().on(table.roleId)],
 );

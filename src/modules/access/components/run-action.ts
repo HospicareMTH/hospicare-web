@@ -1,21 +1,21 @@
 import { unstable_rethrow } from "next/navigation";
 import { toast } from "sonner";
 
-import type { RoleActionResult } from "../actions";
+import type { ActionResult } from "../actions";
 
 const UNEXPECTED_ERROR_MESSAGE =
   "No pudimos guardar el cambio. Probá de nuevo en unos minutos.";
 
-export async function runRoleAction(
-  action: () => Promise<RoleActionResult>,
+export async function runAction(
+  action: () => Promise<ActionResult>,
   successMessage: string,
-): Promise<RoleActionResult | null> {
-  let result: RoleActionResult;
+): Promise<ActionResult | null> {
+  let result: ActionResult;
   try {
     result = await action();
   } catch (error) {
     unstable_rethrow(error);
-    console.error("La operación sobre el rol no pudo completarse.", error);
+    console.error("La operación no pudo completarse.", error);
     toast.error(UNEXPECTED_ERROR_MESSAGE);
     return null;
   }

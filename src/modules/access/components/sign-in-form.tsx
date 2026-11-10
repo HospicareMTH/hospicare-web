@@ -11,22 +11,34 @@ import { Input } from "@/components/ui/input";
 
 import { authClient } from "../auth-client";
 import { getSafeDestination } from "../redirect-destination";
-
-const FIELD_CONTROL_CLASS_NAME =
-  "h-11 rounded-none border-0 border-b bg-transparent px-1 caret-primary focus-visible:border-primary focus-visible:shadow-[inset_0_-1px_0_var(--primary)] focus-visible:ring-0 md:text-base dark:bg-transparent";
-const FIELD_LABEL_CLASS_NAME = "text-sm text-muted-foreground";
+import { ACCESS_REVOKED_ERROR_CODE } from "../schemas";
+import {
+  PUBLIC_FIELD_CONTROL_CLASS_NAME,
+  PUBLIC_FIELD_LABEL_CLASS_NAME,
+  PUBLIC_PRIMARY_BUTTON_CLASS_NAME,
+} from "./styles";
 
 const INVALID_CREDENTIALS_STATUS = 401;
 const TOO_MANY_REQUESTS_STATUS = 429;
 
 const SIGN_IN_ERROR_MESSAGES = {
   invalidCredentials: "El correo o la contraseña no son correctos.",
+  accessRevoked: "Tu acceso está suspendido. Contactá a un administrador.",
   tooManyAttempts:
     "Hiciste demasiados intentos. Esperá un minuto y volvé a probar.",
   unavailable: "No pudimos iniciar sesión. Probá de nuevo en unos minutos.",
 };
 
-function describeSignInError(status: number): string {
+function describeSignInError({
+  status,
+  code,
+}: {
+  status: number;
+  code?: string;
+}): string {
+  if (code === ACCESS_REVOKED_ERROR_CODE) {
+    return SIGN_IN_ERROR_MESSAGES.accessRevoked;
+  }
   if (status === INVALID_CREDENTIALS_STATUS) {
     return SIGN_IN_ERROR_MESSAGES.invalidCredentials;
   }
@@ -51,7 +63,7 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
         password: String(formData.get("password")),
       });
       if (error) {
-        toast.error(describeSignInError(error.status));
+        toast.error(describeSignInError(error));
         setIsSubmitting(false);
         return;
       }
@@ -72,7 +84,7 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
         <Field>
           <RequiredFieldLabel
             htmlFor="sign-in-email"
-            className={FIELD_LABEL_CLASS_NAME}
+            className={PUBLIC_FIELD_LABEL_CLASS_NAME}
           >
             Correo electrónico
           </RequiredFieldLabel>
@@ -82,13 +94,13 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
             type="email"
             autoComplete="username"
             required
-            className={FIELD_CONTROL_CLASS_NAME}
+            className={PUBLIC_FIELD_CONTROL_CLASS_NAME}
           />
         </Field>
         <Field>
           <RequiredFieldLabel
             htmlFor="sign-in-password"
-            className={FIELD_LABEL_CLASS_NAME}
+            className={PUBLIC_FIELD_LABEL_CLASS_NAME}
           >
             Contraseña
           </RequiredFieldLabel>
@@ -98,14 +110,14 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
             type="password"
             autoComplete="current-password"
             required
-            className={FIELD_CONTROL_CLASS_NAME}
+            className={PUBLIC_FIELD_CONTROL_CLASS_NAME}
           />
         </Field>
         <Button
           type="submit"
           disabled={isSubmitting}
           aria-busy={isSubmitting}
-          className="mt-6 h-12 w-full rounded-full text-base font-semibold shadow-[0_10px_24px_-8px_rgb(0_85_145/0.55)] dark:shadow-none"
+          className={PUBLIC_PRIMARY_BUTTON_CLASS_NAME}
         >
           {isSubmitting ? "Ingresando…" : "Ingresar"}
         </Button>

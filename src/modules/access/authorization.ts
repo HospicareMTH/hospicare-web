@@ -35,9 +35,11 @@ export function filterAllowedDestinations(
   destinations: NavigationDestination[],
 ): NavigationDestination[] {
   return destinations.filter(
-    ({ requiredPermission }) =>
-      requiredPermission === null ||
-      (isPermission(requiredPermission) &&
-        hasPermission(access, requiredPermission)),
+    ({ requiredPermissions }) =>
+      requiredPermissions.length === 0 ||
+      requiredPermissions.some(
+        (permission) =>
+          isPermission(permission) && hasPermission(access, permission),
+      ),
   );
 }

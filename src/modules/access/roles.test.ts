@@ -1,9 +1,8 @@
 // @vitest-environment node
-import { hashPassword } from "better-auth/crypto";
 import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getDatabase, runInTransaction } from "@/platform/database/client";
+import { getDatabase } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
 
 import {
@@ -12,8 +11,6 @@ import {
   deleteRoleAction,
 } from "./actions";
 import { getAuth } from "./auth";
-import type { Permission } from "./permissions";
-import { insertUserWithPassword } from "./repository";
 import { roleDetailsSchema } from "./schemas";
 import {
   assignRolePermissions,
@@ -26,6 +23,14 @@ import {
   updateRole,
   type UserAccess,
 } from "./service";
+import {
+  createRoleWithPermissions,
+  createSuperUserAccess,
+  createUserWithRole,
+  FICTITIOUS_PASSWORD,
+  FICTITIOUS_SUPER_USER,
+  findRoleId,
+} from "./test-fixtures";
 
 const requestHeaders = vi.hoisted(() => ({ current: new Headers() }));
 
@@ -35,60 +40,6 @@ vi.mock("next/headers", () => ({
 vi.mock("next/cache", () => ({ refresh: vi.fn() }));
 
 const FORBIDDEN_DIGEST = "NEXT_HTTP_ERROR_FALLBACK;403";
-const FICTITIOUS_PASSWORD = "clave-de-prueba-larga";
-const FICTITIOUS_SUPER_USER = {
-  name: "Ana Prueba",
-  email: "ana.prueba@hospicare.test",
-  password: FICTITIOUS_PASSWORD,
-};
-
-async function findUserId(email: string): Promise<string> {
-  const result = await getDatabase().execute<{ id: string }>(
-    sql`select id from users where email = ${email}`,
-  );
-  const [user] = result.rows;
-  if (!user) {
-    throw new Error("No se creó el usuario de prueba.");
-  }
-  return user.id;
-}
-
-async function findRoleId(name: string): Promise<string> {
-  const role = (await listRoles()).find((candidate) => candidate.name === name);
-  if (!role) {
-    throw new Error(`No existe el rol de prueba ${name}.`);
-  }
-  return role.id;
-}
-
-async function createSuperUserAccess(): Promise<UserAccess> {
-  await createFirstSuperUser(FICTITIOUS_SUPER_USER);
-  return getUserAccess(await findUserId(FICTITIOUS_SUPER_USER.email));
-}
-
-async function createUserWithRole(email: string, roleId: string) {
-  const passwordHash = await hashPassword(FICTITIOUS_PASSWORD);
-  const userId = await runInTransaction((transaction) =>
-    insertUserWithPassword(transaction, {
-      name: "Persona Ficticia",
-      email,
-      passwordHash,
-      roleId,
-    }),
-  );
-  return getUserAccess(userId);
-}
-
-async function createRoleWithPermissions(
-  superUser: UserAccess,
-  name: string,
-  permissions: Permission[],
-): Promise<string> {
-  await createRole(superUser, { name, description: null });
-  const roleId = await findRoleId(name);
-  await assignRolePermissions(superUser, roleId, permissions);
-  return roleId;
-}
 
 async function countRoles(): Promise<number> {
   return (await listRoles()).length;
