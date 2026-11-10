@@ -1,23 +1,41 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { APIError, createAuthMiddleware, isAPIError } from "better-auth/api";
+import {
+  APIError,
+  createAuthMiddleware,
+  getSessionFromCtx,
+  isAPIError,
+} from "better-auth/api";
+import { emailOTP, twoFactor } from "better-auth/plugins";
 import { z } from "zod";
 
 import { getDatabase } from "@/platform/database/client";
 
 import {
   ACCESS_REVOKED_ERROR_CODE,
+  EMAIL_NOT_VERIFIED_ERROR_CODE,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
 } from "./schemas";
 import {
   CLIENT_IP_HEADER,
+  EMAIL_VERIFICATION_CODE_VALIDITY_SECONDS,
   isUserAccessRevoked,
   PASSWORD_RESET_VALIDITY_SECONDS,
   recordFailedSignInAttempt,
+  sendEmailVerificationCode,
   sendPasswordResetMail,
+  sendTwoFactorCode,
+  TWO_FACTOR_CODE_VALIDITY_MINUTES,
 } from "./service";
-import { accounts, rateLimits, sessions, users, verifications } from "./tables";
+import {
+  accounts,
+  rateLimits,
+  sessions,
+  twoFactors,
+  users,
+  verifications,
+} from "./tables";
 
 const SECONDS_PER_DAY = 86_400;
 const SESSION_DURATION_SECONDS = 7 * SECONDS_PER_DAY;
@@ -30,6 +48,35 @@ const SECONDS_PER_HOUR = 3_600;
 const PASSWORD_RESET_ATTEMPTS_PER_HOUR = 5;
 const PASSWORD_RESET_REQUEST_ENDPOINT_PATH = "/request-password-reset";
 const PASSWORD_RESET_ENDPOINT_PATH = "/reset-password";
+const TWO_FACTOR_VERIFICATION_PATHS = "/two-factor/verify-*";
+const TWO_FACTOR_PATHS = "/two-factor/*";
+const TWO_FACTOR_ATTEMPTS_PER_WINDOW = 5;
+const EMAIL_VERIFICATION_SEND_PATH = "/email-otp/send-verification-otp";
+const EMAIL_VERIFICATION_PATH = "/email-otp/verify-email";
+const EMAIL_VERIFICATION_SENDS_PER_WINDOW = 3;
+const EMAIL_VERIFICATION_OTP_TYPE = "email-verification";
+const TWO_FACTOR_ENABLE_PATH = "/two-factor/enable";
+const VERIFIED_EMAIL_REQUIRED_PATHS = new Set([
+  TWO_FACTOR_ENABLE_PATH,
+  "/two-factor/disable",
+  "/two-factor/generate-backup-codes",
+  "/two-factor/get-totp-uri",
+]);
+const DISABLED_EMAIL_OTP_PATHS = [
+  "/email-otp/check-verification-otp",
+  "/sign-in/email-otp",
+  "/email-otp/request-password-reset",
+  "/forget-password/email-otp",
+  "/email-otp/reset-password",
+  "/email-otp/request-email-change",
+  "/email-otp/change-email",
+];
+const TWO_FACTOR_ISSUER = "Hospicare";
+const ONE_TIME_CODE_DIGITS = 6;
+const TOTP_PERIOD_SECONDS = 30;
+const ONE_TIME_CODE_ATTEMPTS = 5;
+const BACKUP_CODE_AMOUNT = 10;
+const BACKUP_CODE_LENGTH = 10;
 const INVALID_CREDENTIALS_STATUS_CODE = 401;
 const MINIMUM_SECRET_LENGTH = 32;
 
@@ -62,6 +109,52 @@ const recordFailedSignInMiddleware = createAuthMiddleware(async (context) => {
   }
 });
 
+const ownEmailVerificationBodySchema = z.object({
+  email: z.string(),
+  type: z.literal(EMAIL_VERIFICATION_OTP_TYPE).optional(),
+});
+
+// RF-ACC-11: el segundo factor se activa solo con aplicación autenticadora.
+const authenticatorEnableBodySchema = z.object({
+  method: z.literal("totp").optional(),
+});
+
+const guardAccountSecurityMiddleware = createAuthMiddleware(async (context) => {
+  const isEmailVerification =
+    context.path === EMAIL_VERIFICATION_SEND_PATH ||
+    context.path === EMAIL_VERIFICATION_PATH;
+  const requiresVerifiedEmail = VERIFIED_EMAIL_REQUIRED_PATHS.has(context.path);
+  if (!isEmailVerification && !requiresVerifiedEmail) {
+    return;
+  }
+
+  const session = await getSessionFromCtx(context);
+  if (!session) {
+    throw new APIError("UNAUTHORIZED");
+  }
+  if (isEmailVerification) {
+    const body = ownEmailVerificationBodySchema.safeParse(context.body);
+    if (
+      !body.success ||
+      body.data.email.toLowerCase() !== session.user.email.toLowerCase()
+    ) {
+      throw new APIError("FORBIDDEN");
+    }
+  }
+  if (requiresVerifiedEmail && !session.user.emailVerified) {
+    throw new APIError("FORBIDDEN", {
+      code: EMAIL_NOT_VERIFIED_ERROR_CODE,
+      message: "Verificá tu correo para hacer esta acción.",
+    });
+  }
+  if (
+    context.path === TWO_FACTOR_ENABLE_PATH &&
+    !authenticatorEnableBodySchema.safeParse(context.body).success
+  ) {
+    throw new APIError("BAD_REQUEST");
+  }
+});
+
 function createAuth() {
   const environment = authEnvironmentSchema.parse(process.env);
 
@@ -77,6 +170,7 @@ function createAuth() {
         account: accounts,
         verification: verifications,
         rateLimit: rateLimits,
+        twoFactor: twoFactors,
       },
     }),
     emailAndPassword: {
@@ -89,6 +183,38 @@ function createAuth() {
       sendResetPassword: ({ user, url }) => sendPasswordResetMail(user, url),
     },
     verification: { storeIdentifier: "hashed" },
+    disabledPaths: DISABLED_EMAIL_OTP_PATHS,
+    plugins: [
+      twoFactor({
+        issuer: TWO_FACTOR_ISSUER,
+        totpOptions: {
+          digits: ONE_TIME_CODE_DIGITS,
+          period: TOTP_PERIOD_SECONDS,
+        },
+        otpOptions: {
+          period: TWO_FACTOR_CODE_VALIDITY_MINUTES,
+          digits: ONE_TIME_CODE_DIGITS,
+          allowedAttempts: ONE_TIME_CODE_ATTEMPTS,
+          storeOTP: "encrypted",
+          sendOTP: ({ user, otp }) => sendTwoFactorCode(user.email, otp),
+        },
+        backupCodeOptions: {
+          amount: BACKUP_CODE_AMOUNT,
+          length: BACKUP_CODE_LENGTH,
+          storeBackupCodes: "encrypted",
+        },
+        accountLockout: { enabled: false },
+      }),
+      emailOTP({
+        otpLength: ONE_TIME_CODE_DIGITS,
+        expiresIn: EMAIL_VERIFICATION_CODE_VALIDITY_SECONDS,
+        allowedAttempts: ONE_TIME_CODE_ATTEMPTS,
+        storeOTP: "encrypted",
+        disableSignUp: true,
+        sendVerificationOTP: ({ email, otp }) =>
+          sendEmailVerificationCode(email, otp),
+      }),
+    ],
     session: {
       expiresIn: SESSION_DURATION_SECONDS,
       updateAge: SESSION_RENEWAL_SECONDS,
@@ -111,12 +237,31 @@ function createAuth() {
           window: SECONDS_PER_HOUR,
           max: PASSWORD_RESET_ATTEMPTS_PER_HOUR,
         },
+        [TWO_FACTOR_VERIFICATION_PATHS]: {
+          window: RATE_LIMIT_WINDOW_SECONDS,
+          max: TWO_FACTOR_ATTEMPTS_PER_WINDOW,
+        },
+        [TWO_FACTOR_PATHS]: {
+          window: RATE_LIMIT_WINDOW_SECONDS,
+          max: AUTH_REQUESTS_PER_WINDOW,
+        },
+        [EMAIL_VERIFICATION_SEND_PATH]: {
+          window: RATE_LIMIT_WINDOW_SECONDS,
+          max: EMAIL_VERIFICATION_SENDS_PER_WINDOW,
+        },
+        [EMAIL_VERIFICATION_PATH]: {
+          window: RATE_LIMIT_WINDOW_SECONDS,
+          max: AUTH_REQUESTS_PER_WINDOW,
+        },
       },
     },
     advanced: {
       ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },
     },
-    hooks: { after: recordFailedSignInMiddleware },
+    hooks: {
+      before: guardAccountSecurityMiddleware,
+      after: recordFailedSignInMiddleware,
+    },
     databaseHooks: {
       session: {
         create: {

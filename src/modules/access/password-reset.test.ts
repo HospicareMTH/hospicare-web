@@ -73,7 +73,7 @@ function signIn(password: string) {
 
 function lastResetToken(): string {
   const message = sentMails.messages.at(-1);
-  if (!message) {
+  if (!message || !("actionUrl" in message)) {
     throw new Error("No se envió el correo de recuperación.");
   }
   const token = new URL(message.actionUrl).pathname.split("/").at(-1);

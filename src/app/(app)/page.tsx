@@ -10,6 +10,7 @@ import {
   EmptyHeader,
   EmptyMedia,
 } from "@/components/ui/empty";
+import { EmailVerificationNotice } from "@/modules/access/components";
 
 export const metadata: Metadata = {
   title: "Inicio",
@@ -19,6 +20,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <SectionSheet destination={HOME_DESTINATION}>
+      <EmailVerificationNotice />
       <Empty className="flex-1 rounded-xl border border-dashed border-input/60">
         <EmptyHeader>
           <EmptyMedia

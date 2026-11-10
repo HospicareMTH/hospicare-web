@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   accessRevokedByUserId: text().references((): AnyPgColumn => users.id, {
     onDelete: "set null",
   }),
+  twoFactorEnabled: boolean().notNull().default(false),
 });
 
 export const sessions = pgTable(
@@ -85,6 +86,22 @@ export const verifications = pgTable(
     updatedAt: updatedAt(),
   },
   (table) => [index().on(table.identifier)],
+);
+
+export const twoFactors = pgTable(
+  "two_factors",
+  {
+    id: text().primaryKey(),
+    secret: text().notNull(),
+    backupCodes: text().notNull(),
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    verified: boolean().notNull().default(true),
+    failedVerificationCount: integer().notNull().default(0),
+    lockedUntil: timestamp({ withTimezone: true }),
+  },
+  (table) => [index().on(table.userId), index().on(table.secret)],
 );
 
 export const rateLimits = pgTable("rate_limits", {

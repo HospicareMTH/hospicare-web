@@ -59,8 +59,8 @@ const ALL_INVITATIONS: InvitationListQuery = {
 
 function lastInvitationToken(): string {
   const message = sentMails.messages.at(-1);
-  if (!message) {
-    throw new Error("No se envió ningún correo.");
+  if (!message || !("actionUrl" in message)) {
+    throw new Error("No se envió ningún correo con enlace.");
   }
   const token = new URL(message.actionUrl).searchParams.get("token");
   if (!token) {

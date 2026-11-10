@@ -1,4 +1,8 @@
-import { Home01Icon, UserShield01Icon } from "@hugeicons/core-free-icons";
+import {
+  Home01Icon,
+  UserCircleIcon,
+  UserShield01Icon,
+} from "@hugeicons/core-free-icons";
 import type { IconSvgElement } from "@hugeicons/react";
 
 export type SectionColor = "blue" | "green" | "ochre" | "plum";
@@ -34,9 +38,19 @@ export const ADMINISTRATION_DESTINATION: NavigationDestination = {
   ],
 };
 
+export const ACCOUNT_DESTINATION: NavigationDestination = {
+  label: "Mi cuenta",
+  href: "/usuario",
+  icon: UserCircleIcon,
+  color: null,
+  isInMobileBar: false,
+  requiredPermissions: [],
+};
+
 export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
   HOME_DESTINATION,
   ADMINISTRATION_DESTINATION,
+  ACCOUNT_DESTINATION,
 ];
 
 export const SECTION_ICON_CLASS_NAMES: Record<SectionColor, string> = {

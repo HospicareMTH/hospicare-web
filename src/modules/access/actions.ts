@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 
 import { requirePermission } from "./authorization";
+import { requireSession } from "./session";
 import {
   type AccessRevocationInput,
   accessRevocationSchema,
@@ -16,6 +17,7 @@ import {
   type RoleDetailsInput,
   roleIdSchema,
   rolePermissionsSchema,
+  totpUriSchema,
   userIdSchema,
 } from "./schemas";
 import {
@@ -27,6 +29,7 @@ import {
   type OperationResult,
   restoreUserAccess,
   revokeInvitation,
+  renderTotpQrCode,
   revokeUserAccess,
   updateRole,
 } from "./service";
@@ -177,4 +180,12 @@ export async function acceptInvitationAction(
     return toInvalidResult(acceptance.error);
   }
   return acceptInvitation(acceptance.data.token, acceptance.data.password);
+}
+
+export async function createTotpQrCodeAction(
+  totpUri: string,
+): Promise<string | null> {
+  await requireSession();
+  const uri = totpUriSchema.safeParse(totpUri);
+  return uri.success ? renderTotpQrCode(uri.data) : null;
 }

@@ -50,6 +50,20 @@
       "when": 1794351999101,
       "tag": "0006_password_reset_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794353236223,
+      "tag": "0007_two_factor",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794353262292,
+      "tag": "0008_two_factor_audit",
+      "breakpoints": true
     }
   ]
 }

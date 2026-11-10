@@ -169,7 +169,7 @@ export function UsersTable({
                   {user.isEmailVerified ? YES_LABEL : NO_LABEL}
                 </TableCell>
                 <TableCell className="hidden @5xl:table-cell">
-                  {NO_LABEL}
+                  {user.isTwoFactorEnabled ? YES_LABEL : NO_LABEL}
                 </TableCell>
               </ActionTableRow>
             ))}

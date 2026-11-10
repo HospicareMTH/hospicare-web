@@ -1,7 +1,9 @@
 export { AcceptInvitationScreen } from "./accept-invitation-screen";
+export { AccountScreen } from "./account-screen";
 export { AccessRestricted } from "./access-restricted";
 export { AdminHome, AdminLayout } from "./admin-layout";
 export { AuthenticatedShell } from "./authenticated-shell";
+export { EmailVerificationNotice } from "./email-verification-notice";
 export { InvitationsScreen } from "./invitations-screen";
 export { PasswordRecoveryScreen } from "./password-recovery-screen";
 export { PasswordResetScreen } from "./password-reset-screen";
@@ -9,4 +11,5 @@ export { RolesScreen } from "./roles-screen";
 export { SessionLoadingScreen } from "./session-loading-screen";
 export { SignInScreen } from "./sign-in-screen";
 export { SignUpScreen } from "./sign-up-screen";
+export { TwoFactorScreen } from "./two-factor-screen";
 export { UsersScreen } from "./users-screen";

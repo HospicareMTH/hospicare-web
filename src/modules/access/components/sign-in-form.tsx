@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 
 import { authClient } from "../auth-client";
 import { getSafeDestination } from "../redirect-destination";
-import { PASSWORD_RECOVERY_PATH } from "../routes";
+import { PASSWORD_RECOVERY_PATH, TWO_FACTOR_PATH } from "../routes";
 import { ACCESS_REVOKED_ERROR_CODE } from "../schemas";
 import {
   PUBLIC_FIELD_CONTROL_CLASS_NAME,
@@ -60,13 +60,17 @@ export function SignInForm({ labelledBy }: { labelledBy: string }) {
     setIsSubmitting(true);
 
     try {
-      const { error } = await authClient.signIn.email({
+      const { data, error } = await authClient.signIn.email({
         email: String(formData.get("email")),
         password: String(formData.get("password")),
       });
       if (error) {
         toast.error(describeSignInError(error));
         setIsSubmitting(false);
+        return;
+      }
+      if (data && "twoFactorRedirect" in data) {
+        router.replace(`${TWO_FACTOR_PATH}${window.location.search}`);
         return;
       }
     } catch (error) {

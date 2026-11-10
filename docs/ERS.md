@@ -623,7 +623,7 @@ Estas reglas aplican a todos los módulos y deben resolverse en un único lugar 
 | Familia de eventos | Acciones registradas |
 | --- | --- |
 | Sesión | Sesión iniciada, sesión revocada |
-| Usuarios | Creado, actualizado, correo verificado, contraseña restablecida, rol actualizado, acceso revocado, acceso restaurado |
+| Usuarios | Creado, actualizado, correo verificado, contraseña restablecida, rol actualizado, acceso revocado, acceso restaurado, segundo factor activado, segundo factor desactivado, códigos de respaldo regenerados |
 | Invitaciones | Creada, aceptada, revocada |
 | Roles | Creado, actualizado, eliminado, permisos actualizados |
 | Catálogos | Opción creada, actualizada, desactivada, reordenada |

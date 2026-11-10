@@ -5,8 +5,7 @@ export type MailMessage = {
   to: string;
   subject: string;
   text: string;
-  actionUrl: string;
-};
+} & ({ actionUrl: string } | { code: string });
 
 type MailTransport = (message: MailMessage) => Promise<void>;
 
@@ -36,9 +35,10 @@ function createResendTransport(
   };
 }
 
-const consoleTransport: MailTransport = async ({ subject, actionUrl }) => {
-  // Solo asunto y enlace: los registros del servidor no llevan datos personales.
-  console.info(`[correo] ${subject}: ${actionUrl}`);
+const consoleTransport: MailTransport = async (message) => {
+  // Solo asunto y enlace o código: los registros del servidor no llevan datos personales.
+  const detail = "actionUrl" in message ? message.actionUrl : message.code;
+  console.info(`[correo] ${message.subject}: ${detail}`);
 };
 
 function isLocalApplication(): boolean {

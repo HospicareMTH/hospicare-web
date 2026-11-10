@@ -56,6 +56,20 @@ describe("SignInForm", () => {
     });
   });
 
+  it("RF-ACC-12, 8.4: con segundo factor pasa a la verificación conservando el destino", async () => {
+    signInEmail.mockResolvedValue({
+      data: { twoFactorRedirect: true, twoFactorMethods: ["totp", "otp"] },
+      error: null,
+    });
+    render(<SignInForm labelledBy="titulo" />);
+
+    fillAndSubmit();
+
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith("/2fa?redirectTo=%2Fhuespedes%2F42"),
+    );
+  });
+
   it("RF-UX-05: informa que está ingresando mientras espera", () => {
     signInEmail.mockReturnValue(new Promise(() => undefined));
     render(<SignInForm labelledBy="titulo" />);

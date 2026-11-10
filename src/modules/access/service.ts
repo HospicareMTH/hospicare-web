@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 
 import { hashPassword } from "better-auth/crypto";
+import QRCode from "qrcode";
 import { z } from "zod";
 
 import { recordFailedSignIn } from "@/modules/audit";
@@ -408,6 +409,40 @@ export async function sendPasswordResetMail(
   }
 }
 
+const EMAIL_VERIFICATION_CODE_VALIDITY_MINUTES = 5;
+export const EMAIL_VERIFICATION_CODE_VALIDITY_SECONDS =
+  EMAIL_VERIFICATION_CODE_VALIDITY_MINUTES * 60;
+export const TWO_FACTOR_CODE_VALIDITY_MINUTES = 3;
+
+export async function sendEmailVerificationCode(
+  email: string,
+  code: string,
+): Promise<void> {
+  await sendMail({
+    to: email,
+    subject: "Tu código de verificación de Hospicare",
+    text: `Tu código es ${code}. Vence en ${EMAIL_VERIFICATION_CODE_VALIDITY_MINUTES} minutos.`,
+    code,
+  });
+}
+
+export async function sendTwoFactorCode(
+  email: string,
+  code: string,
+): Promise<void> {
+  await sendMail({
+    to: email,
+    subject: "Tu código para entrar a Hospicare",
+    text: `Tu código es ${code}. Vence en ${TWO_FACTOR_CODE_VALIDITY_MINUTES} minutos.`,
+    code,
+  });
+}
+
+export async function renderTotpQrCode(totpUri: string): Promise<string> {
+  const svg = await QRCode.toString(totpUri, { type: "svg", margin: 1 });
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 export type UserListItem = {
   id: string;
   name: string;
@@ -415,6 +450,7 @@ export type UserListItem = {
   roleName: string | null;
   isSuperUser: boolean;
   isEmailVerified: boolean;
+  isTwoFactorEnabled: boolean;
   isRevoked: boolean;
   accessRevokedUntil: Date | null;
   accessRevocationReason: string | null;
@@ -429,6 +465,7 @@ function toUserListItem(user: UserSummary, now: Date): UserListItem {
     roleName: user.roleName,
     isSuperUser: user.roleSystemKey === SUPER_USER_SYSTEM_KEY,
     isEmailVerified: user.emailVerified,
+    isTwoFactorEnabled: user.twoFactorEnabled,
     isRevoked,
     accessRevokedUntil: isRevoked ? user.accessRevokedUntil : null,
     accessRevocationReason: isRevoked ? user.accessRevocationReason : null,

@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 
 import { expect, type Page } from "@playwright/test";
 import { hashPassword } from "better-auth/crypto";
+import { eq } from "drizzle-orm";
 
 import type { Permission } from "../src/modules/access";
 import {
@@ -15,7 +16,7 @@ import {
   getUserAccess,
   listRoles,
 } from "../src/modules/access/service";
-import { verifications } from "../src/modules/access/tables";
+import { users, verifications } from "../src/modules/access/tables";
 import { getDatabase, runInTransaction } from "../src/platform/database/client";
 
 export const FICTITIOUS_SUPER_USER = {
@@ -134,4 +135,11 @@ export async function createPasswordResetLink(email: string): Promise<string> {
       expiresAt: new Date(Date.now() + PASSWORD_RESET_VALIDITY_MILLISECONDS),
     });
   return `/api/auth/reset-password/${token}?callbackURL=%2Frestablecer-contrasena`;
+}
+
+export async function markEmailVerified(email: string) {
+  await getDatabase()
+    .update(users)
+    .set({ emailVerified: true })
+    .where(eq(users.email, email));
 }

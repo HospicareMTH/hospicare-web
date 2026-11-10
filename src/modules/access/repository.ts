@@ -364,6 +364,7 @@ export type UserSummary = AccessRevocationRecord & {
   name: string;
   email: string;
   emailVerified: boolean;
+  twoFactorEnabled: boolean;
   accessRevocationReason: string | null;
   roleName: string | null;
   roleSystemKey: string | null;
@@ -376,6 +377,7 @@ export async function listUsers(): Promise<UserSummary[]> {
       name: users.name,
       email: users.email,
       emailVerified: users.emailVerified,
+      twoFactorEnabled: users.twoFactorEnabled,
       accessRevokedAt: users.accessRevokedAt,
       accessRevokedUntil: users.accessRevokedUntil,
       accessRevocationReason: users.accessRevocationReason,

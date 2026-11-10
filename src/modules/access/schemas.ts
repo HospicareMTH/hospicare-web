@@ -3,6 +3,11 @@ import { z } from "zod";
 import { ALL_PERMISSIONS } from "./permissions";
 
 export const ACCESS_REVOKED_ERROR_CODE = "ACCESS_REVOKED";
+export const EMAIL_NOT_VERIFIED_ERROR_CODE = "EMAIL_NOT_VERIFIED";
+
+export const totpUriSchema = z.string().startsWith("otpauth://totp/", {
+  error: "El enlace del autenticador no es válido.",
+});
 export const PASSWORD_MIN_LENGTH = 12;
 export const PASSWORD_MAX_LENGTH = 256;
 const NAME_MIN_LENGTH = 2;
