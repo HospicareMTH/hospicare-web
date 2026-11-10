@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { SignInScreen } from "./sign-in-screen";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn(), refresh: vi.fn() }),
+}));
 
 function getEmailInput() {
   return screen.getByLabelText(/Correo electrónico/);
@@ -50,15 +54,5 @@ describe("SignInScreen", () => {
     expect(
       screen.getAllByAltText("Hospice Madre Teresa").length,
     ).toBeGreaterThan(0);
-  });
-
-  it("no envía los datos mientras el ingreso no esté disponible", () => {
-    const { container } = render(<SignInScreen />);
-
-    expect(container.querySelector('[type="submit"]')).toBeNull();
-    expect(screen.getByRole("button", { name: "Ingresar" })).toHaveAttribute(
-      "type",
-      "button",
-    );
   });
 });

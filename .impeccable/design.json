@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-10T00:46:35.238Z",
+  "generatedAt": "2026-11-10T04:41:22.358Z",
   "title": "Design System: Hospicare",
   "extensions": {
     "colorMeta": {
@@ -51,7 +51,7 @@
       },
       "section-blue": {
         "role": "secondary",
-        "displayName": "Solapa Azul",
+        "displayName": "Azul de Inicio",
         "canonical": "oklch(44.0% 0.120 248.6)",
         "tonalRamp": [
           "oklch(15% 0.053 248.6)",
@@ -66,7 +66,7 @@
       },
       "section-green": {
         "role": "secondary",
-        "displayName": "Solapa Verde",
+        "displayName": "Verde de Admisiones",
         "canonical": "oklch(53.2% 0.093 162.4)",
         "tonalRamp": [
           "oklch(15% 0.041 162.4)",
@@ -81,7 +81,7 @@
       },
       "section-ochre": {
         "role": "secondary",
-        "displayName": "Solapa Ocre",
+        "displayName": "Ocre de Huéspedes",
         "canonical": "oklch(62.9% 0.127 69.9)",
         "tonalRamp": [
           "oklch(15% 0.056 69.9)",
@@ -96,7 +96,7 @@
       },
       "section-plum": {
         "role": "secondary",
-        "displayName": "Solapa Ciruela",
+        "displayName": "Ciruela de Epicrisis",
         "canonical": "oklch(48.7% 0.140 3.5)",
         "tonalRamp": [
           "oklch(15% 0.061 3.5)",
@@ -107,6 +107,156 @@
           "oklch(75% 0.101 3.5)",
           "oklch(87% 0.077 3.5)",
           "oklch(95% 0.061 3.5)"
+        ]
+      },
+      "section-on-dark": {
+        "role": "secondary",
+        "displayName": "Tinta sobre Sección Oscura",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "section-on-light": {
+        "role": "secondary",
+        "displayName": "Tinta sobre Ocre",
+        "canonical": "oklch(26.7% 0.028 248.9)",
+        "tonalRamp": [
+          "oklch(15% 0.012 248.9)",
+          "oklch(27% 0.017 248.9)",
+          "oklch(39% 0.022 248.9)",
+          "oklch(51% 0.027 248.9)",
+          "oklch(63% 0.025 248.9)",
+          "oklch(75% 0.020 248.9)",
+          "oklch(87% 0.015 248.9)",
+          "oklch(95% 0.012 248.9)"
+        ]
+      },
+      "sidebar": {
+        "role": "primary",
+        "displayName": "Barra Institucional",
+        "canonical": "oklch(44.0% 0.120 248.6)",
+        "tonalRamp": [
+          "oklch(15% 0.053 248.6)",
+          "oklch(27% 0.073 248.6)",
+          "oklch(39% 0.094 248.6)",
+          "oklch(51% 0.114 248.6)",
+          "oklch(63% 0.107 248.6)",
+          "oklch(75% 0.088 248.6)",
+          "oklch(87% 0.066 248.6)",
+          "oklch(95% 0.053 248.6)"
+        ]
+      },
+      "sidebar-foreground": {
+        "role": "primary",
+        "displayName": "Texto de Barra",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "sidebar-primary": {
+        "role": "primary",
+        "displayName": "Iniciales de Cuenta",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "sidebar-primary-foreground": {
+        "role": "primary",
+        "displayName": "Tinta de Iniciales",
+        "canonical": "oklch(44.0% 0.120 248.6)",
+        "tonalRamp": [
+          "oklch(15% 0.053 248.6)",
+          "oklch(27% 0.073 248.6)",
+          "oklch(39% 0.094 248.6)",
+          "oklch(51% 0.114 248.6)",
+          "oklch(63% 0.107 248.6)",
+          "oklch(75% 0.088 248.6)",
+          "oklch(87% 0.066 248.6)",
+          "oklch(95% 0.053 248.6)"
+        ]
+      },
+      "sidebar-accent": {
+        "role": "primary",
+        "displayName": "Pastilla Activa",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "sidebar-accent-foreground": {
+        "role": "primary",
+        "displayName": "Tinta de Pastilla Activa",
+        "canonical": "oklch(26.7% 0.028 248.9)",
+        "tonalRamp": [
+          "oklch(15% 0.012 248.9)",
+          "oklch(27% 0.017 248.9)",
+          "oklch(39% 0.022 248.9)",
+          "oklch(51% 0.027 248.9)",
+          "oklch(63% 0.025 248.9)",
+          "oklch(75% 0.020 248.9)",
+          "oklch(87% 0.015 248.9)",
+          "oklch(95% 0.012 248.9)"
+        ]
+      },
+      "sidebar-border": {
+        "role": "neutral",
+        "displayName": "Filete de Barra",
+        "canonical": "oklch(100% 0 0 / 20%)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "sidebar-ring": {
+        "role": "primary",
+        "displayName": "Foco en Barra",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
         ]
       },
       "destructive": {
@@ -246,7 +396,7 @@
       },
       "section-blue-dark": {
         "role": "secondary",
-        "displayName": "Solapa Azul, oscuro",
+        "displayName": "Azul de Inicio, oscuro",
         "canonical": "oklch(56.0% 0.131 249.2)",
         "tonalRamp": [
           "oklch(15% 0.057 249.2)",
@@ -261,7 +411,7 @@
       },
       "section-green-dark": {
         "role": "secondary",
-        "displayName": "Solapa Verde, oscuro",
+        "displayName": "Verde de Admisiones, oscuro",
         "canonical": "oklch(62.0% 0.106 162.4)",
         "tonalRamp": [
           "oklch(15% 0.047 162.4)",
@@ -276,7 +426,7 @@
       },
       "section-ochre-dark": {
         "role": "secondary",
-        "displayName": "Solapa Ocre, oscuro",
+        "displayName": "Ocre de Huéspedes, oscuro",
         "canonical": "oklch(69.8% 0.132 72.8)",
         "tonalRamp": [
           "oklch(15% 0.058 72.8)",
@@ -291,7 +441,7 @@
       },
       "section-plum-dark": {
         "role": "secondary",
-        "displayName": "Solapa Ciruela, oscuro",
+        "displayName": "Ciruela de Epicrisis, oscuro",
         "canonical": "oklch(56.5% 0.149 2.0)",
         "tonalRamp": [
           "oklch(15% 0.065 2.0)",
@@ -302,6 +452,111 @@
           "oklch(75% 0.107 2.0)",
           "oklch(87% 0.082 2.0)",
           "oklch(95% 0.065 2.0)"
+        ]
+      },
+      "sidebar-dark": {
+        "role": "primary",
+        "displayName": "Barra Institucional, oscuro",
+        "canonical": "oklch(31.5% 0.078 250.1)",
+        "tonalRamp": [
+          "oklch(15% 0.034 250.1)",
+          "oklch(27% 0.047 250.1)",
+          "oklch(39% 0.061 250.1)",
+          "oklch(51% 0.074 250.1)",
+          "oklch(63% 0.069 250.1)",
+          "oklch(75% 0.057 250.1)",
+          "oklch(87% 0.043 250.1)",
+          "oklch(95% 0.034 250.1)"
+        ]
+      },
+      "sidebar-foreground-dark": {
+        "role": "primary",
+        "displayName": "Texto de Barra, oscuro",
+        "canonical": "oklch(96.2% 0.009 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.004 247.9)",
+          "oklch(27% 0.005 247.9)",
+          "oklch(39% 0.007 247.9)",
+          "oklch(51% 0.008 247.9)",
+          "oklch(63% 0.008 247.9)",
+          "oklch(75% 0.006 247.9)",
+          "oklch(87% 0.005 247.9)",
+          "oklch(95% 0.004 247.9)"
+        ]
+      },
+      "sidebar-primary-dark": {
+        "role": "primary",
+        "displayName": "Iniciales de Cuenta, oscuro",
+        "canonical": "oklch(96.2% 0.009 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.004 247.9)",
+          "oklch(27% 0.005 247.9)",
+          "oklch(39% 0.007 247.9)",
+          "oklch(51% 0.008 247.9)",
+          "oklch(63% 0.008 247.9)",
+          "oklch(75% 0.006 247.9)",
+          "oklch(87% 0.005 247.9)",
+          "oklch(95% 0.004 247.9)"
+        ]
+      },
+      "sidebar-primary-foreground-dark": {
+        "role": "primary",
+        "displayName": "Tinta de Iniciales, oscuro",
+        "canonical": "oklch(31.5% 0.078 250.1)",
+        "tonalRamp": [
+          "oklch(15% 0.034 250.1)",
+          "oklch(27% 0.047 250.1)",
+          "oklch(39% 0.061 250.1)",
+          "oklch(51% 0.074 250.1)",
+          "oklch(63% 0.069 250.1)",
+          "oklch(75% 0.057 250.1)",
+          "oklch(87% 0.043 250.1)",
+          "oklch(95% 0.034 250.1)"
+        ]
+      },
+      "sidebar-accent-dark": {
+        "role": "primary",
+        "displayName": "Pastilla Activa, oscuro",
+        "canonical": "oklch(96.2% 0.009 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.004 247.9)",
+          "oklch(27% 0.005 247.9)",
+          "oklch(39% 0.007 247.9)",
+          "oklch(51% 0.008 247.9)",
+          "oklch(63% 0.008 247.9)",
+          "oklch(75% 0.006 247.9)",
+          "oklch(87% 0.005 247.9)",
+          "oklch(95% 0.004 247.9)"
+        ]
+      },
+      "sidebar-border-dark": {
+        "role": "neutral",
+        "displayName": "Filete de Barra, oscuro",
+        "canonical": "oklch(100% 0 0 / 15%)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(95% 0 0)"
+        ]
+      },
+      "sidebar-ring-dark": {
+        "role": "primary",
+        "displayName": "Foco en Barra, oscuro",
+        "canonical": "oklch(71.0% 0.119 243.9)",
+        "tonalRamp": [
+          "oklch(15% 0.052 243.9)",
+          "oklch(27% 0.072 243.9)",
+          "oklch(39% 0.093 243.9)",
+          "oklch(51% 0.113 243.9)",
+          "oklch(63% 0.106 243.9)",
+          "oklch(75% 0.087 243.9)",
+          "oklch(87% 0.065 243.9)",
+          "oklch(95% 0.052 243.9)"
         ]
       },
       "destructive-dark": {
@@ -398,7 +653,7 @@
     "typographyMeta": {
       "headline": {
         "displayName": "Headline",
-        "purpose": "Título de la hoja."
+        "purpose": "Título de la hoja de acceso y etiqueta de carpeta."
       },
       "action": {
         "displayName": "Action",
@@ -406,7 +661,7 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Rótulos de campo y enlace de recuperación."
+        "purpose": "Rótulos de campo, enlace de recuperación, destinos de navegación y nombre de la cuenta; el destino activo sube a 600."
       },
       "body": {
         "displayName": "Body",
@@ -417,14 +672,14 @@
       {
         "name": "hoja-apoyada",
         "value": "0 14px 34px rgb(11 59 102 / 0.1)",
-        "purpose": "Solo en la hoja; se define en la propia pantalla y todavía no es un token."
+        "purpose": "Solo en la hoja, de acceso y de trabajo; se repite en cada pantalla y todavía no es un token."
       }
     ],
     "motion": [
       {
         "name": "transicion-de-estado",
         "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
-        "purpose": "Valor por defecto de Tailwind en botones y campos de shadcn/ui."
+        "purpose": "Valor por defecto de Tailwind en botones, campos y destinos de shadcn/ui."
       }
     ],
     "breakpoints": [
@@ -475,30 +730,60 @@
       "name": "Solapas de carpeta",
       "kind": "custom",
       "refersTo": "folder-tab-blue",
-      "description": "Cuatro solapas de color que asoman del borde derecho; sin sección asignada.",
+      "description": "Firma del acceso: cuatro solapas decorativas en el orden de las secciones.",
       "html": "<div class=\"ds-folder\"><div class=\"ds-folder-tabs\" aria-hidden=\"true\"><span class=\"ds-tab ds-tab-blue\"></span><span class=\"ds-tab ds-tab-green\"></span><span class=\"ds-tab ds-tab-ochre\"></span><span class=\"ds-tab ds-tab-plum\"></span></div><div class=\"ds-folder-sheet\"></div></div>",
       "css": ".ds-folder { position: relative; width: 240px; height: 480px; margin-right: 40px; } .ds-folder-tabs { position: absolute; top: 56px; right: -40px; display: flex; flex-direction: column; gap: 12px; } .ds-tab { display: block; width: 56px; height: 96px; border-radius: 0 var(--radius) var(--radius) 0; } .ds-tab-blue { background: var(--section-blue); } .ds-tab-green { background: var(--section-green); } .ds-tab-ochre { background: var(--section-ochre); } .ds-tab-plum { background: var(--section-plum); } .ds-folder-sheet { position: relative; height: 100%; border-radius: calc(var(--radius) * 1.4); background: var(--card); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 14px 34px rgb(11 59 102 / 0.1); }"
+    },
+    {
+      "name": "Barra lateral con destinos",
+      "kind": "nav",
+      "refersTo": "sidebar",
+      "description": "Barra llena del azul institucional; destino activo en pastilla clara con ficha de color, hover en blanco al 12%.",
+      "html": "<nav class=\"ds-sidebar\"><a class=\"ds-nav-item\" aria-current=\"page\" href=\"#\"><span class=\"ds-chip ds-chip-blue\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg></span>Inicio</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-chip ds-chip-green\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></span>Admisiones</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-chip ds-chip-ochre\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></span>Huéspedes</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-chip ds-chip-plum\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></span>Epicrisis</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-chip ds-chip-neutral\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></span>Administración</a></nav>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; gap: 6px; width: 256px; padding: 8px; background: var(--sidebar); color: var(--sidebar-foreground); } .ds-nav-item { display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 8px; border-radius: var(--radius); color: var(--sidebar-foreground); font-size: 1rem; font-weight: 500; text-decoration: none; outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-nav-item:hover { background: rgb(255 255 255 / 12%); } .ds-nav-item[aria-current=page], .ds-nav-item[aria-current=page]:hover { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600; } .ds-nav-item:focus-visible { box-shadow: 0 0 0 2px var(--sidebar), 0 0 0 4px var(--sidebar-ring); } .ds-chip { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--radius); box-shadow: 0 0 0 2px rgb(255 255 255 / 30%); } .ds-chip-blue { background: var(--section-blue); color: var(--section-on-dark); } .ds-chip-green { background: var(--section-green); color: var(--section-on-dark); } .ds-chip-ochre { background: var(--section-ochre); color: var(--section-on-light); } .ds-chip-plum { background: var(--section-plum); color: var(--section-on-dark); } .ds-chip-neutral { background: rgb(255 255 255 / 12%); color: var(--sidebar-foreground); }"
+    },
+    {
+      "name": "Etiqueta de carpeta y hoja de sección",
+      "kind": "custom",
+      "refersTo": "folder-label-blue",
+      "description": "Encabezado de toda pantalla de sección: etiqueta del color de la sección, hoja con franja interna de 4 px y estado vacío.",
+      "html": "<section class=\"ds-section\"><h1 class=\"ds-label ds-label-blue\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg>Inicio</h1><div class=\"ds-section-sheet\"><div class=\"ds-strip ds-strip-blue\" aria-hidden=\"true\"></div><div class=\"ds-empty\"><span class=\"ds-empty-media ds-tint-blue\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></span><p class=\"ds-empty-text\">Todavía no hay reportes para mostrar.</p></div></div></section>",
+      "css": ".ds-section { display: flex; flex-direction: column; width: 560px; } .ds-label { display: flex; align-items: center; gap: 12px; width: fit-content; height: 52px; margin: 0; padding: 0 24px; border-radius: calc(var(--radius) * 1.4) calc(var(--radius) * 1.4) 0 0; font-size: 1.5rem; font-weight: 600; line-height: 1.333; } .ds-label-blue { background: var(--section-blue); color: var(--section-on-dark); } .ds-section-sheet { display: flex; flex-direction: column; min-height: 280px; overflow: hidden; border-radius: 0 calc(var(--radius) * 1.4) calc(var(--radius) * 1.4) calc(var(--radius) * 1.4); background: var(--card); color: var(--card-foreground); box-shadow: 0 14px 34px rgb(11 59 102 / 0.1); } .ds-strip { height: 4px; flex-shrink: 0; } .ds-strip-blue { background: var(--section-blue); } .ds-empty { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; } .ds-empty-media { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: calc(var(--radius) * 1.4); } .ds-tint-blue { background: color-mix(in oklab, var(--section-blue) 12%, transparent); color: var(--section-blue); } .ds-empty-text { margin: 0; color: var(--foreground); font-size: 1.125rem; }"
+    },
+    {
+      "name": "Navegación inferior móvil",
+      "kind": "nav",
+      "refersTo": "mobile-nav-bar",
+      "description": "Barra fija en azul institucional por debajo de 768 px, con los destinos del teléfono y Menú.",
+      "html": "<nav class=\"ds-mobile-nav\" aria-label=\"Navegación principal\"><a class=\"ds-mobile-item\" aria-current=\"page\" href=\"#\"><span class=\"ds-mobile-inner\"><span class=\"ds-chip ds-chip-blue\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg></span>Inicio</span></a><button class=\"ds-mobile-item\" type=\"button\"><span class=\"ds-mobile-inner\"><span class=\"ds-chip ds-chip-neutral\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"/></svg></span>Menú</span></button></nav>",
+      "css": ".ds-mobile-nav { display: flex; width: 390px; border-top: 1px solid var(--sidebar-border); background: var(--sidebar); color: var(--sidebar-foreground); } .ds-mobile-item { display: flex; flex: 1; padding: 6px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 1rem; font-weight: 500; text-decoration: none; outline: none; cursor: pointer; } .ds-mobile-item:hover { background: rgb(255 255 255 / 12%); } .ds-mobile-item:focus-visible { box-shadow: inset 0 0 0 2px var(--sidebar-ring); } .ds-mobile-inner { display: flex; flex: 1; align-items: center; justify-content: center; gap: 10px; height: 52px; border-radius: var(--radius); } .ds-mobile-item[aria-current=page] .ds-mobile-inner { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 600; } .ds-chip { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: var(--radius); box-shadow: 0 0 0 2px rgb(255 255 255 / 30%); } .ds-chip-blue { background: var(--section-blue); color: var(--section-on-dark); } .ds-chip-green { background: var(--section-green); color: var(--section-on-dark); } .ds-chip-ochre { background: var(--section-ochre); color: var(--section-on-light); } .ds-chip-plum { background: var(--section-plum); color: var(--section-on-dark); } .ds-chip-neutral { background: rgb(255 255 255 / 12%); color: var(--sidebar-foreground); }"
     }
   ],
   "narrative": {
     "northStar": "La carpeta de historia clínica",
-    "overview": "Hospicare se apoya en un objeto que el equipo del hospice ya conoce: la carpeta de papel con hojas y solapas de color. La hoja blanca descansa sobre una mesa celeste muy clara, y las solapas asoman por su borde derecho. El sistema rechaza tanto el formulario gris intercambiable como la portada emotiva de ONG.\n\nEl azul institucional del logo ordena la interacción: acción principal, enlace y foco. Las solapas aportan el único color adicional y todavía no tienen significado asignado; ver la decisión pendiente en Colors. El resto es neutro con un leve tinte azul, para que nada decorativo compita con el dato clínico.\n\nLa base técnica es shadcn/ui en estilo radix-nova con IBM Plex Sans e íconos HugeIcons. CLAUDE.md, sección 7, manda sobre componentes, tipografía e íconos. Lo registrado aquí proviene de la única superficie construida, el inicio de sesión; las pantallas autenticadas todavía no tienen evidencia propia.",
+    "overview": "Hospicare se apoya en un objeto que el equipo del hospice ya conoce: la carpeta de papel con hojas y solapas de color. La hoja blanca descansa sobre una mesa celeste muy clara. En el acceso, las solapas asoman por el borde derecho de la hoja; dentro del sistema, cada hoja de trabajo lleva arriba una etiqueta de carpeta del color de su sección, con su nombre. El sistema rechaza tanto el formulario gris intercambiable como la portada emotiva de ONG, y también el panel gris con un acento y el tablero de tarjetas.\n\nEl azul institucional del logo ordena la interacción: acción principal, enlace y foco, y además llena la barra lateral, donde el logo va en blanco. Los cuatro colores de sección dicen dónde está la persona: Inicio azul, Admisiones verde, Huéspedes ocre y Epicrisis ciruela; Administración, Documentación y Mi cuenta son neutras. El resto es neutro con un leve tinte azul, para que nada decorativo compita con el dato clínico.\n\nLa base técnica es shadcn/ui en estilo radix-nova con IBM Plex Sans e íconos HugeIcons. CLAUDE.md, sección 7, manda sobre componentes, tipografía e íconos. Lo registrado aquí proviene de dos superficies construidas: el inicio de sesión y el shell autenticado con Inicio.",
     "keyCharacteristics": [
-      "Mesa celeste, hoja blanca y cuatro solapas de color.",
+      "Mesa celeste, hoja blanca y etiqueta de carpeta del color de la sección.",
+      "Barra lateral llena del azul institucional, con el destino activo en pastilla clara.",
+      "Cuatro secciones con color propio; el resto, neutras.",
       "Una sola familia tipográfica, con tres pesos.",
-      "Un solo azul para actuar, enlazar y enfocar.",
       "Dos radios: controles y hoja.",
       "Controles planos; la profundidad pertenece a la hoja."
     ],
     "rules": [
       {
         "name": "La Regla del Azul Único",
-        "body": "Acción principal, enlace y foco usan siempre el azul institucional; ningún color de solapa cumple esas funciones.",
+        "body": "Acción principal, enlace y foco usan siempre el azul institucional; ningún color de sección cumple esas funciones.",
         "section": "colors"
       },
       {
-        "name": "La Regla de las Solapas sin Dueño",
-        "body": "Ninguna superficie asocia un color de solapa con una sección hasta que esa asignación esté decidida.",
+        "name": "La Regla de una Sección, un Color",
+        "body": "Inicio es azul, Admisiones verde, Huéspedes ocre y Epicrisis ciruela; todo otro destino es neutro. Un color de sección no se presta a otra sección ni se usa como decoración.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Tinta Legible",
+        "body": "Sobre ocre se escribe con `section-on-light`; sobre azul, verde y ciruela, con `section-on-dark`. El relleno de sección lleva solo íconos o la etiqueta de 24 px: el verde oscuro con blanco da 3,45:1 y el ocre claro con su tinta 4,20:1, suficientes para texto grande y no para texto de cuerpo.",
         "section": "colors"
       },
       {
@@ -513,7 +798,7 @@
       },
       {
         "name": "La Regla de la Hoja Apoyada",
-        "body": "La sombra describe una hoja sobre la mesa; filas, celdas y controles no la llevan.",
+        "body": "La sombra describe una hoja sobre la mesa; filas, celdas, etiquetas y controles no la llevan.",
         "section": "elevation"
       },
       {
@@ -526,17 +811,22 @@
       "**Do** partir siempre de `src/components/ui/` y seguir el orden de CLAUDE.md, sección 7, antes de crear un componente.",
       "**Do** usar tokens semánticos y la escala de radios de `globals.css`.",
       "**Do** resolver cada pantalla en modo claro y oscuro con sus tokens `-dark` equivalentes.",
+      "**Do** declarar cada destino nuevo en `navigation.ts` con su color de sección o `null` si es neutro.",
+      "**Do** abrir toda pantalla de sección con la hoja y su etiqueta de carpeta compartidas.",
+      "**Do** escribir sobre ocre con `section-on-light` y sobre azul, verde y ciruela con `section-on-dark`.",
       "**Do** marcar todo campo obligatorio con el rótulo compartido y sumar `required` al control.",
-      "**Do** usar el logo azul en modo claro y el blanco en modo oscuro.",
+      "**Do** usar el logo azul sobre la mesa en modo claro y el blanco sobre la barra y en modo oscuro.",
       "**Do** usar íconos HugeIcons, y Sonner para los resultados de operaciones."
     ],
     "donts": [
-      "**Don't** asignar un color de solapa a una sección sin la decisión pendiente resuelta.",
-      "**Don't** usar un color de solapa para acción, enlace o foco.",
+      "**Don't** dar color de sección a Administración, Documentación o Mi cuenta, ni prestar un color de una sección a otra.",
+      "**Don't** usar un color de sección para acción, enlace o foco.",
+      "**Don't** poner texto de cuerpo sobre un relleno de sección.",
       "**Don't** convertir las tarjetas en el patrón dominante de las pantallas de trabajo.",
       "**Don't** usar `<select>` nativo ni `<input type=\"date\">`.",
       "**Don't** reemplazar variantes y tokens de shadcn/ui por estilos propios, ni modificar `src/components/ui/` sin aprobación.",
-      "**Don't** extender las alturas del acceso a pantallas de trabajo sin decidirlo antes."
+      "**Don't** extender las alturas del acceso a pantallas de trabajo sin decidirlo antes.",
+      "**Don't** confiar en `position: sticky` dentro de la hoja mientras recorte su contenido."
     ]
   }
 }

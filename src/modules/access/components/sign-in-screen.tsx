@@ -1,11 +1,9 @@
 import Image from "next/image";
 
-import { RequiredFieldLabel } from "@/components/shared/required-field-label";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+
+import { SignInForm } from "./sign-in-form";
 
 const FOLDER_TAB_COLOR_CLASS_NAMES = [
   "bg-section-blue",
@@ -19,8 +17,7 @@ const LOGO_WIDTH = 600;
 const LOGO_HEIGHT = 116;
 const LOGO_CLASS_NAME = "mx-auto h-auto w-70 max-w-full";
 
-const FIELD_CONTROL_CLASS_NAME = "h-12 px-3.5 caret-primary md:text-base";
-const FIELD_LABEL_CLASS_NAME = "text-base";
+const SIGN_IN_TITLE_ID = "sign-in-title";
 
 export function SignInScreen() {
   return (
@@ -57,7 +54,7 @@ export function SignInScreen() {
               className={`${LOGO_CLASS_NAME} hidden dark:block`}
             />
             <h1
-              id="sign-in-title"
+              id={SIGN_IN_TITLE_ID}
               className="text-center text-2xl font-semibold"
             >
               Iniciar sesión
@@ -65,55 +62,7 @@ export function SignInScreen() {
           </CardHeader>
 
           <CardContent className="px-0">
-            <form aria-labelledby="sign-in-title">
-              <FieldGroup>
-                <Field>
-                  <RequiredFieldLabel
-                    htmlFor="sign-in-email"
-                    className={FIELD_LABEL_CLASS_NAME}
-                  >
-                    Correo electrónico
-                  </RequiredFieldLabel>
-                  <Input
-                    id="sign-in-email"
-                    name="email"
-                    type="email"
-                    autoComplete="username"
-                    required
-                    className={FIELD_CONTROL_CLASS_NAME}
-                  />
-                </Field>
-                <Field>
-                  <RequiredFieldLabel
-                    htmlFor="sign-in-password"
-                    className={FIELD_LABEL_CLASS_NAME}
-                  >
-                    Contraseña
-                  </RequiredFieldLabel>
-                  <Input
-                    id="sign-in-password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className={FIELD_CONTROL_CLASS_NAME}
-                  />
-                </Field>
-                <Button
-                  type="button"
-                  className="mt-2 h-13 w-full text-lg font-semibold"
-                >
-                  Ingresar
-                </Button>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="h-11 text-base underline"
-                >
-                  ¿Olvidaste tu contraseña?
-                </Button>
-              </FieldGroup>
-            </form>
+            <SignInForm labelledBy={SIGN_IN_TITLE_ID} />
           </CardContent>
         </Card>
       </div>

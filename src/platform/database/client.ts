@@ -10,6 +10,8 @@ const databaseEnvironmentSchema = z.object({
   }),
 });
 
+export const DATABASE_CASING = "snake_case";
+
 let database: NodePgDatabase | undefined;
 
 export function getDatabase(): NodePgDatabase {
@@ -18,8 +20,21 @@ export function getDatabase(): NodePgDatabase {
   }
 
   const { DATABASE_URL } = databaseEnvironmentSchema.parse(process.env);
-  database = drizzle({ client: new Pool({ connectionString: DATABASE_URL }) });
+  database = drizzle({
+    client: new Pool({ connectionString: DATABASE_URL }),
+    casing: DATABASE_CASING,
+  });
   return database;
+}
+
+export type DatabaseTransaction = Parameters<
+  Parameters<NodePgDatabase["transaction"]>[0]
+>[0];
+
+export function runInTransaction<Result>(
+  work: (transaction: DatabaseTransaction) => Promise<Result>,
+): Promise<Result> {
+  return getDatabase().transaction(work);
 }
 
 export async function checkDatabaseConnection(): Promise<void> {

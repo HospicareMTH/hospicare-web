@@ -2,6 +2,8 @@ import { existsSync } from "node:fs";
 
 import { defineConfig } from "drizzle-kit";
 
+import { DATABASE_CASING } from "./src/platform/database/client";
+
 const LOCAL_ENVIRONMENT_FILE = ".env.local";
 
 if (existsSync(LOCAL_ENVIRONMENT_FILE)) {
@@ -18,6 +20,7 @@ export default defineConfig({
   dialect: "postgresql",
   schema: "./src/modules/*/tables.ts",
   out: "./drizzle",
+  casing: DATABASE_CASING,
   dbCredentials: { url: migrationDatabaseUrl },
   strict: true,
   verbose: true,

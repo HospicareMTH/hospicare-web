@@ -19,5 +19,8 @@ export default defineConfig({
     environment: "jsdom",
     include: ["src/**/*.test.{ts,tsx}"],
     setupFiles: ["./vitest.setup.ts"],
+    globalSetup: ["./vitest.global-setup.ts"],
+    // Las pruebas de base comparten hospicare-web-test y la vacían entre casos.
+    fileParallelism: false,
   },
 });
