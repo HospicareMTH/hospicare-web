@@ -35,6 +35,16 @@ export const ADMINISTRATION_DESTINATION: NavigationDestination = {
     "admin.roles.view",
     "admin.users.view",
     "admin.invitations.view",
+    "admin.relationship_types.view",
+    "admin.healthcare_professionals.view",
+    "admin.health_insurance_providers.view",
+    "admin.information_awareness_options.view",
+    "admin.religion_options.view",
+    "admin.ecog_score_options.view",
+    "admin.oncological_treatment_options.view",
+    "admin.metastasis_location_options.view",
+    "admin.surgery_options.view",
+    "admin.guest_clinical_catalog_options.view",
   ],
 };
 

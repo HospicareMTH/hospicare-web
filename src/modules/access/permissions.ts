@@ -17,6 +17,32 @@ function catalogPermissionGroup<Key extends string>(key: Key, label: string) {
   } as const;
 }
 
+const CATALOG_PERMISSION_GROUPS = [
+  catalogPermissionGroup("relationship_types", "Vínculos"),
+  catalogPermissionGroup("healthcare_professionals", "Profesionales"),
+  catalogPermissionGroup("health_insurance_providers", "Obras sociales"),
+  catalogPermissionGroup(
+    "information_awareness_options",
+    "Información general",
+  ),
+  catalogPermissionGroup("religion_options", "Religión"),
+  catalogPermissionGroup("ecog_score_options", "ECOG"),
+  catalogPermissionGroup(
+    "oncological_treatment_options",
+    "Tratamiento oncológico",
+  ),
+  catalogPermissionGroup("metastasis_location_options", "Lugar de metástasis"),
+  catalogPermissionGroup("surgery_options", "Cirugía"),
+  catalogPermissionGroup(
+    "guest_clinical_catalog_options",
+    "Opciones clínicas de huéspedes",
+  ),
+] as const;
+
+export const CATALOG_VIEW_PERMISSIONS = CATALOG_PERMISSION_GROUPS.map(
+  (group) => group.permissions[0].key,
+);
+
 export const PERMISSION_GROUPS = [
   {
     key: "roles",
@@ -48,28 +74,7 @@ export const PERMISSION_GROUPS = [
       { key: "admin.invitations.delete", label: "Revocar" },
     ],
   },
-  catalogPermissionGroup("relationship_types", "Vínculos"),
-  catalogPermissionGroup("healthcare_professionals", "Profesionales de salud"),
-  catalogPermissionGroup("health_insurance_providers", "Obras sociales"),
-  catalogPermissionGroup(
-    "information_awareness_options",
-    "Información general",
-  ),
-  catalogPermissionGroup("religion_options", "Religiones"),
-  catalogPermissionGroup("ecog_score_options", "ECOG"),
-  catalogPermissionGroup(
-    "oncological_treatment_options",
-    "Tratamientos oncológicos",
-  ),
-  catalogPermissionGroup(
-    "metastasis_location_options",
-    "Lugares de metástasis",
-  ),
-  catalogPermissionGroup("surgery_options", "Cirugías"),
-  catalogPermissionGroup(
-    "guest_clinical_catalog_options",
-    "Opciones clínicas de huéspedes",
-  ),
+  ...CATALOG_PERMISSION_GROUPS,
   {
     key: "documentation",
     label: "Documentación",
