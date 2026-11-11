@@ -1,15 +1,18 @@
-export { AcceptInvitationScreen } from "./accept-invitation-screen";
-export { AccountScreen } from "./account-screen";
-export { AccessRestricted } from "./access-restricted";
-export { AdminHome, AdminLayout } from "./admin-layout";
-export { AuthenticatedShell } from "./authenticated-shell";
-export { EmailVerificationNotice } from "./email-verification-notice";
-export { InvitationsScreen } from "./invitations-screen";
-export { PasswordRecoveryScreen } from "./password-recovery-screen";
-export { PasswordResetScreen } from "./password-reset-screen";
-export { RolesScreen } from "./roles-screen";
-export { SessionLoadingScreen } from "./session-loading-screen";
-export { SignInScreen } from "./sign-in-screen";
-export { SignUpScreen } from "./sign-up-screen";
-export { TwoFactorScreen } from "./two-factor-screen";
-export { UsersScreen } from "./users-screen";
+export { AcceptInvitationScreen } from "../invitations/components/accept-invitation-screen";
+export { AccountScreen } from "../account/components/account-screen";
+export { AccessRestricted } from "../authorization/components/access-restricted";
+export {
+  AdminHome,
+  AdminLayout,
+} from "../administration/components/admin-layout";
+export { AuthenticatedShell } from "../authorization/components/authenticated-shell";
+export { EmailVerificationNotice } from "../account/components/email-verification-notice";
+export { InvitationsScreen } from "../invitations/components/invitations-screen";
+export { PasswordRecoveryScreen } from "../auth/components/password-recovery-screen";
+export { PasswordResetScreen } from "../auth/components/password-reset-screen";
+export { RolesScreen } from "../roles/components/roles-screen";
+export { SessionLoadingScreen } from "../auth/components/session-loading-screen";
+export { SignInScreen } from "../auth/components/sign-in-screen";
+export { SignUpScreen } from "../auth/components/sign-up-screen";
+export { TwoFactorScreen } from "../auth/components/two-factor-screen";
+export { UsersScreen } from "../users/components/users-screen";

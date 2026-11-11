@@ -6,15 +6,10 @@ import { sql } from "drizzle-orm";
 import { getDatabase, runInTransaction } from "@/platform/database/client";
 
 import type { Permission } from "./permissions";
-import { insertUserWithPassword } from "./repository";
-import {
-  assignRolePermissions,
-  createFirstSuperUser,
-  createRole,
-  getUserAccess,
-  listRoles,
-  type UserAccess,
-} from "./service";
+import { insertUserWithPassword } from "./users/repository";
+import { assignRolePermissions, createRole, listRoles } from "./roles/service";
+import { createFirstSuperUser } from "./users/service";
+import { getUserAccess, type UserAccess } from "./authorization/service";
 
 export const FICTITIOUS_PASSWORD = "clave-de-prueba-larga";
 export const FICTITIOUS_SUPER_USER = {

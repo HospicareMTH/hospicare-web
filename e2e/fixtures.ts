@@ -5,17 +5,15 @@ import { hashPassword } from "better-auth/crypto";
 import { eq } from "drizzle-orm";
 
 import type { Permission } from "../src/modules/access";
-import {
-  findUserIdByEmail,
-  insertInvitation,
-  insertUserWithPassword,
-} from "../src/modules/access/repository";
+import { findUserIdByEmail } from "../src/modules/access/auth/repository";
+import { insertInvitation } from "../src/modules/access/invitations/repository";
+import { insertUserWithPassword } from "../src/modules/access/users/repository";
 import {
   assignRolePermissions,
   createRole,
-  getUserAccess,
   listRoles,
-} from "../src/modules/access/service";
+} from "../src/modules/access/roles/service";
+import { getUserAccess } from "../src/modules/access/authorization/service";
 import { users, verifications } from "../src/modules/access/tables";
 import { getDatabase, runInTransaction } from "../src/platform/database/client";
 

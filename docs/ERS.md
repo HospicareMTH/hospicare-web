@@ -904,11 +904,14 @@ src/
       schemas.ts        Validación de datos
       permissions.ts    Permisos del dominio
       index.ts          API pública de servidor
+      <subdominio>/     Opcional: misma estructura (components/, actions.ts, service.ts...)
   components/
     ui/                 shadcn/ui
     shared/             Composiciones reutilizables de shadcn/ui
   platform/             Base de datos, autenticación, archivos y fechas
 ```
+
+Un dominio grande se divide en subdominios dentro de su carpeta. Cada subdominio repite la estructura de capas y componentes; las tablas, los permisos, `index.ts` y `components/index.ts` siguen siendo del dominio. `access` se divide en `auth` (ingreso, sesión, recuperación y segundo factor), `authorization` (permisos vigentes y shell autenticado), `roles`, `users`, `invitations`, `account` (Mi cuenta) y `administration` (navegación de Administración).
 
 | Módulo | Responsabilidad | Requisitos |
 | --- | --- | --- |
@@ -933,7 +936,7 @@ src/
 | Capas | `actions` llama a `service`, y `service` a `repository`. Ninguna capa se saltea. |
 | Propiedad de datos | Cada tabla pertenece a un módulo, y solo su `repository` la consulta. |
 | Transacciones | Una operación entre módulos la coordina un servicio, que comparte la misma transacción. |
-| Ciclos | Si dos módulos se necesitan mutuamente, la regla compartida se extrae a un módulo propio. |
+| Ciclos | Si dos módulos se necesitan mutuamente, la regla compartida se extrae a un módulo propio. Vale también entre subdominios. |
 | Control automático | `no-restricted-imports` de ESLint hace cumplir estos límites en integración continua. |
 
 ## 16. Estándares de seguridad del despliegue
