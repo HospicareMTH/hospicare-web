@@ -24,3 +24,21 @@ export const passwordChangeSchema = z
     passwordConfirmation: z.string(),
   })
   .refine(hasMatchingConfirmation, passwordMismatch);
+
+const MAX_HIDDEN_COLUMNS = 50;
+
+export const columnPreferenceSchema = z.object({
+  tableKey: z
+    .string()
+    .regex(/^[a-z][a-z-]{0,63}$/, { error: "La tabla no es válida." }),
+  hiddenColumns: z
+    .array(
+      z.string().regex(/^[a-zA-Z][a-zA-Z0-9]{0,63}$/, {
+        error: "Las columnas no son válidas.",
+      }),
+    )
+    .max(MAX_HIDDEN_COLUMNS, { error: "Las columnas no son válidas." })
+    .transform((columns) => [...new Set(columns)]),
+});
+
+export type ColumnPreference = z.output<typeof columnPreferenceSchema>;

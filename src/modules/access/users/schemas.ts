@@ -31,6 +31,8 @@ export const superUserInputSchema = z.object({
 
 export type SuperUserInput = z.input<typeof superUserInputSchema>;
 
+export const USERS_TABLE_KEY = "users";
+
 export const USER_SORT_KEYS = ["name", "email", "role"] as const;
 
 export type UserSortKey = (typeof USER_SORT_KEYS)[number];

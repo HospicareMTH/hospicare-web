@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 
 import type { SearchParams } from "@/platform/list-query";
-import { LoadingStatus } from "@/components/shared/loading-status";
+import { DataTableSkeleton } from "@/components/shared/data-table/data-table-skeleton";
 
 import { hasPermission, requirePermission } from "../../authorization/service";
-import { parseRoleListQuery } from "../schemas";
+import { getHiddenColumns } from "../../account/service";
+import { parseRoleListQuery, ROLES_TABLE_KEY } from "../schemas";
 import { searchRoles } from "../service";
 import { RolesTable } from "./roles-table";
 
@@ -15,11 +16,15 @@ async function RolesContent({
 }) {
   const { access } = await requirePermission("admin.roles.view");
   const query = parseRoleListQuery(await searchParams);
-  const rolePage = await searchRoles(query);
+  const [rolePage, hiddenColumns] = await Promise.all([
+    searchRoles(query),
+    getHiddenColumns(access.userId, ROLES_TABLE_KEY),
+  ]);
 
   return (
     <RolesTable
       rolePage={rolePage}
+      hiddenColumns={hiddenColumns}
       query={query}
       heldPermissions={[...access.permissions]}
       ownRoleId={access.roleId}
@@ -42,7 +47,7 @@ export function RolesScreen({
   searchParams: Promise<SearchParams>;
 }) {
   return (
-    <Suspense fallback={<LoadingStatus label="Cargando roles…" />}>
+    <Suspense fallback={<DataTableSkeleton label="Cargando roles…" />}>
       <RolesContent searchParams={searchParams} />
     </Suspense>
   );

@@ -2,31 +2,20 @@
 
 import {
   ArrowDown01Icon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
   ArrowUp01Icon,
   ArrowUpDownIcon,
-  Search01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Form from "next/form";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { TableHead } from "@/components/ui/table";
-import { formatListSort, type ListSort } from "@/platform/list-query";
 import {
-  DIALOG_BUTTON_CLASS_NAME,
-  FIELD_CONTROL_CLASS_NAME,
-} from "@/components/shared/form-styles";
-
-const SEARCH_PARAMETER = "buscar";
-const SORT_PARAMETER = "orden";
-const PAGE_PARAMETER = "pagina";
-const FIRST_PAGE = 1;
+  formatListSort,
+  LIST_PARAMETERS,
+  type ListSort,
+} from "@/platform/list-query";
 
 type ParameterChanges = Record<string, string | null>;
 
@@ -46,62 +35,6 @@ export function useListHref(): (changes: ParameterChanges) => string {
     const queryString = nextParams.toString();
     return queryString ? `${pathname}?${queryString}` : pathname;
   };
-}
-
-export function ListToolbar({
-  search,
-  searchLabel,
-  children,
-  action,
-}: {
-  search: string;
-  searchLabel: string;
-  children?: ReactNode;
-  action?: ReactNode;
-}) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const preservedParams = [...searchParams.entries()].filter(
-    ([name]) => name !== SEARCH_PARAMETER && name !== PAGE_PARAMETER,
-  );
-
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex w-full flex-wrap items-center gap-2 lg:w-auto">
-        <Form
-          action={pathname}
-          role="search"
-          className="flex w-full items-center gap-2 sm:w-auto"
-        >
-          {preservedParams.map(([name, value]) => (
-            <input key={name} type="hidden" name={name} value={value} />
-          ))}
-          <Input
-            type="search"
-            name={SEARCH_PARAMETER}
-            defaultValue={search}
-            aria-label={searchLabel}
-            placeholder={searchLabel}
-            className={`${FIELD_CONTROL_CLASS_NAME} sm:w-64`}
-          />
-          <Button
-            type="submit"
-            variant="outline"
-            className={DIALOG_BUTTON_CLASS_NAME}
-          >
-            <HugeiconsIcon
-              icon={Search01Icon}
-              data-icon="inline-start"
-              aria-hidden="true"
-            />
-            Buscar
-          </Button>
-        </Form>
-        {children}
-      </div>
-      {action}
-    </div>
-  );
 }
 
 export function SortableHead<SortKey extends string>({
@@ -125,9 +58,9 @@ export function SortableHead<SortKey extends string>({
     isDescending: isActive && !sort.isDescending,
   });
   const href = buildHref({
-    [SORT_PARAMETER]:
+    [LIST_PARAMETERS.sort]:
       nextSort === formatListSort(defaultSort) ? null : nextSort,
-    [PAGE_PARAMETER]: null,
+    [LIST_PARAMETERS.page]: null,
   });
   const icon = !isActive
     ? ArrowUpDownIcon
@@ -158,68 +91,5 @@ export function SortableHead<SortKey extends string>({
         </Link>
       </Button>
     </TableHead>
-  );
-}
-
-function PageButton({
-  page,
-  isAvailable,
-  children,
-}: {
-  page: number;
-  isAvailable: boolean;
-  children: ReactNode;
-}) {
-  const buildHref = useListHref();
-  if (!isAvailable) {
-    return (
-      <Button variant="outline" disabled className={DIALOG_BUTTON_CLASS_NAME}>
-        {children}
-      </Button>
-    );
-  }
-  return (
-    <Button asChild variant="outline" className={DIALOG_BUTTON_CLASS_NAME}>
-      <Link
-        href={buildHref({
-          [PAGE_PARAMETER]: page > FIRST_PAGE ? String(page) : null,
-        })}
-      >
-        {children}
-      </Link>
-    </Button>
-  );
-}
-
-export function ListFooter({
-  totalLabel,
-  page,
-  pageCount,
-  paginationLabel,
-}: {
-  totalLabel: string;
-  page: number;
-  pageCount: number;
-  paginationLabel: string;
-}) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <p className="text-sm text-muted-foreground">{totalLabel}</p>
-      {pageCount > FIRST_PAGE && (
-        <nav aria-label={paginationLabel} className="flex items-center gap-2">
-          <PageButton page={page - 1} isAvailable={page > FIRST_PAGE}>
-            <HugeiconsIcon icon={ArrowLeft01Icon} aria-hidden="true" />
-            Anterior
-          </PageButton>
-          <span className="px-1 text-sm text-muted-foreground tabular-nums">
-            Página {page} de {pageCount}
-          </span>
-          <PageButton page={page + 1} isAvailable={page < pageCount}>
-            Siguiente
-            <HugeiconsIcon icon={ArrowRight01Icon} aria-hidden="true" />
-          </PageButton>
-        </nav>
-      )}
-    </div>
   );
 }

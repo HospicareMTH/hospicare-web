@@ -1,4 +1,12 @@
-export const LIST_PAGE_SIZE = 10;
+export const LIST_PARAMETERS = {
+  search: "buscar",
+  sort: "orden",
+  page: "pagina",
+  pageSize: "filas",
+} as const;
+
+export const PAGE_SIZE_OPTIONS = [50, 100, 150] as const;
+export const DEFAULT_PAGE_SIZE = PAGE_SIZE_OPTIONS[0];
 
 const LOCALE = "es-AR";
 
@@ -7,6 +15,7 @@ export type ListPage<Item> = {
   totalCount: number;
   page: number;
   pageCount: number;
+  pageSize: number;
 };
 
 export type Comparator<Item> = (first: Item, second: Item) => number;
@@ -25,7 +34,7 @@ export function compareText(first: string, second: string): number {
 // shortcut: filtra y pagina en memoria porque las listas de acceso son chicas; pasar a SQL si superan los miles.
 export function paginateList<Item, SortKey extends string>(
   items: Item[],
-  { search, sort, page }: ListQuery<SortKey>,
+  { search, sort, page, pageSize }: ListQuery<SortKey>,
   searchableText: (item: Item) => string,
   comparators: Record<SortKey, Comparator<Item>>,
 ): ListPage<Item> {
@@ -39,17 +48,15 @@ export function paginateList<Item, SortKey extends string>(
       sort.isDescending ? compare(second, first) : compare(first, second),
     );
 
-  const pageCount = Math.max(
-    1,
-    Math.ceil(matchingItems.length / LIST_PAGE_SIZE),
-  );
+  const pageCount = Math.max(1, Math.ceil(matchingItems.length / pageSize));
   const currentPage = Math.min(page, pageCount);
-  const pageStart = (currentPage - 1) * LIST_PAGE_SIZE;
+  const pageStart = (currentPage - 1) * pageSize;
   return {
-    items: matchingItems.slice(pageStart, pageStart + LIST_PAGE_SIZE),
+    items: matchingItems.slice(pageStart, pageStart + pageSize),
     totalCount: matchingItems.length,
     page: currentPage,
     pageCount,
+    pageSize,
   };
 }
 
@@ -62,6 +69,7 @@ export type ListQuery<SortKey extends string> = {
   search: string;
   sort: ListSort<SortKey>;
   page: number;
+  pageSize: number;
 };
 
 const DESCENDING_PREFIX = "-";
@@ -96,6 +104,13 @@ export function readSearchParam(
   return Array.isArray(value) ? value[0] : value;
 }
 
+function parsePageSize(value: string | undefined): number {
+  return (
+    PAGE_SIZE_OPTIONS.find((option) => String(option) === value) ??
+    DEFAULT_PAGE_SIZE
+  );
+}
+
 function parsePage(value: string | undefined): number {
   const pageNumber = Number(value);
   return Number.isInteger(pageNumber) && pageNumber >= FIRST_PAGE
@@ -109,12 +124,15 @@ export function parseListQuery<SortKey extends string>(
   defaultSort: ListSort<SortKey>,
 ): ListQuery<SortKey> {
   return {
-    search: readSearchParam(searchParams, "buscar")?.trim() ?? "",
+    search: readSearchParam(searchParams, LIST_PARAMETERS.search)?.trim() ?? "",
     sort: parseListSort(
-      readSearchParam(searchParams, "orden"),
+      readSearchParam(searchParams, LIST_PARAMETERS.sort),
       sortKeys,
       defaultSort,
     ),
-    page: parsePage(readSearchParam(searchParams, "pagina")),
+    page: parsePage(readSearchParam(searchParams, LIST_PARAMETERS.page)),
+    pageSize: parsePageSize(
+      readSearchParam(searchParams, LIST_PARAMETERS.pageSize),
+    ),
   };
 }

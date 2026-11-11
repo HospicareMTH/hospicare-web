@@ -7,6 +7,17 @@ const dateFormatter = new Intl.DateTimeFormat("es-AR", {
   year: "numeric",
 });
 
+const timeFormatter = new Intl.DateTimeFormat("es-AR", {
+  timeZone: BUSINESS_TIME_ZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
 export function formatDate(date: Date): string {
   return dateFormatter.format(date);
+}
+
+export function formatDateTime(date: Date): string {
+  return `${formatDate(date)} ${timeFormatter.format(date)}`;
 }

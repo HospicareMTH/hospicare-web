@@ -221,7 +221,7 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | RF-CFG-02 | Administración debe poder configurar la ventana de edición de evoluciones diarias. | Mismas opciones y valor inicial. |
 | RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Epicrisis: vale solo para las nuevas, porque el límite se fija al emitir. Evoluciones: vale también para las ya registradas. |
 | RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado. |
-| RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. 10, 25, 50 o 100 filas por página. |
+| RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. 50, 100 o 150 filas por página, como todo listado. |
 
 ## 6. Requisitos funcionales: operación clínica
 
@@ -449,11 +449,12 @@ Todas las ventanas temporales son de 7 días y se calculan en hora de Buenos Air
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-TAB-01 | Los listados deben tener búsqueda, orden y paginación. | El estado queda en la dirección de la página. |
+| RF-TAB-01 | Los listados deben tener búsqueda, orden y paginación. | El estado queda en la dirección de la página. 50, 100 o 150 filas por página; 50 por defecto. |
 | RF-TAB-02 | Los listados deben poder exportarse a Excel. | Exporta las filas de la página visible. |
 | RF-TAB-03 | Un clic debe marcar la fila. | Solo una fila marcada por tabla. |
 | RF-TAB-04 | Doble clic debe abrir el registro. | Solo donde existe detalle. |
 | RF-TAB-05 | Clic derecho debe mostrar las acciones de la fila. | En táctil, mantener presionado. Respeta permisos; acciones destructivas en rojo. |
+| RF-TAB-06 | El usuario debe poder elegir qué columnas ver en cada listado. | Selección múltiple; la columna principal no se oculta. Se guarda por persona y listado en la base, no en el navegador. |
 
 ### 7.5 Manual funcional
 
@@ -569,6 +570,7 @@ Un huésped puede existir sin entrevista cuando nace de un alta manual.
 | Rol | Responsabilidad operativa | Nombre, descripción, de sistema | Física, solo sin uso |
 | Permiso de rol | Acción habilitada a un rol | Rol, permiso | Física |
 | Sesión, cuenta, verificación, segundo factor, límite de intentos | Soporte de autenticación | Vencimientos, IP, navegador, secretos cifrados | Automática |
+| Preferencia de tabla | Columnas que cada persona oculta en cada listado | Persona, listado, columnas ocultas, fecha de cambio | Con la persona |
 | Invitación | Alta cerrada | Correo, nombre, rol, token en hash, estado, vencimiento, quién invitó | Revocación |
 | Configuración | Parámetros operativos | Clave, valor, etiqueta, último editor | No aplica |
 | Registro de actividad | Trazabilidad de datos y de acceso | Acción, operación, recurso, id, responsable, destino, estado, valor anterior y nuevo, IP y navegador en eventos de acceso, fecha | No aplica |

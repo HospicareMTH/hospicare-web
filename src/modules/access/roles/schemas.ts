@@ -46,6 +46,8 @@ export const rolePermissionsSchema = z
   .array(z.enum(ALL_PERMISSIONS, { error: "Hay un permiso que no existe." }))
   .transform((permissions) => [...new Set(permissions)]);
 
+export const ROLES_TABLE_KEY = "roles";
+
 export const ROLE_SORT_KEYS = ["name", "permissions", "users"] as const;
 
 export type RoleSortKey = (typeof ROLE_SORT_KEYS)[number];

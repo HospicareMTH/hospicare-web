@@ -11,6 +11,8 @@ import {
 import { emailSchema, personNameSchema } from "../schemas";
 import { roleIdSchema, roleSelectionSchema } from "../roles/schemas";
 
+export const INVITATIONS_TABLE_KEY = "invitations";
+
 export const INVITATION_SORT_KEYS = ["createdAt", "name", "expiresAt"] as const;
 
 export type InvitationSortKey = (typeof INVITATION_SORT_KEYS)[number];

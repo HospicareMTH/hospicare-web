@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 
 import type { SearchParams } from "@/platform/list-query";
-import { LoadingStatus } from "@/components/shared/loading-status";
+import { DataTableSkeleton } from "@/components/shared/data-table/data-table-skeleton";
 
 import { hasPermission, requirePermission } from "../../authorization/service";
-import { parseInvitationListQuery } from "../schemas";
+import { INVITATIONS_TABLE_KEY, parseInvitationListQuery } from "../schemas";
+import { getHiddenColumns } from "../../account/service";
 import { listInvitableRoles, listRoleFilterOptions } from "../../roles/service";
 import { searchInvitations } from "../service";
 import { InvitationsTable } from "./invitations-table";
@@ -17,13 +18,13 @@ async function InvitationsContent({
   const { access } = await requirePermission("admin.invitations.view");
   const query = parseInvitationListQuery(await searchParams);
   const canInvite = hasPermission(access, "admin.invitations.create");
-  const [invitationPage, roleFilterOptions, invitableRoles] = await Promise.all(
-    [
+  const [invitationPage, roleFilterOptions, invitableRoles, hiddenColumns] =
+    await Promise.all([
       searchInvitations(query),
       listRoleFilterOptions(),
       canInvite ? listInvitableRoles(access) : [],
-    ],
-  );
+      getHiddenColumns(access.userId, INVITATIONS_TABLE_KEY),
+    ]);
 
   return (
     <InvitationsTable
@@ -31,6 +32,7 @@ async function InvitationsContent({
       query={query}
       roleFilterOptions={roleFilterOptions}
       invitableRoles={invitableRoles}
+      hiddenColumns={hiddenColumns}
       abilities={{
         canInvite,
         canRevoke: hasPermission(access, "admin.invitations.delete"),
@@ -45,7 +47,7 @@ export function InvitationsScreen({
   searchParams: Promise<SearchParams>;
 }) {
   return (
-    <Suspense fallback={<LoadingStatus label="Cargando invitaciones…" />}>
+    <Suspense fallback={<DataTableSkeleton label="Cargando invitaciones…" />}>
       <InvitationsContent searchParams={searchParams} />
     </Suspense>
   );

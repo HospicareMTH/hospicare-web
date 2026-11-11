@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { getDatabase } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
+import { DEFAULT_PAGE_SIZE } from "@/platform/list-query";
 
 import { getAuth } from "../auth/auth";
 import { ACCESS_REVOKED_ERROR_CODE } from "../auth/schemas";
@@ -168,6 +169,7 @@ describe("revocación de accesos", () => {
       search: "",
       sort: DEFAULT_USER_SORT,
       page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
     });
     expect(
       page.items.map(

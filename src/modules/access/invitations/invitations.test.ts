@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getDatabase } from "@/platform/database/client";
+import { DEFAULT_PAGE_SIZE } from "@/platform/list-query";
 import type { MailMessage } from "@/platform/mail";
 import { resetTestDatabase } from "@/platform/database/test-database";
 
@@ -55,6 +56,7 @@ const ALL_INVITATIONS: InvitationListQuery = {
   search: "",
   sort: DEFAULT_INVITATION_SORT,
   page: 1,
+  pageSize: DEFAULT_PAGE_SIZE,
   state: null,
   roleId: null,
 };

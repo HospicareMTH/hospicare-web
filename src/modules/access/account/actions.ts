@@ -4,10 +4,16 @@ import {
   type ActionResult,
   refreshOnSuccess,
   toInvalidResult,
+  toRejectedResult,
 } from "@/platform/operation-result";
 
-import { type OwnNameInput, ownNameSchema, totpUriSchema } from "./schemas";
-import { renderTotpQrCode, updateOwnName } from "./service";
+import {
+  columnPreferenceSchema,
+  type OwnNameInput,
+  ownNameSchema,
+  totpUriSchema,
+} from "./schemas";
+import { renderTotpQrCode, saveHiddenColumns, updateOwnName } from "./service";
 import { requireSession } from "../auth/session";
 
 export async function createTotpQrCodeAction(
@@ -27,4 +33,19 @@ export async function updateOwnNameAction(
     return toInvalidResult(name.error);
   }
   return refreshOnSuccess(await updateOwnName(user.id, name.data.name));
+}
+
+export async function saveHiddenColumnsAction(
+  tableKey: string,
+  hiddenColumns: string[],
+): Promise<ActionResult> {
+  const { user } = await requireSession();
+  const preference = columnPreferenceSchema.safeParse({
+    tableKey,
+    hiddenColumns,
+  });
+  if (!preference.success) {
+    return toRejectedResult(preference.error);
+  }
+  return saveHiddenColumns(user.id, preference.data);
 }

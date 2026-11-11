@@ -71,6 +71,20 @@
       "when": 1794354736726,
       "tag": "0009_password_updated_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794364175230,
+      "tag": "0010_table_column_preferences",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794364177003,
+      "tag": "0011_table_column_preferences_audit",
+      "breakpoints": true
     }
   ]
 }

@@ -13,7 +13,13 @@ import {
   FICTITIOUS_PASSWORD,
   findRoleId,
 } from "../test-fixtures";
-import { ACCOUNT_REJECTION_MESSAGES, updateOwnName } from "./service";
+import { columnPreferenceSchema } from "./schemas";
+import {
+  ACCOUNT_REJECTION_MESSAGES,
+  getHiddenColumns,
+  saveHiddenColumns,
+  updateOwnName,
+} from "./service";
 
 const STAFF_EMAIL = "lorena.ficticia@hospicare.test";
 const NEW_PASSWORD = "otra-clave-de-prueba-larga";
@@ -193,5 +199,49 @@ describe("Mi cuenta", () => {
       expect((await attempt()).status).not.toBe(429);
     }
     expect((await attempt()).status).toBe(429);
+  });
+
+  it("RF-TAB-06, RN-20: guarda las columnas ocultas por persona y tabla", async () => {
+    const staff = await createUserWithRole(STAFF_EMAIL, userRoleId);
+    const other = await createUserWithRole(
+      "otra.persona@hospicare.test",
+      userRoleId,
+    );
+
+    await saveHiddenColumns(staff.userId, {
+      tableKey: "users",
+      hiddenColumns: ["email", "role"],
+    });
+    await saveHiddenColumns(staff.userId, {
+      tableKey: "users",
+      hiddenColumns: ["email"],
+    });
+
+    expect(await getHiddenColumns(staff.userId, "users")).toEqual(["email"]);
+    expect(await getHiddenColumns(staff.userId, "roles")).toEqual([]);
+    expect(await getHiddenColumns(other.userId, "users")).toEqual([]);
+    expect(await countAuditEntries("table_column_preference.created")).toBe(1);
+    expect(await countAuditEntries("table_column_preference.updated")).toBe(1);
+  });
+
+  it("RF-TAB-06: rechaza claves de tabla o columnas inválidas", () => {
+    expect(
+      columnPreferenceSchema.safeParse({
+        tableKey: "users; drop table",
+        hiddenColumns: [],
+      }).success,
+    ).toBe(false);
+    expect(
+      columnPreferenceSchema.safeParse({
+        tableKey: "users",
+        hiddenColumns: ["email", "<script>"],
+      }).success,
+    ).toBe(false);
+    expect(
+      columnPreferenceSchema.parse({
+        tableKey: "users",
+        hiddenColumns: ["email", "email"],
+      }).hiddenColumns,
+    ).toEqual(["email"]);
   });
 });

@@ -9,31 +9,24 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
+import type { RowAction } from "@/components/shared/data-table/action-table-row";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/shared/data-table/data-table";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import type { ListPage } from "@/platform/list-query";
-import {
-  ActionTableRow,
-  type RowAction,
-} from "@/components/shared/data-table/action-table-row";
-import {
-  ListFooter,
-  ListToolbar,
-  SortableHead,
-} from "@/components/shared/data-table/list-controls";
-import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
-import { TableFrame } from "@/components/shared/data-table/table-frame";
 
 import type { Permission } from "../../permissions";
-import { DEFAULT_ROLE_SORT, type RoleListQuery } from "../schemas";
+import { saveHiddenColumns } from "../../account/components/save-hidden-columns";
+import {
+  DEFAULT_ROLE_SORT,
+  type RoleListQuery,
+  ROLES_TABLE_KEY,
+  type RoleSortKey,
+} from "../schemas";
 import type { RoleListItem } from "../service";
 import { DeleteRoleDialog } from "./delete-role-dialog";
 import { RoleDetailsDialog } from "./role-details-dialog";
@@ -53,7 +46,45 @@ type OpenDialog =
   | { kind: "delete"; role: RoleListItem };
 
 const ALL_PERMISSIONS_LABEL = "Todos";
-const COLUMN_COUNT = 5;
+
+const COLUMNS: DataTableColumn<RoleListItem, RoleSortKey>[] = [
+  {
+    id: "name",
+    label: "Nombre",
+    sortKey: "name",
+    canHide: false,
+    cellClassName: "font-medium whitespace-normal",
+    cell: (role) => (
+      <span className="flex flex-wrap items-center gap-2">
+        {role.name}
+        {role.isSystemRole && <Badge variant="secondary">De sistema</Badge>}
+      </span>
+    ),
+  },
+  {
+    id: "description",
+    label: "Descripción",
+    className: "hidden @3xl:table-cell",
+    cellClassName: "max-w-md truncate text-muted-foreground",
+    cell: (role) => role.description,
+  },
+  {
+    id: "permissions",
+    label: "Permisos",
+    sortKey: "permissions",
+    className: "hidden @lg:table-cell",
+    cellClassName: "tabular-nums",
+    cell: (role) =>
+      role.isSuperUserRole ? ALL_PERMISSIONS_LABEL : role.permissions.length,
+  },
+  {
+    id: "users",
+    label: "Usuarios",
+    sortKey: "users",
+    cellClassName: "tabular-nums",
+    cell: (role) => role.userCount,
+  },
+];
 
 function describeRoleCount(count: number): string {
   return count === 1 ? "1 rol" : `${count} roles`;
@@ -64,15 +95,16 @@ export function RolesTable({
   query,
   heldPermissions,
   ownRoleId,
+  hiddenColumns,
   abilities,
 }: {
   rolePage: ListPage<RoleListItem>;
+  hiddenColumns: string[];
   query: RoleListQuery;
   heldPermissions: Permission[];
   ownRoleId: string | null;
   abilities: RoleAbilities;
 }) {
-  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState<OpenDialog | null>(null);
   const closeDialog = () => setOpenDialog(null);
 
@@ -103,13 +135,27 @@ export function RolesTable({
     return actions;
   }
 
-  const sortProps = { sort: query.sort, defaultSort: DEFAULT_ROLE_SORT };
-
   return (
-    <div className="flex flex-col gap-4">
-      <ListToolbar
-        search={query.search}
+    <>
+      <DataTable
+        columns={COLUMNS}
+        page={rolePage}
+        query={query}
+        defaultSort={DEFAULT_ROLE_SORT}
         searchLabel="Buscar roles"
+        emptyMessage={
+          query.search
+            ? `Ningún rol coincide con “${query.search}”.`
+            : "Todavía no hay roles."
+        }
+        totalLabel={describeRoleCount(rolePage.totalCount)}
+        paginationLabel="Páginas de roles"
+        getRowActions={getRoleActions}
+        getActionsLabel={(role) => `Acciones de ${role.name}`}
+        hiddenColumns={hiddenColumns}
+        onHiddenColumnsChange={(columns) =>
+          saveHiddenColumns(ROLES_TABLE_KEY, columns)
+        }
         action={
           abilities.canCreate && (
             <Button
@@ -125,75 +171,6 @@ export function RolesTable({
             </Button>
           )
         }
-      />
-
-      <TableFrame>
-        <Table className="text-base">
-          <TableHeader className="bg-muted/60">
-            <TableRow className="hover:bg-transparent">
-              <SortableHead label="Nombre" sortKey="name" {...sortProps} />
-              <TableHead className="hidden font-semibold text-foreground @3xl:table-cell">
-                Descripción
-              </TableHead>
-              <SortableHead
-                label="Permisos"
-                sortKey="permissions"
-                className="hidden @lg:table-cell"
-                {...sortProps}
-              />
-              <SortableHead label="Usuarios" sortKey="users" {...sortProps} />
-              <TableHead className="w-14">
-                <span className="sr-only">Acciones</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rolePage.items.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={COLUMN_COUNT}
-                  className="h-24 text-center whitespace-normal text-muted-foreground"
-                >
-                  Ningún rol coincide con “{query.search}”.
-                </TableCell>
-              </TableRow>
-            )}
-            {rolePage.items.map((role) => (
-              <ActionTableRow
-                key={role.id}
-                actions={getRoleActions(role)}
-                actionsLabel={`Acciones de ${role.name}`}
-                isSelected={role.id === selectedRoleId}
-                onSelect={() => setSelectedRoleId(role.id)}
-              >
-                <TableCell className="font-medium whitespace-normal">
-                  <span className="flex flex-wrap items-center gap-2">
-                    {role.name}
-                    {role.isSystemRole && (
-                      <Badge variant="secondary">De sistema</Badge>
-                    )}
-                  </span>
-                </TableCell>
-                <TableCell className="hidden max-w-md truncate text-muted-foreground @3xl:table-cell">
-                  {role.description}
-                </TableCell>
-                <TableCell className="hidden tabular-nums @lg:table-cell">
-                  {role.isSuperUserRole
-                    ? ALL_PERMISSIONS_LABEL
-                    : role.permissions.length}
-                </TableCell>
-                <TableCell className="tabular-nums">{role.userCount}</TableCell>
-              </ActionTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableFrame>
-
-      <ListFooter
-        totalLabel={describeRoleCount(rolePage.totalCount)}
-        page={rolePage.page}
-        pageCount={rolePage.pageCount}
-        paginationLabel="Páginas de roles"
       />
 
       {openDialog?.kind === "create" && (
@@ -214,6 +191,6 @@ export function RolesTable({
       {openDialog?.kind === "delete" && (
         <DeleteRoleDialog role={openDialog.role} onClose={closeDialog} />
       )}
-    </div>
+    </>
   );
 }

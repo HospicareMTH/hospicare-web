@@ -26,7 +26,7 @@ export type RowAction = {
   open: () => void;
 };
 
-const MENU_ITEM_CLASS_NAME = "h-10 text-base";
+const MENU_ITEM_CLASS_NAME = "h-10 text-base whitespace-nowrap";
 
 export function ActionTableRow({
   actions,
@@ -67,7 +67,7 @@ export function ActionTableRow({
                 />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="min-w-52">
               {actions.map((action) => (
                 <DropdownMenuItem
                   key={action.label}
@@ -93,7 +93,7 @@ export function ActionTableRow({
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>{row}</ContextMenuTrigger>
-      <ContextMenuContent>
+      <ContextMenuContent className="min-w-52">
         {actions.map((action) => (
           <ContextMenuItem
             key={action.label}

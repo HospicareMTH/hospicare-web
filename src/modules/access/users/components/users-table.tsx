@@ -9,32 +9,25 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
+import type { RowAction } from "@/components/shared/data-table/action-table-row";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/shared/data-table/data-table";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { formatDate } from "@/platform/dates";
 import type { ListPage } from "@/platform/list-query";
-import {
-  ActionTableRow,
-  type RowAction,
-} from "@/components/shared/data-table/action-table-row";
-import {
-  ListFooter,
-  ListToolbar,
-  SortableHead,
-} from "@/components/shared/data-table/list-controls";
-import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
-import { TableFrame } from "@/components/shared/data-table/table-frame";
 
 import type { RoleOption } from "../../roles/repository";
-import { DEFAULT_USER_SORT, type UserListQuery } from "../schemas";
+import { saveHiddenColumns } from "../../account/components/save-hidden-columns";
+import {
+  DEFAULT_USER_SORT,
+  type UserListQuery,
+  USERS_TABLE_KEY,
+  type UserSortKey,
+} from "../schemas";
 import type { UserListItem } from "../service";
 import { ChangeRoleDialog } from "./change-role-dialog";
 import { CreateUserDialog } from "./create-user-dialog";
@@ -55,10 +48,8 @@ type OpenDialog =
   | { kind: "revoke"; user: UserListItem }
   | { kind: "restore"; user: UserListItem };
 
-const COLUMN_COUNT = 7;
 const YES_LABEL = "Sí";
 const NO_LABEL = "No";
-const HEAD_CLASS_NAME = "font-semibold text-foreground";
 
 function describeUserCount(count: number): string {
   return count === 1 ? "1 usuario" : `${count} usuarios`;
@@ -77,18 +68,62 @@ function AccessStatus({ user }: { user: UserListItem }) {
   );
 }
 
+const COLUMNS: DataTableColumn<UserListItem, UserSortKey>[] = [
+  {
+    id: "name",
+    label: "Nombre",
+    sortKey: "name",
+    canHide: false,
+    cellClassName: "font-medium whitespace-normal",
+    cell: (user) => user.name,
+  },
+  {
+    id: "email",
+    label: "Correo",
+    sortKey: "email",
+    className: "hidden @3xl:table-cell",
+    cellClassName: "text-muted-foreground",
+    cell: (user) => user.email,
+  },
+  {
+    id: "role",
+    label: "Rol",
+    sortKey: "role",
+    className: "hidden @lg:table-cell",
+    cell: (user) => user.roleName,
+  },
+  {
+    id: "access",
+    label: "Estado",
+    cell: (user) => <AccessStatus user={user} />,
+  },
+  {
+    id: "emailVerified",
+    label: "Correo verificado",
+    className: "hidden @5xl:table-cell",
+    cell: (user) => (user.isEmailVerified ? YES_LABEL : NO_LABEL),
+  },
+  {
+    id: "twoFactor",
+    label: "Segundo factor",
+    className: "hidden @5xl:table-cell",
+    cell: (user) => (user.isTwoFactorEnabled ? YES_LABEL : NO_LABEL),
+  },
+];
+
 export function UsersTable({
   userPage,
   query,
   grantableRoles,
+  hiddenColumns,
   actor,
 }: {
+  hiddenColumns: string[];
   userPage: ListPage<UserListItem>;
   query: UserListQuery;
   grantableRoles: RoleOption[];
   actor: UsersActor;
 }) {
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState<OpenDialog | null>(null);
   const closeDialog = () => setOpenDialog(null);
 
@@ -130,13 +165,27 @@ export function UsersTable({
     return actions;
   }
 
-  const sortProps = { sort: query.sort, defaultSort: DEFAULT_USER_SORT };
-
   return (
-    <div className="flex flex-col gap-4">
-      <ListToolbar
-        search={query.search}
+    <>
+      <DataTable
+        columns={COLUMNS}
+        page={userPage}
+        query={query}
+        defaultSort={DEFAULT_USER_SORT}
         searchLabel="Buscar usuarios"
+        emptyMessage={
+          query.search
+            ? `Ningún usuario coincide con “${query.search}”.`
+            : "Todavía no hay usuarios."
+        }
+        totalLabel={describeUserCount(userPage.totalCount)}
+        paginationLabel="Páginas de usuarios"
+        getRowActions={getUserActions}
+        getActionsLabel={(user) => `Acciones de ${user.name}`}
+        hiddenColumns={hiddenColumns}
+        onHiddenColumnsChange={(columns) =>
+          saveHiddenColumns(USERS_TABLE_KEY, columns)
+        }
         action={
           actor.canCreate && (
             <Button
@@ -152,89 +201,6 @@ export function UsersTable({
             </Button>
           )
         }
-      />
-
-      <TableFrame>
-        <Table className="text-base">
-          <TableHeader className="bg-muted/60">
-            <TableRow className="hover:bg-transparent">
-              <SortableHead label="Nombre" sortKey="name" {...sortProps} />
-              <SortableHead
-                label="Correo"
-                sortKey="email"
-                className="hidden @3xl:table-cell"
-                {...sortProps}
-              />
-              <SortableHead
-                label="Rol"
-                sortKey="role"
-                className="hidden @lg:table-cell"
-                {...sortProps}
-              />
-              <TableHead className={HEAD_CLASS_NAME}>Estado</TableHead>
-              <TableHead
-                className={`hidden @5xl:table-cell ${HEAD_CLASS_NAME}`}
-              >
-                Correo verificado
-              </TableHead>
-              <TableHead
-                className={`hidden @5xl:table-cell ${HEAD_CLASS_NAME}`}
-              >
-                Segundo factor
-              </TableHead>
-              <TableHead className="w-14">
-                <span className="sr-only">Acciones</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {userPage.items.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={COLUMN_COUNT}
-                  className="h-24 text-center whitespace-normal text-muted-foreground"
-                >
-                  Ningún usuario coincide con “{query.search}”.
-                </TableCell>
-              </TableRow>
-            )}
-            {userPage.items.map((user) => (
-              <ActionTableRow
-                key={user.id}
-                actions={getUserActions(user)}
-                actionsLabel={`Acciones de ${user.name}`}
-                isSelected={user.id === selectedUserId}
-                onSelect={() => setSelectedUserId(user.id)}
-              >
-                <TableCell className="font-medium whitespace-normal">
-                  {user.name}
-                </TableCell>
-                <TableCell className="hidden text-muted-foreground @3xl:table-cell">
-                  {user.email}
-                </TableCell>
-                <TableCell className="hidden @lg:table-cell">
-                  {user.roleName}
-                </TableCell>
-                <TableCell>
-                  <AccessStatus user={user} />
-                </TableCell>
-                <TableCell className="hidden @5xl:table-cell">
-                  {user.isEmailVerified ? YES_LABEL : NO_LABEL}
-                </TableCell>
-                <TableCell className="hidden @5xl:table-cell">
-                  {user.isTwoFactorEnabled ? YES_LABEL : NO_LABEL}
-                </TableCell>
-              </ActionTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableFrame>
-
-      <ListFooter
-        totalLabel={describeUserCount(userPage.totalCount)}
-        page={userPage.page}
-        pageCount={userPage.pageCount}
-        paginationLabel="Páginas de usuarios"
       />
 
       {openDialog?.kind === "create" && (
@@ -253,6 +219,6 @@ export function UsersTable({
       {openDialog?.kind === "restore" && (
         <RestoreAccessDialog user={openDialog.user} onClose={closeDialog} />
       )}
-    </div>
+    </>
   );
 }

@@ -184,3 +184,19 @@ export const invitations = pgTable(
   },
   (table) => [index().on(table.email), index().on(table.roleId)],
 );
+
+export const tableColumnPreferences = pgTable(
+  "table_column_preferences",
+  {
+    userId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tableKey: text().notNull(),
+    hiddenColumns: text()
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    updatedAt: updatedAt(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.tableKey] })],
+);

@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 
 import type { SearchParams } from "@/platform/list-query";
-import { LoadingStatus } from "@/components/shared/loading-status";
+import { DataTableSkeleton } from "@/components/shared/data-table/data-table-skeleton";
 
 import { hasPermission, requirePermission } from "../../authorization/service";
-import { parseUserListQuery } from "../schemas";
+import { getHiddenColumns } from "../../account/service";
+import { parseUserListQuery, USERS_TABLE_KEY } from "../schemas";
 import { listInvitableRoles } from "../../roles/service";
 import { searchUsers } from "../service";
 import { UsersTable } from "./users-table";
@@ -18,9 +19,10 @@ async function UsersContent({
   const query = parseUserListQuery(await searchParams);
   const canCreate = hasPermission(access, "admin.users.create");
   const canChangeRole = hasPermission(access, "admin.users.update");
-  const [userPage, grantableRoles] = await Promise.all([
+  const [userPage, grantableRoles, hiddenColumns] = await Promise.all([
     searchUsers(query),
     canCreate || canChangeRole ? listInvitableRoles(access) : [],
+    getHiddenColumns(access.userId, USERS_TABLE_KEY),
   ]);
 
   return (
@@ -28,6 +30,7 @@ async function UsersContent({
       userPage={userPage}
       query={query}
       grantableRoles={grantableRoles}
+      hiddenColumns={hiddenColumns}
       actor={{
         userId: access.userId,
         isSuperUser: access.isSuperUser,
@@ -45,7 +48,7 @@ export function UsersScreen({
   searchParams: Promise<SearchParams>;
 }) {
   return (
-    <Suspense fallback={<LoadingStatus label="Cargando usuarios…" />}>
+    <Suspense fallback={<DataTableSkeleton label="Cargando usuarios…" />}>
       <UsersContent searchParams={searchParams} />
     </Suspense>
   );

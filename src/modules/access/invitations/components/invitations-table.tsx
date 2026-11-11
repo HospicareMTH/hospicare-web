@@ -2,60 +2,34 @@
 
 import { Cancel01Icon, MailAdd01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import type { RowAction } from "@/components/shared/data-table/action-table-row";
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/shared/data-table/data-table";
+import { FilterSelect } from "@/components/shared/data-table/filter-select";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { formatDate } from "@/platform/dates";
+import { formatDateTime } from "@/platform/dates";
 import type { ListPage } from "@/platform/list-query";
-import {
-  ActionTableRow,
-  type RowAction,
-} from "@/components/shared/data-table/action-table-row";
-import {
-  ListFooter,
-  ListToolbar,
-  SortableHead,
-  useListHref,
-} from "@/components/shared/data-table/list-controls";
-import {
-  DIALOG_BUTTON_CLASS_NAME,
-  SELECT_ITEM_CLASS_NAME,
-  SELECT_TRIGGER_CLASS_NAME,
-} from "@/components/shared/form-styles";
-import { TableFrame } from "@/components/shared/data-table/table-frame";
 
+import { saveHiddenColumns } from "../../account/components/save-hidden-columns";
 import type { RoleOption } from "../../roles/repository";
 import {
   DEFAULT_INVITATION_SORT,
   INVITATION_STATE_PARAMETERS,
   INVITATION_STATES,
+  INVITATIONS_TABLE_KEY,
   type InvitationListQuery,
+  type InvitationSortKey,
   type InvitationState,
 } from "../schemas";
 import type { InvitationListItem } from "../service";
 import { InviteDialog } from "./invite-dialog";
 import { RevokeInvitationDialog } from "./revoke-invitation-dialog";
-
-const ALL_OPTIONS_VALUE = "todos";
-const COLUMN_COUNT = 6;
-const HEAD_CLASS_NAME = "font-semibold text-foreground";
 
 const STATE_LABELS: Record<InvitationState, string> = {
   pending: "Pendiente",
@@ -81,63 +55,49 @@ const STATE_BADGE_VARIANTS: Record<
   revoked: "destructive",
 };
 
+const COLUMNS: DataTableColumn<InvitationListItem, InvitationSortKey>[] = [
+  {
+    id: "name",
+    label: "Nombre",
+    sortKey: "name",
+    canHide: false,
+    cellClassName: "font-medium whitespace-normal",
+    cell: (invitation) => invitation.name,
+  },
+  {
+    id: "email",
+    label: "Correo",
+    className: "hidden @3xl:table-cell",
+    cellClassName: "text-muted-foreground",
+    cell: (invitation) => invitation.email,
+  },
+  {
+    id: "role",
+    label: "Rol",
+    className: "hidden @lg:table-cell",
+    cell: (invitation) => invitation.roleName,
+  },
+  {
+    id: "state",
+    label: "Estado",
+    cell: (invitation) => (
+      <Badge variant={STATE_BADGE_VARIANTS[invitation.state]}>
+        {STATE_LABELS[invitation.state]}
+      </Badge>
+    ),
+  },
+  {
+    id: "expiresAt",
+    label: "Vence",
+    sortKey: "expiresAt",
+    className: "hidden @2xl:table-cell",
+    cellClassName: "tabular-nums",
+    cell: (invitation) => formatDateTime(invitation.expiresAt),
+  },
+];
+
 function describeInvitationCount(count: number): string {
   return count === 1 ? "1 invitación" : `${count} invitaciones`;
-}
-
-function FilterSelect({
-  label,
-  allLabel,
-  parameter,
-  value,
-  options,
-}: {
-  label: string;
-  allLabel: string;
-  parameter: string;
-  value: string | null;
-  options: { value: string; label: string }[];
-}) {
-  const router = useRouter();
-  const buildHref = useListHref();
-
-  return (
-    <Select
-      value={value ?? ALL_OPTIONS_VALUE}
-      onValueChange={(nextValue) =>
-        router.push(
-          buildHref({
-            [parameter]: nextValue === ALL_OPTIONS_VALUE ? null : nextValue,
-            pagina: null,
-          }),
-        )
-      }
-    >
-      <SelectTrigger
-        aria-label={label}
-        className={`w-full sm:w-48 ${SELECT_TRIGGER_CLASS_NAME}`}
-      >
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem
-          value={ALL_OPTIONS_VALUE}
-          className={SELECT_ITEM_CLASS_NAME}
-        >
-          {allLabel}
-        </SelectItem>
-        {options.map((option) => (
-          <SelectItem
-            key={option.value}
-            value={option.value}
-            className={SELECT_ITEM_CLASS_NAME}
-          >
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
 }
 
 type OpenDialog =
@@ -148,17 +108,16 @@ export function InvitationsTable({
   query,
   roleFilterOptions,
   invitableRoles,
+  hiddenColumns,
   abilities,
 }: {
   invitationPage: ListPage<InvitationListItem>;
   query: InvitationListQuery;
   roleFilterOptions: RoleOption[];
   invitableRoles: RoleOption[];
+  hiddenColumns: string[];
   abilities: { canInvite: boolean; canRevoke: boolean };
 }) {
-  const [selectedInvitationId, setSelectedInvitationId] = useState<
-    string | null
-  >(null);
   const [openDialog, setOpenDialog] = useState<OpenDialog | null>(null);
   const closeDialog = () => setOpenDialog(null);
   const hasFilters =
@@ -178,13 +137,55 @@ export function InvitationsTable({
     ];
   }
 
-  const sortProps = { sort: query.sort, defaultSort: DEFAULT_INVITATION_SORT };
-
   return (
-    <div className="flex flex-col gap-4">
-      <ListToolbar
-        search={query.search}
+    <>
+      <DataTable
+        columns={COLUMNS}
+        page={invitationPage}
+        query={query}
+        defaultSort={DEFAULT_INVITATION_SORT}
         searchLabel="Buscar invitaciones"
+        emptyMessage={
+          hasFilters
+            ? "Ninguna invitación coincide con los filtros."
+            : "Todavía no hay invitaciones."
+        }
+        totalLabel={describeInvitationCount(invitationPage.totalCount)}
+        paginationLabel="Páginas de invitaciones"
+        getRowActions={getInvitationActions}
+        getActionsLabel={(invitation) =>
+          `Acciones de la invitación de ${invitation.name}`
+        }
+        hiddenColumns={hiddenColumns}
+        onHiddenColumnsChange={(columns) =>
+          saveHiddenColumns(INVITATIONS_TABLE_KEY, columns)
+        }
+        filters={
+          <>
+            <FilterSelect
+              label="Filtrar por estado"
+              allLabel="Todos los estados"
+              parameter="estado"
+              value={
+                query.state ? INVITATION_STATE_PARAMETERS[query.state] : null
+              }
+              options={INVITATION_STATES.map((state) => ({
+                value: INVITATION_STATE_PARAMETERS[state],
+                label: STATE_FILTER_LABELS[state],
+              }))}
+            />
+            <FilterSelect
+              label="Filtrar por rol"
+              allLabel="Todos los roles"
+              parameter="rol"
+              value={query.roleId}
+              options={roleFilterOptions.map((role) => ({
+                value: role.id,
+                label: role.name,
+              }))}
+            />
+          </>
+        }
         action={
           abilities.canInvite && (
             <Button
@@ -200,103 +201,6 @@ export function InvitationsTable({
             </Button>
           )
         }
-      >
-        <FilterSelect
-          label="Filtrar por estado"
-          allLabel="Todos los estados"
-          parameter="estado"
-          value={query.state ? INVITATION_STATE_PARAMETERS[query.state] : null}
-          options={INVITATION_STATES.map((state) => ({
-            value: INVITATION_STATE_PARAMETERS[state],
-            label: STATE_FILTER_LABELS[state],
-          }))}
-        />
-        <FilterSelect
-          label="Filtrar por rol"
-          allLabel="Todos los roles"
-          parameter="rol"
-          value={query.roleId}
-          options={roleFilterOptions.map((role) => ({
-            value: role.id,
-            label: role.name,
-          }))}
-        />
-      </ListToolbar>
-
-      <TableFrame>
-        <Table className="text-base">
-          <TableHeader className="bg-muted/60">
-            <TableRow className="hover:bg-transparent">
-              <SortableHead label="Nombre" sortKey="name" {...sortProps} />
-              <TableHead
-                className={`hidden @3xl:table-cell ${HEAD_CLASS_NAME}`}
-              >
-                Correo
-              </TableHead>
-              <TableHead className={`hidden @lg:table-cell ${HEAD_CLASS_NAME}`}>
-                Rol
-              </TableHead>
-              <TableHead className={HEAD_CLASS_NAME}>Estado</TableHead>
-              <SortableHead
-                label="Vence"
-                sortKey="expiresAt"
-                className="hidden @2xl:table-cell"
-                {...sortProps}
-              />
-              <TableHead className="w-14">
-                <span className="sr-only">Acciones</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {invitationPage.items.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={COLUMN_COUNT}
-                  className="h-24 text-center whitespace-normal text-muted-foreground"
-                >
-                  {hasFilters
-                    ? "Ninguna invitación coincide con los filtros."
-                    : "Todavía no hay invitaciones."}
-                </TableCell>
-              </TableRow>
-            )}
-            {invitationPage.items.map((invitation) => (
-              <ActionTableRow
-                key={invitation.id}
-                actions={getInvitationActions(invitation)}
-                actionsLabel={`Acciones de la invitación de ${invitation.name}`}
-                isSelected={invitation.id === selectedInvitationId}
-                onSelect={() => setSelectedInvitationId(invitation.id)}
-              >
-                <TableCell className="font-medium whitespace-normal">
-                  {invitation.name}
-                </TableCell>
-                <TableCell className="hidden text-muted-foreground @3xl:table-cell">
-                  {invitation.email}
-                </TableCell>
-                <TableCell className="hidden @lg:table-cell">
-                  {invitation.roleName}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={STATE_BADGE_VARIANTS[invitation.state]}>
-                    {STATE_LABELS[invitation.state]}
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden tabular-nums @2xl:table-cell">
-                  {formatDate(invitation.expiresAt)}
-                </TableCell>
-              </ActionTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableFrame>
-
-      <ListFooter
-        totalLabel={describeInvitationCount(invitationPage.totalCount)}
-        page={invitationPage.page}
-        pageCount={invitationPage.pageCount}
-        paginationLabel="Páginas de invitaciones"
       />
 
       {openDialog?.kind === "invite" && (
@@ -308,6 +212,6 @@ export function InvitationsTable({
           onClose={closeDialog}
         />
       )}
-    </div>
+    </>
   );
 }

@@ -7,7 +7,13 @@ import {
 } from "@/platform/operation-result";
 import { runInTransactionAs } from "@/platform/database/client";
 
-import { lockUserEmailVerification, updateUserName } from "./repository";
+import {
+  findHiddenColumns,
+  lockUserEmailVerification,
+  updateUserName,
+  upsertHiddenColumns,
+} from "./repository";
+import type { ColumnPreference } from "./schemas";
 
 export const ACCOUNT_REJECTION_MESSAGES = {
   userNotFound: "Tu cuenta ya no existe. Volvé a iniciar sesión.",
@@ -37,4 +43,21 @@ export async function updateOwnName(
     await updateUserName(transaction, userId, name);
     return SUCCESS;
   });
+}
+
+export function getHiddenColumns(
+  userId: string,
+  tableKey: string,
+): Promise<string[]> {
+  return findHiddenColumns(userId, tableKey);
+}
+
+export async function saveHiddenColumns(
+  userId: string,
+  { tableKey, hiddenColumns }: ColumnPreference,
+): Promise<OperationResult> {
+  await runInTransactionAs(userId, (transaction) =>
+    upsertHiddenColumns(transaction, userId, tableKey, hiddenColumns),
+  );
+  return SUCCESS;
 }
