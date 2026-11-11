@@ -12,6 +12,31 @@ export const PASSWORD_MIN_LENGTH = 12;
 export const PASSWORD_MAX_LENGTH = 256;
 const NAME_MIN_LENGTH = 2;
 
+const passwordSchema = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, {
+    error: `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`,
+  })
+  .max(PASSWORD_MAX_LENGTH, {
+    error: `La contraseña no puede superar los ${PASSWORD_MAX_LENGTH} caracteres.`,
+  });
+
+function hasMatchingConfirmation(input: {
+  password: string;
+  passwordConfirmation: string;
+}): boolean {
+  return input.password === input.passwordConfirmation;
+}
+
+const passwordMismatch = {
+  error: "Las contraseñas no coinciden.",
+  path: ["passwordConfirmation"],
+};
+
+const emailSchema = z
+  .email({ error: "El correo no es válido." })
+  .transform((email) => email.toLowerCase());
+
 export const superUserInputSchema = z.object({
   name: z
     .string()
@@ -19,17 +44,8 @@ export const superUserInputSchema = z.object({
     .min(NAME_MIN_LENGTH, {
       error: `El nombre debe tener al menos ${NAME_MIN_LENGTH} caracteres.`,
     }),
-  email: z
-    .email({ error: "El correo no es válido." })
-    .transform((email) => email.toLowerCase()),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH, {
-      error: `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`,
-    })
-    .max(PASSWORD_MAX_LENGTH, {
-      error: `La contraseña no puede superar los ${PASSWORD_MAX_LENGTH} caracteres.`,
-    }),
+  email: emailSchema,
+  password: passwordSchema,
 });
 
 export type SuperUserInput = z.input<typeof superUserInputSchema>;
@@ -206,19 +222,19 @@ export function parseInvitationListQuery(
 const PERSON_NAME_MIN_LENGTH = 2;
 const PERSON_NAME_MAX_LENGTH = 120;
 
+const personNameSchema = z
+  .string()
+  .trim()
+  .min(PERSON_NAME_MIN_LENGTH, {
+    error: `El nombre debe tener al menos ${PERSON_NAME_MIN_LENGTH} caracteres.`,
+  })
+  .max(PERSON_NAME_MAX_LENGTH, {
+    error: `El nombre no puede superar los ${PERSON_NAME_MAX_LENGTH} caracteres.`,
+  });
+
 export const invitationInputSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(PERSON_NAME_MIN_LENGTH, {
-      error: `El nombre debe tener al menos ${PERSON_NAME_MIN_LENGTH} caracteres.`,
-    })
-    .max(PERSON_NAME_MAX_LENGTH, {
-      error: `El nombre no puede superar los ${PERSON_NAME_MAX_LENGTH} caracteres.`,
-    }),
-  email: z
-    .email({ error: "El correo no es válido." })
-    .transform((email) => email.toLowerCase()),
+  name: personNameSchema,
+  email: emailSchema,
   roleId: z.uuid({ error: "Elegí un rol." }),
 });
 
@@ -270,19 +286,34 @@ export type AccessRevocation = z.output<typeof accessRevocationSchema>;
 export const newPasswordSchema = z
   .object({
     token: z.string().min(1, { error: "El enlace no es válido." }),
-    password: z
-      .string()
-      .min(PASSWORD_MIN_LENGTH, {
-        error: `La contraseña debe tener al menos ${PASSWORD_MIN_LENGTH} caracteres.`,
-      })
-      .max(PASSWORD_MAX_LENGTH, {
-        error: `La contraseña no puede superar los ${PASSWORD_MAX_LENGTH} caracteres.`,
-      }),
+    password: passwordSchema,
     passwordConfirmation: z.string(),
   })
-  .refine((input) => input.password === input.passwordConfirmation, {
-    error: "Las contraseñas no coinciden.",
-    path: ["passwordConfirmation"],
-  });
+  .refine(hasMatchingConfirmation, passwordMismatch);
 
 export type NewPasswordInput = z.input<typeof newPasswordSchema>;
+
+export const userCreationSchema = invitationInputSchema
+  .extend({
+    password: passwordSchema,
+    passwordConfirmation: z.string(),
+    isEmailVerified: z.boolean(),
+  })
+  .refine(hasMatchingConfirmation, passwordMismatch);
+
+export type UserCreationInput = z.input<typeof userCreationSchema>;
+export type ValidUserCreationInput = z.output<typeof userCreationSchema>;
+
+export const ownNameSchema = z.object({ name: personNameSchema });
+
+export type OwnNameInput = z.input<typeof ownNameSchema>;
+
+export const passwordChangeSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(1, { error: "Ingresá tu contraseña actual." }),
+    password: passwordSchema,
+    passwordConfirmation: z.string(),
+  })
+  .refine(hasMatchingConfirmation, passwordMismatch);

@@ -166,7 +166,7 @@ describe("recuperación de contraseña", () => {
       status: string;
     }>(sql`
       select operation, actor_user_id, target_user_id, status
-      from audit_log where action = 'user.password_reset'
+      from audit_log where action = 'user.password_updated'
     `);
     expect(result.rows).toEqual([
       {

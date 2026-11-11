@@ -17,20 +17,27 @@ import {
   type RoleDetailsInput,
   roleIdSchema,
   rolePermissionsSchema,
+  ownNameSchema,
+  type OwnNameInput,
   totpUriSchema,
+  type UserCreationInput,
+  userCreationSchema,
   userIdSchema,
 } from "./schemas";
 import {
   acceptInvitation,
   assignRolePermissions,
+  changeUserRole,
   createInvitation,
   createRole,
+  createUser,
   deleteRole,
   type OperationResult,
   restoreUserAccess,
   revokeInvitation,
   renderTotpQrCode,
   revokeUserAccess,
+  updateOwnName,
   updateRole,
 } from "./service";
 
@@ -188,4 +195,44 @@ export async function createTotpQrCodeAction(
   await requireSession();
   const uri = totpUriSchema.safeParse(totpUri);
   return uri.success ? renderTotpQrCode(uri.data) : null;
+}
+
+export async function createUserAction(
+  input: UserCreationInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admin.users.create");
+  const user = userCreationSchema.safeParse(input);
+  if (!user.success) {
+    return toInvalidResult(user.error);
+  }
+  return refreshOnSuccess(await createUser(access, user.data));
+}
+
+export async function changeUserRoleAction(
+  userId: string,
+  roleId: string,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admin.users.update");
+  const parsedUserId = userIdSchema.safeParse(userId);
+  if (!parsedUserId.success) {
+    return toRejectedResult(parsedUserId.error);
+  }
+  const role = z.object({ roleId: roleIdSchema }).safeParse({ roleId });
+  if (!role.success) {
+    return toInvalidResult(role.error);
+  }
+  return refreshOnSuccess(
+    await changeUserRole(access, parsedUserId.data, role.data.roleId),
+  );
+}
+
+export async function updateOwnNameAction(
+  input: OwnNameInput,
+): Promise<ActionResult> {
+  const { user } = await requireSession();
+  const name = ownNameSchema.safeParse(input);
+  if (!name.success) {
+    return toInvalidResult(name.error);
+  }
+  return refreshOnSuccess(await updateOwnName(user.id, name.data.name));
 }

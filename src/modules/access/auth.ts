@@ -46,6 +46,9 @@ const SIGN_IN_ATTEMPTS_PER_WINDOW = 5;
 const SIGN_IN_ENDPOINT_PATH = "/sign-in/email";
 const SECONDS_PER_HOUR = 3_600;
 const PASSWORD_RESET_ATTEMPTS_PER_HOUR = 5;
+const PASSWORD_CHANGE_PATH = "/change-password";
+const PASSWORD_CHANGE_WINDOW_SECONDS = 600;
+const PASSWORD_CHANGE_ATTEMPTS_PER_WINDOW = 5;
 const PASSWORD_RESET_REQUEST_ENDPOINT_PATH = "/request-password-reset";
 const PASSWORD_RESET_ENDPOINT_PATH = "/reset-password";
 const TWO_FACTOR_VERIFICATION_PATHS = "/two-factor/verify-*";
@@ -61,8 +64,11 @@ const VERIFIED_EMAIL_REQUIRED_PATHS = new Set([
   "/two-factor/disable",
   "/two-factor/generate-backup-codes",
   "/two-factor/get-totp-uri",
+  PASSWORD_CHANGE_PATH,
 ]);
-const DISABLED_EMAIL_OTP_PATHS = [
+// /update-user no valida el nombre según la ERS: el nombre se edita con updateOwnNameAction.
+const DISABLED_PATHS = [
+  "/update-user",
   "/email-otp/check-verification-otp",
   "/sign-in/email-otp",
   "/email-otp/request-password-reset",
@@ -119,6 +125,11 @@ const authenticatorEnableBodySchema = z.object({
   method: z.literal("totp").optional(),
 });
 
+// RF-ACC-16: cambiar la contraseña siempre cierra las otras sesiones.
+const passwordChangeBodySchema = z.object({
+  revokeOtherSessions: z.literal(true),
+});
+
 const guardAccountSecurityMiddleware = createAuthMiddleware(async (context) => {
   const isEmailVerification =
     context.path === EMAIL_VERIFICATION_SEND_PATH ||
@@ -153,6 +164,12 @@ const guardAccountSecurityMiddleware = createAuthMiddleware(async (context) => {
   ) {
     throw new APIError("BAD_REQUEST");
   }
+  if (
+    context.path === PASSWORD_CHANGE_PATH &&
+    !passwordChangeBodySchema.safeParse(context.body).success
+  ) {
+    throw new APIError("BAD_REQUEST");
+  }
 });
 
 function createAuth() {
@@ -183,7 +200,7 @@ function createAuth() {
       sendResetPassword: ({ user, url }) => sendPasswordResetMail(user, url),
     },
     verification: { storeIdentifier: "hashed" },
-    disabledPaths: DISABLED_EMAIL_OTP_PATHS,
+    disabledPaths: DISABLED_PATHS,
     plugins: [
       twoFactor({
         issuer: TWO_FACTOR_ISSUER,
@@ -248,6 +265,10 @@ function createAuth() {
         [EMAIL_VERIFICATION_SEND_PATH]: {
           window: RATE_LIMIT_WINDOW_SECONDS,
           max: EMAIL_VERIFICATION_SENDS_PER_WINDOW,
+        },
+        [PASSWORD_CHANGE_PATH]: {
+          window: PASSWORD_CHANGE_WINDOW_SECONDS,
+          max: PASSWORD_CHANGE_ATTEMPTS_PER_WINDOW,
         },
         [EMAIL_VERIFICATION_PATH]: {
           window: RATE_LIMIT_WINDOW_SECONDS,

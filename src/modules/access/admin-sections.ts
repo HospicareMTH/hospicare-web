@@ -7,6 +7,13 @@ export type AdminSection = {
   permission: Permission;
 };
 
+export type AdminSectionLink = Pick<AdminSection, "label" | "href">;
+
+export const ADMIN_SUMMARY_LINK: AdminSectionLink = {
+  label: "Resumen",
+  href: "/admin",
+};
+
 export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { label: "Roles", href: "/admin/roles", permission: "admin.roles.view" },
   {

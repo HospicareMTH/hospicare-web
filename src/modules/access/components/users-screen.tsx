@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import { requirePermission } from "../authorization";
 import { parseUserListQuery, type SearchParams } from "../schemas";
-import { hasPermission, searchUsers } from "../service";
+import { hasPermission, listInvitableRoles, searchUsers } from "../service";
 import { LoadingStatus } from "./loading-status";
 import { UsersTable } from "./users-table";
 
@@ -13,15 +13,24 @@ async function UsersContent({
 }) {
   const { access } = await requirePermission("admin.users.view");
   const query = parseUserListQuery(await searchParams);
+  const canCreate = hasPermission(access, "admin.users.create");
+  const canChangeRole = hasPermission(access, "admin.users.update");
+  const [userPage, grantableRoles] = await Promise.all([
+    searchUsers(query),
+    canCreate || canChangeRole ? listInvitableRoles(access) : [],
+  ]);
 
   return (
     <UsersTable
-      userPage={await searchUsers(query)}
+      userPage={userPage}
       query={query}
+      grantableRoles={grantableRoles}
       actor={{
         userId: access.userId,
         isSuperUser: access.isSuperUser,
         canChangeAccess: hasPermission(access, "admin.users.revoke"),
+        canCreate,
+        canChangeRole,
       }}
     />
   );

@@ -21,6 +21,8 @@ export const PERMISSION_GROUPS = [
     label: "Usuarios",
     permissions: [
       { key: "admin.users.view", label: "Ver" },
+      { key: "admin.users.create", label: "Crear" },
+      { key: "admin.users.update", label: "Cambiar el rol" },
       { key: "admin.users.revoke", label: "Revocar y restaurar accesos" },
     ],
   },

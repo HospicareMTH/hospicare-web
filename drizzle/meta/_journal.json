@@ -64,6 +64,13 @@
       "when": 1794353262292,
       "tag": "0008_two_factor_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794354736726,
+      "tag": "0009_password_updated_audit",
+      "breakpoints": true
     }
   ]
 }

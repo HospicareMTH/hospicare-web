@@ -3,6 +3,8 @@ import { SectionSheet } from "@/components/shared/section-sheet";
 import { Separator } from "@/components/ui/separator";
 
 import { requireSession } from "../session";
+import { AccountNamePanel } from "./account-name-panel";
+import { AccountPasswordPanel } from "./account-password-panel";
 import { EmailVerificationPanel } from "./email-verification-panel";
 import { TwoFactorPanel } from "./two-factor-panel";
 
@@ -32,11 +34,22 @@ export async function AccountScreen() {
   return (
     <SectionSheet destination={ACCOUNT_DESTINATION}>
       <div className="flex flex-col gap-8">
+        <AccountSection title="Nombre" titleId="account-name-title">
+          <AccountNamePanel
+            name={user.name}
+            isEmailVerified={user.emailVerified}
+          />
+        </AccountSection>
+        <Separator />
         <AccountSection title="Correo" titleId="account-email-title">
           <EmailVerificationPanel
             email={user.email}
             isEmailVerified={user.emailVerified}
           />
+        </AccountSection>
+        <Separator />
+        <AccountSection title="Contraseña" titleId="account-password-title">
+          <AccountPasswordPanel isEmailVerified={user.emailVerified} />
         </AccountSection>
         <Separator />
         <AccountSection

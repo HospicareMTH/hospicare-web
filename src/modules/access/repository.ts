@@ -71,14 +71,17 @@ type NewUserWithPassword = {
   email: string;
   passwordHash: string;
   roleId: string;
+  emailVerified?: boolean;
 };
 
 export async function insertUserWithPassword(
   transaction: DatabaseTransaction,
-  { name, email, passwordHash, roleId }: NewUserWithPassword,
+  { name, email, passwordHash, roleId, emailVerified }: NewUserWithPassword,
 ): Promise<string> {
   const userId = randomUUID();
-  await transaction.insert(users).values({ id: userId, name, email });
+  await transaction
+    .insert(users)
+    .values({ id: userId, name, email, emailVerified });
   await transaction.insert(accounts).values({
     id: randomUUID(),
     accountId: userId,
@@ -306,6 +309,7 @@ export async function findAccessRevocation(
 
 export type LockedUser = AccessRevocationRecord & {
   id: string;
+  roleId: string | null;
   roleSystemKey: string | null;
 };
 
@@ -318,6 +322,7 @@ export async function lockUser(
       id: users.id,
       accessRevokedAt: users.accessRevokedAt,
       accessRevokedUntil: users.accessRevokedUntil,
+      roleId: userRoles.roleId,
       roleSystemKey: roles.systemKey,
     })
     .from(users)
@@ -366,6 +371,7 @@ export type UserSummary = AccessRevocationRecord & {
   emailVerified: boolean;
   twoFactorEnabled: boolean;
   accessRevocationReason: string | null;
+  roleId: string | null;
   roleName: string | null;
   roleSystemKey: string | null;
 };
@@ -381,6 +387,7 @@ export async function listUsers(): Promise<UserSummary[]> {
       accessRevokedAt: users.accessRevokedAt,
       accessRevokedUntil: users.accessRevokedUntil,
       accessRevocationReason: users.accessRevocationReason,
+      roleId: roles.id,
       roleName: roles.name,
       roleSystemKey: roles.systemKey,
     })
@@ -524,3 +531,37 @@ export async function listInvitations(): Promise<InvitationSummary[]> {
 }
 
 export type RoleOption = { id: string; name: string };
+
+export async function updateUserRole(
+  transaction: DatabaseTransaction,
+  userId: string,
+  roleId: string,
+): Promise<void> {
+  await transaction
+    .update(userRoles)
+    .set({ roleId, updatedAt: new Date() })
+    .where(eq(userRoles.userId, userId));
+}
+
+export async function lockUserEmailVerification(
+  transaction: DatabaseTransaction,
+  userId: string,
+): Promise<boolean | null> {
+  const [user] = await transaction
+    .select({ emailVerified: users.emailVerified })
+    .from(users)
+    .where(eq(users.id, userId))
+    .for("update");
+  return user?.emailVerified ?? null;
+}
+
+export async function updateUserName(
+  transaction: DatabaseTransaction,
+  userId: string,
+  name: string,
+): Promise<void> {
+  await transaction
+    .update(users)
+    .set({ name, updatedAt: new Date() })
+    .where(eq(users.id, userId));
+}

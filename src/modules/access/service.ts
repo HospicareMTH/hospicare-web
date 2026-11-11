@@ -42,6 +42,7 @@ import {
   lockRole,
   lockSystemRole,
   lockUser,
+  lockUserEmailVerification,
   markInvitationAccepted,
   markInvitationRevoked,
   removeRolePermissions,
@@ -50,6 +51,8 @@ import {
   SUPER_USER_SYSTEM_KEY,
   updateAccessRevocation,
   updateRoleDetails,
+  updateUserName,
+  updateUserRole,
   type UserSummary,
 } from "./repository";
 import { INVITATION_ACCEPTANCE_PATH } from "./routes";
@@ -68,6 +71,7 @@ import {
   type UserListQuery,
   type UserSortKey,
   type ValidInvitationInput,
+  type ValidUserCreationInput,
 } from "./schemas";
 
 export const CLIENT_IP_HEADER = "cf-connecting-ip";
@@ -447,6 +451,7 @@ export type UserListItem = {
   id: string;
   name: string;
   email: string;
+  roleId: string | null;
   roleName: string | null;
   isSuperUser: boolean;
   isEmailVerified: boolean;
@@ -462,6 +467,7 @@ function toUserListItem(user: UserSummary, now: Date): UserListItem {
     id: user.id,
     name: user.name,
     email: user.email,
+    roleId: user.roleId,
     roleName: user.roleName,
     isSuperUser: user.roleSystemKey === SUPER_USER_SYSTEM_KEY,
     isEmailVerified: user.emailVerified,
@@ -843,4 +849,145 @@ export async function acceptInvitation(
     await markInvitationAccepted(transaction, invitation.id, userId);
     return SUCCESS;
   });
+}
+
+export const USER_REJECTION_MESSAGES = {
+  roleNotFound: "El rol elegido ya no existe. Actualizá la pantalla.",
+  superUserRoleOnly: "Solo un Super user puede asignar el rol Super user.",
+  roleNotAllowed: "Solo podés asignar un rol cuyos permisos tengas.",
+  emailRegistered: "Ese correo ya tiene una cuenta.",
+  invitationPending: "Ese correo ya tiene una invitación pendiente.",
+  userNotFound: "La persona ya no existe. Actualizá la pantalla.",
+  ownRole: "No podés cambiar tu propio rol.",
+  superUserOnly: "Solo un Super user puede cambiar el rol de otro Super user.",
+  sameRole: "La persona ya tiene ese rol.",
+  emailNotVerified: "Verificá tu correo para hacer esta acción.",
+} as const;
+
+function checkGrantableRole(
+  actor: UserAccess,
+  role: { systemKey: string | null; permissions: string[] } | null,
+): RejectedOperation | null {
+  if (!role) {
+    return reject(USER_REJECTION_MESSAGES.roleNotFound);
+  }
+  if (role.systemKey === SUPER_USER_SYSTEM_KEY && !actor.isSuperUser) {
+    return reject(USER_REJECTION_MESSAGES.superUserRoleOnly);
+  }
+  if (!canGrantRole(actor, role)) {
+    return reject(USER_REJECTION_MESSAGES.roleNotAllowed);
+  }
+  return null;
+}
+
+export async function createUser(
+  actor: UserAccess,
+  input: ValidUserCreationInput,
+): Promise<OperationResult> {
+  const passwordHash = await hashPassword(input.password);
+  return runInTransactionAs(actor.userId, async (transaction) => {
+    const roleRejection = checkGrantableRole(
+      actor,
+      await lockRole(transaction, input.roleId),
+    );
+    if (roleRejection) {
+      return roleRejection;
+    }
+    if (await isEmailRegistered(transaction, input.email)) {
+      return reject(USER_REJECTION_MESSAGES.emailRegistered);
+    }
+    if (await hasPendingInvitation(transaction, input.email, new Date())) {
+      return reject(USER_REJECTION_MESSAGES.invitationPending);
+    }
+    await insertUserWithPassword(transaction, {
+      name: input.name,
+      email: input.email,
+      passwordHash,
+      roleId: input.roleId,
+      emailVerified: input.isEmailVerified,
+    });
+    return SUCCESS;
+  });
+}
+
+export async function changeUserRole(
+  actor: UserAccess,
+  targetUserId: string,
+  roleId: string,
+): Promise<OperationResult> {
+  if (targetUserId === actor.userId) {
+    return reject(USER_REJECTION_MESSAGES.ownRole);
+  }
+  return runInTransactionAs(actor.userId, async (transaction) => {
+    const target = await lockUser(transaction, targetUserId);
+    if (!target) {
+      return reject(USER_REJECTION_MESSAGES.userNotFound);
+    }
+    if (target.roleSystemKey === SUPER_USER_SYSTEM_KEY && !actor.isSuperUser) {
+      return reject(USER_REJECTION_MESSAGES.superUserOnly);
+    }
+    const roleRejection = checkGrantableRole(
+      actor,
+      await lockRole(transaction, roleId),
+    );
+    if (roleRejection) {
+      return roleRejection;
+    }
+    if (target.roleId === roleId) {
+      return reject(USER_REJECTION_MESSAGES.sameRole);
+    }
+    await updateUserRole(transaction, target.id, roleId);
+    return SUCCESS;
+  });
+}
+
+export async function updateOwnName(
+  userId: string,
+  name: string,
+): Promise<OperationResult> {
+  return runInTransactionAs(userId, async (transaction) => {
+    const isEmailVerified = await lockUserEmailVerification(
+      transaction,
+      userId,
+    );
+    if (isEmailVerified === null) {
+      return reject(USER_REJECTION_MESSAGES.userNotFound);
+    }
+    if (!isEmailVerified) {
+      return reject(USER_REJECTION_MESSAGES.emailNotVerified);
+    }
+    await updateUserName(transaction, userId, name);
+    return SUCCESS;
+  });
+}
+
+export type AdminSummary = {
+  roleCount: number | null;
+  userCount: number | null;
+  activeUserCount: number | null;
+  pendingInvitationCount: number | null;
+};
+
+export async function getAdminSummary(
+  actor: UserAccess,
+): Promise<AdminSummary> {
+  const now = new Date();
+  const canViewRoles = hasPermission(actor, "admin.roles.view");
+  const canViewUsers = hasPermission(actor, "admin.users.view");
+  const canViewInvitations = hasPermission(actor, "admin.invitations.view");
+  const [roles, users, invitations] = await Promise.all([
+    canViewRoles ? listRoleRecords() : null,
+    canViewUsers ? listUserRecords() : null,
+    canViewInvitations ? listInvitationRecords() : null,
+  ]);
+  return {
+    roleCount: roles?.length ?? null,
+    userCount: users?.length ?? null,
+    activeUserCount:
+      users?.filter((user) => !isAccessRevoked(user, now)).length ?? null,
+    pendingInvitationCount:
+      invitations?.filter(
+        (invitation) => getInvitationState(invitation, now) === "pending",
+      ).length ?? null,
+  };
 }

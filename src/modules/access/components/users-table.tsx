@@ -1,9 +1,16 @@
 "use client";
 
-import { LockKeyIcon, LockKeyholeOpenIcon } from "@hugeicons/core-free-icons";
+import {
+  LockKeyIcon,
+  LockKeyholeOpenIcon,
+  UserAdd01Icon,
+  UserSwitchIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -14,21 +21,29 @@ import {
 } from "@/components/ui/table";
 import { formatDate } from "@/platform/dates";
 
+import type { RoleOption } from "../repository";
 import { DEFAULT_USER_SORT, type UserListQuery } from "../schemas";
 import type { ListPage, UserListItem } from "../service";
 import { ActionTableRow, type RowAction } from "./action-table-row";
+import { ChangeRoleDialog } from "./change-role-dialog";
+import { CreateUserDialog } from "./create-user-dialog";
 import { ListFooter, ListToolbar, SortableHead } from "./list-controls";
 import { RestoreAccessDialog } from "./restore-access-dialog";
 import { RevokeAccessDialog } from "./revoke-access-dialog";
+import { DIALOG_BUTTON_CLASS_NAME } from "./styles";
 import { TableFrame } from "./table-frame";
 
 type UsersActor = {
   userId: string;
   isSuperUser: boolean;
   canChangeAccess: boolean;
+  canCreate: boolean;
+  canChangeRole: boolean;
 };
 
 type OpenDialog =
+  | { kind: "create" }
+  | { kind: "changeRole"; user: UserListItem }
   | { kind: "revoke"; user: UserListItem }
   | { kind: "restore"; user: UserListItem };
 
@@ -57,49 +72,79 @@ function AccessStatus({ user }: { user: UserListItem }) {
 export function UsersTable({
   userPage,
   query,
+  grantableRoles,
   actor,
 }: {
   userPage: ListPage<UserListItem>;
   query: UserListQuery;
+  grantableRoles: RoleOption[];
   actor: UsersActor;
 }) {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = useState<OpenDialog | null>(null);
   const closeDialog = () => setOpenDialog(null);
 
+  function getAccessAction(user: UserListItem): RowAction {
+    if (user.isRevoked) {
+      return {
+        label: "Restaurar acceso",
+        icon: LockKeyholeOpenIcon,
+        isDestructive: false,
+        open: () => setOpenDialog({ kind: "restore", user }),
+      };
+    }
+    return {
+      label: "Revocar acceso",
+      icon: LockKeyIcon,
+      isDestructive: true,
+      open: () => setOpenDialog({ kind: "revoke", user }),
+    };
+  }
+
   function getUserActions(user: UserListItem): RowAction[] {
-    const canChangeThisAccess =
-      actor.canChangeAccess &&
-      user.id !== actor.userId &&
-      (!user.isSuperUser || actor.isSuperUser);
-    if (!canChangeThisAccess) {
+    const canManageThisUser =
+      user.id !== actor.userId && (!user.isSuperUser || actor.isSuperUser);
+    if (!canManageThisUser) {
       return [];
     }
-    if (user.isRevoked) {
-      return [
-        {
-          label: "Restaurar acceso",
-          icon: LockKeyholeOpenIcon,
-          isDestructive: false,
-          open: () => setOpenDialog({ kind: "restore", user }),
-        },
-      ];
+    const actions: RowAction[] = [];
+    if (actor.canChangeRole) {
+      actions.push({
+        label: "Cambiar rol",
+        icon: UserSwitchIcon,
+        isDestructive: false,
+        open: () => setOpenDialog({ kind: "changeRole", user }),
+      });
     }
-    return [
-      {
-        label: "Revocar acceso",
-        icon: LockKeyIcon,
-        isDestructive: true,
-        open: () => setOpenDialog({ kind: "revoke", user }),
-      },
-    ];
+    if (actor.canChangeAccess) {
+      actions.push(getAccessAction(user));
+    }
+    return actions;
   }
 
   const sortProps = { sort: query.sort, defaultSort: DEFAULT_USER_SORT };
 
   return (
     <div className="flex flex-col gap-4">
-      <ListToolbar search={query.search} searchLabel="Buscar usuarios" />
+      <ListToolbar
+        search={query.search}
+        searchLabel="Buscar usuarios"
+        action={
+          actor.canCreate && (
+            <Button
+              onClick={() => setOpenDialog({ kind: "create" })}
+              className={DIALOG_BUTTON_CLASS_NAME}
+            >
+              <HugeiconsIcon
+                icon={UserAdd01Icon}
+                data-icon="inline-start"
+                aria-hidden="true"
+              />
+              Crear usuario
+            </Button>
+          )
+        }
+      />
 
       <TableFrame>
         <Table className="text-base">
@@ -184,6 +229,16 @@ export function UsersTable({
         paginationLabel="Páginas de usuarios"
       />
 
+      {openDialog?.kind === "create" && (
+        <CreateUserDialog roles={grantableRoles} onClose={closeDialog} />
+      )}
+      {openDialog?.kind === "changeRole" && (
+        <ChangeRoleDialog
+          user={openDialog.user}
+          roles={grantableRoles}
+          onClose={closeDialog}
+        />
+      )}
       {openDialog?.kind === "revoke" && (
         <RevokeAccessDialog user={openDialog.user} onClose={closeDialog} />
       )}

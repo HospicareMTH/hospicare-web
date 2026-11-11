@@ -5,9 +5,13 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 
-import type { AdminSection } from "../admin-sections";
+import type { AdminSectionLink } from "../admin-sections";
 
-export function AdminSectionNav({ sections }: { sections: AdminSection[] }) {
+export function AdminSectionNav({
+  sections,
+}: {
+  sections: AdminSectionLink[];
+}) {
   const pathname = usePathname();
 
   return (

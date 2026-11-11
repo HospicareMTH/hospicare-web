@@ -15,23 +15,12 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { createInvitationAction } from "../actions";
 import type { RoleOption } from "../repository";
+import { RoleSelectField } from "./role-select-field";
 import { runAction } from "./run-action";
-import {
-  DIALOG_BUTTON_CLASS_NAME,
-  FIELD_CONTROL_CLASS_NAME,
-  SELECT_ITEM_CLASS_NAME,
-  SELECT_TRIGGER_CLASS_NAME,
-} from "./styles";
+import { DIALOG_BUTTON_CLASS_NAME, FIELD_CONTROL_CLASS_NAME } from "./styles";
 
 type FieldErrors = Record<string, string[] | undefined>;
 
@@ -123,35 +112,13 @@ export function InviteDialog({
               />
               <FieldError errors={toFieldError(fieldErrors.email)} />
             </Field>
-            <Field data-invalid={fieldErrors.roleId ? true : undefined}>
-              <RequiredFieldLabel
-                htmlFor="invitation-role"
-                className="text-base"
-              >
-                Rol
-              </RequiredFieldLabel>
-              <Select value={roleId} onValueChange={setRoleId}>
-                <SelectTrigger
-                  id="invitation-role"
-                  aria-invalid={fieldErrors.roleId ? true : undefined}
-                  className={`w-full ${SELECT_TRIGGER_CLASS_NAME}`}
-                >
-                  <SelectValue placeholder="Elegí un rol" />
-                </SelectTrigger>
-                <SelectContent>
-                  {roles.map((role) => (
-                    <SelectItem
-                      key={role.id}
-                      value={role.id}
-                      className={SELECT_ITEM_CLASS_NAME}
-                    >
-                      {role.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FieldError errors={toFieldError(fieldErrors.roleId)} />
-            </Field>
+            <RoleSelectField
+              id="invitation-role"
+              roles={roles}
+              value={roleId}
+              onValueChange={setRoleId}
+              errors={fieldErrors.roleId}
+            />
           </FieldGroup>
         </form>
         <DialogFooter>
