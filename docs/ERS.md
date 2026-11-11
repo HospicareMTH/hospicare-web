@@ -394,8 +394,8 @@ Los formularios clínicos se alimentan de 28 listas configurables, y el inicio m
 
 | Catálogo | Valores iniciales | Reordenable |
 | --- | --- | --- |
-| Vínculos del entrevistado | Hija/o, Cónyuge, Hermana/o, Madre, Padre, Nieto/a, Cuidador/a, Otro | No |
-| Profesionales de salud | Vacío. Nombre, especialidad, matrícula, teléfono, correo | No |
+| Vínculos del entrevistado | Hija/o, Cónyuge, Hermana/o, Madre, Padre, Nieto/a, Cuidador/a, Otro | No. Orden fijo de esta lista; las nuevas van al final. |
+| Profesionales de salud | Vacío. Nombre obligatorio; especialidad, matrícula, teléfono y correo opcionales | No. Orden alfabético. |
 | Obras sociales | 18 coberturas precargadas, entre ellas OSDE, PAMI e IOMA | Sí |
 | Información general | 7 opciones sobre conocimiento del diagnóstico y pronóstico | Sí |
 | Religiones | Ninguna, Católico, Judío, Evangelista, Mormón, Testigo de Jehová, Otra | Sí |
@@ -411,12 +411,12 @@ Los formularios clínicos se alimentan de 28 listas configurables, y el inicio m
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-CAT-01 | Administración debe poder crear, editar y desactivar opciones. | Etiqueta de al menos 2 caracteres, descripción opcional. Permisos por catálogo. |
+| RF-CAT-01 | Administración debe poder crear, editar y desactivar opciones. | Etiqueta de 2 a 120 caracteres; descripción opcional de hasta 500. Permisos por catálogo. Reactivar requiere permiso de modificar. Las opciones de sistema se identifican como Base y se gestionan como las demás. |
 | RF-CAT-02 | Desactivar debe preservar los registros existentes. | Eliminar equivale a desactivar. La opción deja de ofrecerse, pero se sigue mostrando donde ya se usó. |
-| RF-CAT-03 | Administración debe poder reordenar opciones. | El orden se respeta en los selectores. |
+| RF-CAT-03 | Administración debe poder reordenar opciones. | El orden se respeta en los selectores. Requiere permiso de modificar. |
 | RF-CAT-04 | Debe poder crearse una opción sin salir del formulario. | Solo con permiso de creación. En selección única queda elegida; en múltiple, marcada. |
 | RF-CAT-05 | La obra social debe validarse según el permiso de quien carga. | Sin permiso de crear obras sociales, solo admite una activa del catálogo. |
-| RF-CAT-06 | Crear una obra social existente no debe duplicarla. | Compara sin distinguir mayúsculas. Si estaba inactiva, la reactiva. |
+| RF-CAT-06 | Crear una opción existente no debe duplicarla. | En cada catálogo compara sin distinguir mayúsculas ni acentos. Si estaba inactiva, la reactiva. |
 | RF-CAT-07 | Los formularios deben rechazar opciones inactivas nuevas. | Validación en el servidor. |
 
 ### 7.2 Inicio operativo

@@ -4,6 +4,19 @@ type PermissionGroupDefinition = {
   permissions: readonly { key: string; label: string }[];
 };
 
+function catalogPermissionGroup<Key extends string>(key: Key, label: string) {
+  return {
+    key,
+    label,
+    permissions: [
+      { key: `admin.${key}.view`, label: "Ver" },
+      { key: `admin.${key}.create`, label: "Crear" },
+      { key: `admin.${key}.update`, label: "Modificar" },
+      { key: `admin.${key}.delete`, label: "Desactivar" },
+    ],
+  } as const;
+}
+
 export const PERMISSION_GROUPS = [
   {
     key: "roles",
@@ -35,6 +48,28 @@ export const PERMISSION_GROUPS = [
       { key: "admin.invitations.delete", label: "Revocar" },
     ],
   },
+  catalogPermissionGroup("relationship_types", "Vínculos"),
+  catalogPermissionGroup("healthcare_professionals", "Profesionales de salud"),
+  catalogPermissionGroup("health_insurance_providers", "Obras sociales"),
+  catalogPermissionGroup(
+    "information_awareness_options",
+    "Información general",
+  ),
+  catalogPermissionGroup("religion_options", "Religiones"),
+  catalogPermissionGroup("ecog_score_options", "ECOG"),
+  catalogPermissionGroup(
+    "oncological_treatment_options",
+    "Tratamientos oncológicos",
+  ),
+  catalogPermissionGroup(
+    "metastasis_location_options",
+    "Lugares de metástasis",
+  ),
+  catalogPermissionGroup("surgery_options", "Cirugías"),
+  catalogPermissionGroup(
+    "guest_clinical_catalog_options",
+    "Opciones clínicas de huéspedes",
+  ),
   {
     key: "documentation",
     label: "Documentación",
