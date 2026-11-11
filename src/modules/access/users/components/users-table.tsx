@@ -20,33 +20,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDate } from "@/platform/dates";
-
-import type { RoleOption } from "../../roles/repository";
-import { DEFAULT_USER_SORT, type UserListQuery } from "../schemas";
-
 import type { ListPage } from "@/platform/list-query";
-
-import type { UserListItem } from "../service";
-
 import {
   ActionTableRow,
   type RowAction,
 } from "@/components/shared/data-table/action-table-row";
-
-import { ChangeRoleDialog } from "./change-role-dialog";
-import { CreateUserDialog } from "./create-user-dialog";
-
 import {
   ListFooter,
   ListToolbar,
   SortableHead,
 } from "@/components/shared/data-table/list-controls";
-
-import { RestoreAccessDialog } from "./restore-access-dialog";
-import { RevokeAccessDialog } from "./revoke-access-dialog";
-
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { TableFrame } from "@/components/shared/data-table/table-frame";
+
+import type { RoleOption } from "../../roles/repository";
+import { DEFAULT_USER_SORT, type UserListQuery } from "../schemas";
+import type { UserListItem } from "../service";
+import { ChangeRoleDialog } from "./change-role-dialog";
+import { CreateUserDialog } from "./create-user-dialog";
+import { RestoreAccessDialog } from "./restore-access-dialog";
+import { RevokeAccessDialog } from "./revoke-access-dialog";
 
 type UsersActor = {
   userId: string;

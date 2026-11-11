@@ -23,6 +23,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatDate } from "@/platform/dates";
+import type { ListPage } from "@/platform/list-query";
+import {
+  ActionTableRow,
+  type RowAction,
+} from "@/components/shared/data-table/action-table-row";
+import {
+  ListFooter,
+  ListToolbar,
+  SortableHead,
+  useListHref,
+} from "@/components/shared/data-table/list-controls";
+import {
+  DIALOG_BUTTON_CLASS_NAME,
+  SELECT_ITEM_CLASS_NAME,
+  SELECT_TRIGGER_CLASS_NAME,
+} from "@/components/shared/form-styles";
+import { TableFrame } from "@/components/shared/data-table/table-frame";
 
 import type { RoleOption } from "../../roles/repository";
 import {
@@ -33,30 +50,8 @@ import {
   type InvitationState,
 } from "../schemas";
 import type { InvitationListItem } from "../service";
-
-import type { ListPage } from "@/platform/list-query";
-import {
-  ActionTableRow,
-  type RowAction,
-} from "@/components/shared/data-table/action-table-row";
-
 import { InviteDialog } from "./invite-dialog";
-
-import {
-  ListFooter,
-  ListToolbar,
-  SortableHead,
-  useListHref,
-} from "@/components/shared/data-table/list-controls";
-
 import { RevokeInvitationDialog } from "./revoke-invitation-dialog";
-
-import {
-  DIALOG_BUTTON_CLASS_NAME,
-  SELECT_ITEM_CLASS_NAME,
-  SELECT_TRIGGER_CLASS_NAME,
-} from "@/components/shared/form-styles";
-import { TableFrame } from "@/components/shared/data-table/table-frame";
 
 const ALL_OPTIONS_VALUE = "todos";
 const COLUMN_COUNT = 6;

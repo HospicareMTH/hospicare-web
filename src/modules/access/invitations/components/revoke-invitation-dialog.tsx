@@ -2,10 +2,10 @@
 
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+
 import { revokeInvitationAction } from "../actions";
 import type { InvitationListItem } from "../service";
-
-import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
 export function RevokeInvitationDialog({
   invitation,

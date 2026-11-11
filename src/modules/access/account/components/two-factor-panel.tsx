@@ -10,6 +10,10 @@ import { RequiredFieldLabel } from "@/components/shared/required-field-label";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  DIALOG_BUTTON_CLASS_NAME,
+  FIELD_CONTROL_CLASS_NAME,
+} from "@/components/shared/form-styles";
 
 import { createTotpQrCodeAction } from "../actions";
 import { authClient } from "../../auth/auth-client";
@@ -17,11 +21,6 @@ import {
   ACCOUNT_SECURITY_MESSAGES,
   describeAccountSecurityError,
 } from "./account-security-messages";
-
-import {
-  DIALOG_BUTTON_CLASS_NAME,
-  FIELD_CONTROL_CLASS_NAME,
-} from "@/components/shared/form-styles";
 
 type PasswordPurpose = "enable" | "regenerate" | "disable";
 

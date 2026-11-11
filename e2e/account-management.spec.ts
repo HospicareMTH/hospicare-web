@@ -14,28 +14,6 @@ test.use({ extraHTTPHeaders: { "cf-connecting-ip": "203.0.113.80" } });
 
 const NEW_PASSWORD = "otra-clave-de-prueba-larga";
 
-test("RF-ADM-01: Administración abre con el resumen de accesos", async ({
-  page,
-}) => {
-  await page.goto("/admin");
-  await signIn(page);
-
-  await expect(page.getByRole("link", { name: "Resumen" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
-  for (const label of [
-    "Roles",
-    "Usuarios",
-    "Usuarios activos",
-    "Invitaciones pendientes",
-  ]) {
-    await expect(
-      page.getByRole("term").filter({ hasText: new RegExp(`^${label}$`) }),
-    ).toBeVisible();
-  }
-});
-
 test("RF-USR-02, RF-USR-03: administración crea un usuario y le cambia el rol", async ({
   page,
   browser,
@@ -96,9 +74,10 @@ test("RF-ACC-15, RF-ACC-16: la persona cambia su nombre y su contraseña", async
   await page.getByRole("textbox", { name: "Nombre" }).fill("Sofía Ficticia");
   await page.getByRole("button", { name: "Guardar nombre" }).click();
   await expect(page.getByText("Guardaste tu nombre.")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /Sofía Ficticia/ }),
-  ).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("textbox", { name: "Nombre" })).toHaveValue(
+    "Sofía Ficticia",
+  );
 
   await page
     .getByRole("textbox", { name: "Contraseña actual" })

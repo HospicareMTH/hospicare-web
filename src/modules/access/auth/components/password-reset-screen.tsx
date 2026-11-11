@@ -2,12 +2,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
-
-import { PASSWORD_RECOVERY_PATH } from "../../routes";
-
 import { readSearchParam, type SearchParams } from "@/platform/list-query";
 import { LoadingStatus } from "@/components/shared/loading-status";
 
+import { PASSWORD_RECOVERY_PATH } from "../../routes";
 import { PasswordResetForm } from "./password-reset-form";
 import { PASSWORD_RESET_MESSAGES } from "./password-reset-messages";
 import { PublicPageFrame } from "./public-page-frame";

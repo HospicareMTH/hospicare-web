@@ -1,15 +1,13 @@
 import { Suspense } from "react";
 
+import type { SearchParams } from "@/platform/list-query";
+import { LoadingStatus } from "@/components/shared/loading-status";
+
 import { hasPermission, requirePermission } from "../../authorization/service";
 import { parseInvitationListQuery } from "../schemas";
-
-import type { SearchParams } from "@/platform/list-query";
-
 import { listInvitableRoles, listRoleFilterOptions } from "../../roles/service";
 import { searchInvitations } from "../service";
 import { InvitationsTable } from "./invitations-table";
-
-import { LoadingStatus } from "@/components/shared/loading-status";
 
 async function InvitationsContent({
   searchParams,

@@ -21,17 +21,16 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-import { createUserAction } from "../actions";
-import type { RoleOption } from "../../roles/repository";
-import { PASSWORD_MIN_LENGTH } from "../../schemas";
-import { RoleSelectField } from "../../roles/components/role-select-field";
-
 import { runAction } from "@/components/shared/run-action";
 import {
   DIALOG_BUTTON_CLASS_NAME,
   FIELD_CONTROL_CLASS_NAME,
 } from "@/components/shared/form-styles";
+
+import { createUserAction } from "../actions";
+import type { RoleOption } from "../../roles/repository";
+import { PASSWORD_MIN_LENGTH } from "../../schemas";
+import { RoleSelectField } from "../../roles/components/role-select-field";
 
 type FieldErrors = Record<string, string[] | undefined>;
 

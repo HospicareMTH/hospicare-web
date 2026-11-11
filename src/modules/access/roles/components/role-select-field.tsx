@@ -9,13 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import type { RoleOption } from "../repository";
-
 import {
   SELECT_ITEM_CLASS_NAME,
   SELECT_TRIGGER_CLASS_NAME,
 } from "@/components/shared/form-styles";
+
+import type { RoleOption } from "../repository";
 
 export function RoleSelectField({
   id,

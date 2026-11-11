@@ -19,32 +19,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-import type { Permission } from "../../permissions";
-import { DEFAULT_ROLE_SORT, type RoleListQuery } from "../schemas";
-
 import type { ListPage } from "@/platform/list-query";
-
-import type { RoleListItem } from "../service";
-
 import {
   ActionTableRow,
   type RowAction,
 } from "@/components/shared/data-table/action-table-row";
-
-import { DeleteRoleDialog } from "./delete-role-dialog";
-
 import {
   ListFooter,
   ListToolbar,
   SortableHead,
 } from "@/components/shared/data-table/list-controls";
-
-import { RoleDetailsDialog } from "./role-details-dialog";
-import { RolePermissionsDialog } from "./role-permissions-dialog";
-
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { TableFrame } from "@/components/shared/data-table/table-frame";
+
+import type { Permission } from "../../permissions";
+import { DEFAULT_ROLE_SORT, type RoleListQuery } from "../schemas";
+import type { RoleListItem } from "../service";
+import { DeleteRoleDialog } from "./delete-role-dialog";
+import { RoleDetailsDialog } from "./role-details-dialog";
+import { RolePermissionsDialog } from "./role-permissions-dialog";
 
 type RoleAbilities = {
   canCreate: boolean;

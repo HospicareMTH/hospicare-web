@@ -10,7 +10,6 @@ import type { CSSProperties, ReactNode } from "react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarInset,
@@ -179,12 +178,10 @@ function MobileNavigation({ destinations, pathname }: NavigationProps) {
 
 export function AppShell({
   destinations,
-  accountMenu,
   isSidebarOpenByDefault,
   children,
 }: {
   destinations: NavigationDestination[];
-  accountMenu: ReactNode;
   isSidebarOpenByDefault: boolean;
   children: ReactNode;
 }) {
@@ -208,7 +205,6 @@ export function AppShell({
               />
             </SidebarGroup>
           </SidebarContent>
-          <SidebarFooter>{accountMenu}</SidebarFooter>
           <SidebarRail
             aria-label={TOGGLE_SIDEBAR_LABEL}
             title={TOGGLE_SIDEBAR_LABEL}

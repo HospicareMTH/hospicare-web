@@ -15,16 +15,15 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-import { createInvitationAction } from "../actions";
-import type { RoleOption } from "../../roles/repository";
-import { RoleSelectField } from "../../roles/components/role-select-field";
-
 import { runAction } from "@/components/shared/run-action";
 import {
   DIALOG_BUTTON_CLASS_NAME,
   FIELD_CONTROL_CLASS_NAME,
 } from "@/components/shared/form-styles";
+
+import { createInvitationAction } from "../actions";
+import type { RoleOption } from "../../roles/repository";
+import { RoleSelectField } from "../../roles/components/role-select-field";
 
 type FieldErrors = Record<string, string[] | undefined>;
 

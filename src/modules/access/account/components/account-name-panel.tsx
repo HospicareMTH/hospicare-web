@@ -6,14 +6,13 @@ import { RequiredFieldLabel } from "@/components/shared/required-field-label";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
-import { updateOwnNameAction } from "../actions";
-
 import { runAction } from "@/components/shared/run-action";
 import {
   DIALOG_BUTTON_CLASS_NAME,
   FIELD_CONTROL_CLASS_NAME,
 } from "@/components/shared/form-styles";
+
+import { updateOwnNameAction } from "../actions";
 
 export function AccountNamePanel({
   name,

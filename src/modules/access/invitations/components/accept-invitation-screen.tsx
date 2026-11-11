@@ -2,16 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
-
-import { SIGN_IN_PATH } from "../../routes";
-
 import { readSearchParam, type SearchParams } from "@/platform/list-query";
-
-import { INVITATION_REJECTION_MESSAGES, previewInvitation } from "../service";
-import { AcceptInvitationForm } from "./accept-invitation-form";
-
 import { LoadingStatus } from "@/components/shared/loading-status";
 
+import { SIGN_IN_PATH } from "../../routes";
+import { INVITATION_REJECTION_MESSAGES, previewInvitation } from "../service";
+import { AcceptInvitationForm } from "./accept-invitation-form";
 import { PublicPageFrame } from "../../auth/components/public-page-frame";
 import { PUBLIC_PRIMARY_BUTTON_CLASS_NAME } from "../../auth/components/public-styles";
 

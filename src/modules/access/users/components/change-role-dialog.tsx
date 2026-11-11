@@ -12,14 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { runAction } from "@/components/shared/run-action";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 
 import { changeUserRoleAction } from "../actions";
 import type { RoleOption } from "../../roles/repository";
 import type { UserListItem } from "../service";
 import { RoleSelectField } from "../../roles/components/role-select-field";
-
-import { runAction } from "@/components/shared/run-action";
-import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 
 type FieldErrors = Record<string, string[] | undefined>;
 

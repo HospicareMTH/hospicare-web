@@ -1,14 +1,11 @@
 import { Suspense } from "react";
 
-import { hasPermission, requirePermission } from "../../authorization/service";
-import { parseRoleListQuery } from "../schemas";
-
 import type { SearchParams } from "@/platform/list-query";
-
-import { searchRoles } from "../service";
-
 import { LoadingStatus } from "@/components/shared/loading-status";
 
+import { hasPermission, requirePermission } from "../../authorization/service";
+import { parseRoleListQuery } from "../schemas";
+import { searchRoles } from "../service";
 import { RolesTable } from "./roles-table";
 
 async function RolesContent({

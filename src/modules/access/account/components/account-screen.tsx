@@ -6,6 +6,7 @@ import { requireSession } from "../../auth/session";
 import { AccountNamePanel } from "./account-name-panel";
 import { AccountPasswordPanel } from "./account-password-panel";
 import { EmailVerificationPanel } from "./email-verification-panel";
+import { SignOutButton } from "./sign-out-button";
 import { TwoFactorPanel } from "./two-factor-panel";
 
 function AccountSection({
@@ -34,7 +35,7 @@ export async function AccountScreen() {
   return (
     <SectionSheet destination={ACCOUNT_DESTINATION}>
       <div className="flex flex-col gap-8">
-        <AccountSection title="Nombre" titleId="account-name-title">
+        <AccountSection title="Perfil" titleId="account-profile-title">
           <AccountNamePanel
             name={user.name}
             isEmailVerified={user.emailVerified}
@@ -60,6 +61,13 @@ export async function AccountScreen() {
             isEmailVerified={user.emailVerified}
             isTwoFactorEnabled={isTwoFactorEnabled}
           />
+        </AccountSection>
+        <Separator />
+        <AccountSection title="Sesión" titleId="account-session-title">
+          <p className="text-base text-muted-foreground">
+            Cierra la sesión solo en este dispositivo.
+          </p>
+          <SignOutButton />
         </AccountSection>
       </div>
     </SectionSheet>

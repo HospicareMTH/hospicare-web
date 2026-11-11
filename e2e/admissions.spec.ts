@@ -97,7 +97,7 @@ test("RF-USR-04, RF-ACC-18: un acceso revocado no puede volver a entrar", async 
   await page.getByRole("menuitem", { name: "Revocar acceso" }).click();
   await page.getByRole("combobox", { name: "Duración" }).click();
   await page.getByRole("option", { name: "Por una cantidad de días" }).click();
-  await page.getByLabel("Días").fill("3");
+  await page.getByRole("spinbutton", { name: "Días" }).fill("3");
   await page.getByLabel("Motivo").fill("Licencia de prueba");
   await page.getByRole("button", { name: "Revocar acceso" }).click();
   await expect(page.getByText("Acceso revocado.")).toBeVisible();

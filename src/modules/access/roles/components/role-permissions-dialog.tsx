@@ -21,13 +21,12 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
+import { runAction } from "@/components/shared/run-action";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 
 import { assignRolePermissionsAction } from "../actions";
 import { type Permission, PERMISSION_GROUPS } from "../../permissions";
 import type { RoleListItem } from "../service";
-
-import { runAction } from "@/components/shared/run-action";
-import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 
 type PermissionGroup = (typeof PERMISSION_GROUPS)[number];
 

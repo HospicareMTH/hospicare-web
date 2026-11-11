@@ -2,10 +2,10 @@
 
 import { LockKeyholeOpenIcon } from "@hugeicons/core-free-icons";
 
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+
 import { restoreUserAccessAction } from "../actions";
 import type { UserListItem } from "../service";
-
-import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
 export function RestoreAccessDialog({
   user,

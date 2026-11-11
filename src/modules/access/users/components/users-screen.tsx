@@ -1,15 +1,12 @@
 import { Suspense } from "react";
 
-import { hasPermission, requirePermission } from "../../authorization/service";
-import { parseUserListQuery } from "../schemas";
-
 import type { SearchParams } from "@/platform/list-query";
-
-import { listInvitableRoles } from "../../roles/service";
-import { searchUsers } from "../service";
-
 import { LoadingStatus } from "@/components/shared/loading-status";
 
+import { hasPermission, requirePermission } from "../../authorization/service";
+import { parseUserListQuery } from "../schemas";
+import { listInvitableRoles } from "../../roles/service";
+import { searchUsers } from "../service";
 import { UsersTable } from "./users-table";
 
 async function UsersContent({

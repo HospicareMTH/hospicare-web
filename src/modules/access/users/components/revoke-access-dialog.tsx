@@ -23,6 +23,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { runAction } from "@/components/shared/run-action";
+import {
+  DIALOG_BUTTON_CLASS_NAME,
+  FIELD_CONTROL_CLASS_NAME,
+  SELECT_ITEM_CLASS_NAME,
+  SELECT_TRIGGER_CLASS_NAME,
+} from "@/components/shared/form-styles";
 
 import { revokeUserAccessAction } from "../actions";
 import {
@@ -31,14 +38,6 @@ import {
   REVOCATION_REASON_MAX_LENGTH,
 } from "../schemas";
 import type { UserListItem } from "../service";
-
-import { runAction } from "@/components/shared/run-action";
-import {
-  DIALOG_BUTTON_CLASS_NAME,
-  FIELD_CONTROL_CLASS_NAME,
-  SELECT_ITEM_CLASS_NAME,
-  SELECT_TRIGGER_CLASS_NAME,
-} from "@/components/shared/form-styles";
 
 type DurationKind = "permanent" | "temporary";
 type FieldErrors = Record<string, string[] | undefined>;

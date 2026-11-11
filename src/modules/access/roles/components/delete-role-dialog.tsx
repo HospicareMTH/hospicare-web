@@ -2,10 +2,10 @@
 
 import { Delete02Icon } from "@hugeicons/core-free-icons";
 
+import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
+
 import { deleteRoleAction } from "../actions";
 import type { RoleListItem } from "../service";
-
-import { ConfirmActionDialog } from "@/components/shared/confirm-action-dialog";
 
 export function DeleteRoleDialog({
   role,

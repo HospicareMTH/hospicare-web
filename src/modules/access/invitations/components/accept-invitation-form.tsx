@@ -5,6 +5,7 @@ import { type FormEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
+import { runAction } from "@/components/shared/run-action";
 
 import { acceptInvitationAction } from "../actions";
 import { SIGN_IN_PATH } from "../../routes";
@@ -12,9 +13,6 @@ import {
   type FieldErrors,
   NewPasswordFields,
 } from "../../auth/components/new-password-fields";
-
-import { runAction } from "@/components/shared/run-action";
-
 import { PUBLIC_PRIMARY_BUTTON_CLASS_NAME } from "../../auth/components/public-styles";
 
 const ACCOUNT_READY_MESSAGE =

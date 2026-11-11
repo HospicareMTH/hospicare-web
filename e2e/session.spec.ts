@@ -38,13 +38,13 @@ test("RF-UX-01: con una contraseña incorrecta avisa sin decir si el correo exis
   await expect(page).toHaveURL("/iniciar-sesion");
 });
 
-test("RF-ACC-08: cerrar sesión vuelve al ingreso y vuelve a proteger el Inicio", async ({
+test("RF-ACC-08: cerrar sesión desde Mi cuenta vuelve al ingreso y vuelve a proteger el Inicio", async ({
   page,
 }) => {
   await signInFromHome(page);
 
-  await page.getByRole("button", { name: "Ana Prueba" }).click();
-  await page.getByRole("menuitem", { name: "Cerrar sesión" }).click();
+  await page.getByRole("link", { name: "Mi cuenta" }).click();
+  await page.getByRole("button", { name: "Cerrar sesión" }).click();
 
   await expect(page).toHaveURL("/iniciar-sesion");
   await page.goto("/");

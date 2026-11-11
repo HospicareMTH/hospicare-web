@@ -127,7 +127,7 @@ El sistema tiene 29 pantallas y 2 documentos PDF, organizados en 7 destinos de n
 | `/epicrisis/[id]` | Detalle de epicrisis | `epicrises.records.view` |
 | `/epicrisis/[id]/editar` | Edición de epicrisis | `epicrises.records.update` |
 | `/epicrisis/[id]/pdf` | PDF de epicrisis | `epicrises.records.view` |
-| `/admin` | Resumen administrativo | Cualquier permiso `admin.*` |
+| `/admin` | Lleva a la primera sección permitida | Cualquier permiso `admin.*` |
 | `/admin/team` | Equipo y roles | `admin.roles.view`, `admin.users.view` |
 | `/admin/invitaciones` | Invitaciones | `admin.invitations.view` |
 | `/admin/catalogos` | Catálogos clínicos | `admin.*_options.view` por catálogo |
@@ -220,7 +220,6 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | RF-CFG-01 | Administración debe poder configurar la ventana de edición de epicrisis. | Bloqueo inmediato o duración de 1 minuto a 30 días, en minutos, horas o días. Valor inicial: 24 horas. |
 | RF-CFG-02 | Administración debe poder configurar la ventana de edición de evoluciones diarias. | Mismas opciones y valor inicial. |
 | RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Epicrisis: vale solo para las nuevas, porque el límite se fija al emitir. Evoluciones: vale también para las ya registradas. |
-| RF-ADM-01 | El resumen administrativo debe mostrar los totales de acceso. | Roles, usuarios, usuarios activos e invitaciones pendientes. |
 | RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado. |
 | RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. 10, 25, 50 o 100 filas por página. |
 
@@ -915,7 +914,7 @@ Un dominio grande se divide en subdominios dentro de su carpeta. Cada subdominio
 
 | Módulo | Responsabilidad | Requisitos |
 | --- | --- | --- |
-| `access` | Cuenta, roles, usuarios, invitaciones y resumen administrativo | RF-ACC, RF-ROL, RF-USR, RF-INV, RF-ADM |
+| `access` | Cuenta, roles, usuarios e invitaciones | RF-ACC, RF-ROL, RF-USR, RF-INV |
 | `admissions` | Entrevistas de admisión | RF-ENT |
 | `guests` | Registro y ficha del huésped | RF-HUE |
 | `daily-evolutions` | Evoluciones y notas aclaratorias | RF-EVO |

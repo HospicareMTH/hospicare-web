@@ -7,14 +7,8 @@ import { getDatabase } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
 
 import { getAuth } from "../auth/auth";
-import {
-  changeUserRole,
-  createUser,
-  revokeUserAccess,
-  USER_REJECTION_MESSAGES,
-} from "./service";
+import { changeUserRole, createUser, USER_REJECTION_MESSAGES } from "./service";
 import { createInvitation } from "../invitations/service";
-import { getAdminSummary } from "../administration/service";
 import { getUserAccess, type UserAccess } from "../authorization/service";
 import {
   createRoleWithPermissions,
@@ -206,42 +200,6 @@ describe("administración de usuarios", () => {
     expect(result).toEqual({
       status: "rejected",
       message: USER_REJECTION_MESSAGES.superUserOnly,
-    });
-  });
-
-  it("RF-ADM-01: resume roles, usuarios, activos e invitaciones pendientes", async () => {
-    const staff = await createUserWithRole(STAFF_EMAIL, userRoleId);
-    await revokeUserAccess(superUser, staff.userId, {
-      duration: { kind: "permanent" },
-      reason: "Prueba de revocación",
-    });
-    await createInvitation(superUser, {
-      name: "Carla Ficticia",
-      email: "carla.ficticia@hospicare.test",
-      roleId: userRoleId,
-    });
-
-    expect(await getAdminSummary(superUser)).toEqual({
-      roleCount: 2,
-      userCount: 2,
-      activeUserCount: 1,
-      pendingInvitationCount: 1,
-    });
-  });
-
-  it("RF-ADM-01, RF-ROL-09: no calcula los totales que el rol no puede ver", async () => {
-    const viewerRoleId = await createRoleWithPermissions(
-      superUser,
-      "Solo invitaciones",
-      ["admin.invitations.view"],
-    );
-    const viewer = await createUserWithRole(STAFF_EMAIL, viewerRoleId);
-
-    expect(await getAdminSummary(viewer)).toEqual({
-      roleCount: null,
-      userCount: null,
-      activeUserCount: null,
-      pendingInvitationCount: 0,
     });
   });
 });
