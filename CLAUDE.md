@@ -98,7 +98,7 @@ El sistema debe ser modular, profesional, entendible, manejable y escalable (`RN
 Quien lea el código por primera vez debe entender qué hace y por qué sin preguntar.
 
 - **Idioma:** identificadores en inglés; textos de usuario y mensajes de error visibles en español rioplatense.
-- **Vocabulario único:** huésped `guest`, entrevista `admissionInterview`, evolución `dailyEvolution`, nota aclaratoria `clarification`, epicrisis `epicrisis`, obra social `healthInsurance`, bitácora `auditLog`, anular `annul`. No uses sinónimos.
+- **Vocabulario único:** huésped `guest`, entrevista `admissionInterview`, evolución `dailyEvolution`, nota aclaratoria `clarification`, epicrisis `epicrisis`, obra social `healthInsurance`, registro de actividad `auditLog`, anular `annul`. No uses sinónimos.
 - **Nombres:** completos y descriptivos, sin abreviaturas. Los booleanos se leen como pregunta: `isLocked`, `canEdit`.
 - **Funciones:** una sola responsabilidad. Si no se puede explicar en una frase, dividila.
 - **Flujo:** retornos tempranos en lugar de anidación profunda.
@@ -116,7 +116,7 @@ Son obligatorias en todo cambio. Si alguna parece no aplicar, preguntá.
 
 - **Permisos:** todo acceso y cambio se valida en el servidor, cerca del dato (`RF-ROL-08`, `RN-14`). Ocultar un botón no alcanza. Toda entidad nueva declara sus permisos de ver, crear, modificar y eliminar.
 - **Elevación:** nadie obtiene ni otorga privilegios superiores a los que tiene (`R-01`).
-- **Auditoría:** todo cambio escribe en bitácora en la misma transacción, con valor anterior y nuevo (`RN-20`, `R-02`, `R-11`).
+- **Auditoría:** todo cambio escribe en el registro de actividad en la misma transacción, con valor anterior y nuevo (`RN-20`, `R-02`, `R-11`).
 - **Registros clínicos:** nunca se borran físicamente; se anulan con responsable, fecha y motivo (`RN-04`).
 - **Epicrisis activa:** bloquea en el servidor todo cambio del huésped y su admisión, por encima de cualquier ventana de edición (`RN-05`).
 - **Firma profesional:** la determina el sistema y no cambia al editar (`RN-08`).
@@ -187,7 +187,7 @@ Toda tarea que diseñe, cree, modifique o revise interfaz se hace con la skill `
 Una función de producto no está terminada sin:
 
 - permisos declarados y verificados en el servidor;
-- entrada en bitácora por cada cambio de datos;
+- entrada en el registro de actividad por cada cambio de datos;
 - métrica o reporte en el inicio, con su permiso de visualización (`RF-DAS-02`);
 - manual funcional actualizado y accesible desde Documentación (`RF-MAN-02`);
 - metadatos SEO, con decisión explícita de indexación (`RNF-20`); las pantallas privadas no se indexan.

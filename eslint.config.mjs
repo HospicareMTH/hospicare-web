@@ -34,6 +34,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "out/**",
     "playwright-report/**",
+    // Generado por shadcn/ui junto con Sidebar; CLAUDE.md prohíbe modificarlo sin aprobación.
+    "src/hooks/use-mobile.ts",
     "test-results/**",
   ]),
 ]);

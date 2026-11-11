@@ -1,0 +1,10 @@
+GRANT CONNECT, CREATE ON DATABASE :"DBNAME" TO hospicare_migrator;
+GRANT CONNECT ON DATABASE :"DBNAME" TO hospicare_app;
+
+ALTER SCHEMA public OWNER TO hospicare_migrator;
+GRANT USAGE ON SCHEMA public TO hospicare_app;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE hospicare_migrator IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO hospicare_app;
+ALTER DEFAULT PRIVILEGES FOR ROLE hospicare_migrator IN SCHEMA public
+  GRANT USAGE, SELECT ON SEQUENCES TO hospicare_app;

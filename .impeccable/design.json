@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-10T00:46:35.238Z",
+  "generatedAt": "2026-11-10T18:01:57.931Z",
   "title": "Design System: Hospicare",
   "extensions": {
     "colorMeta": {
@@ -9,29 +9,29 @@
         "displayName": "Azul Madre Teresa",
         "canonical": "oklch(44.0% 0.120 248.6)",
         "tonalRamp": [
-          "oklch(15% 0.053 248.6)",
-          "oklch(27% 0.073 248.6)",
-          "oklch(39% 0.093 248.6)",
-          "oklch(51% 0.114 248.6)",
-          "oklch(63% 0.107 248.6)",
-          "oklch(75% 0.087 248.6)",
-          "oklch(87% 0.066 248.6)",
-          "oklch(95% 0.053 248.6)"
+          "oklch(15% 0.072 248.6)",
+          "oklch(27% 0.087 248.6)",
+          "oklch(39% 0.101 248.6)",
+          "oklch(51% 0.115 248.6)",
+          "oklch(63% 0.111 248.6)",
+          "oklch(75% 0.096 248.6)",
+          "oklch(87% 0.082 248.6)",
+          "oklch(95% 0.072 248.6)"
         ]
       },
       "primary-foreground": {
         "role": "primary",
         "displayName": "Texto sobre Azul",
-        "canonical": "oklch(100% 0 0)",
+        "canonical": "oklch(100.0% 0.000 0.0)",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(27% 0 0)",
-          "oklch(39% 0 0)",
-          "oklch(51% 0 0)",
-          "oklch(63% 0 0)",
-          "oklch(75% 0 0)",
-          "oklch(87% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.000 0.0)",
+          "oklch(27% 0.000 0.0)",
+          "oklch(39% 0.000 0.0)",
+          "oklch(51% 0.000 0.0)",
+          "oklch(63% 0.000 0.0)",
+          "oklch(75% 0.000 0.0)",
+          "oklch(87% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
         ]
       },
       "ring": {
@@ -39,149 +39,164 @@
         "displayName": "Foco Azul",
         "canonical": "oklch(44.0% 0.120 248.6)",
         "tonalRamp": [
-          "oklch(15% 0.053 248.6)",
-          "oklch(27% 0.073 248.6)",
-          "oklch(39% 0.093 248.6)",
-          "oklch(51% 0.114 248.6)",
-          "oklch(63% 0.107 248.6)",
-          "oklch(75% 0.087 248.6)",
-          "oklch(87% 0.066 248.6)",
-          "oklch(95% 0.053 248.6)"
+          "oklch(15% 0.072 248.6)",
+          "oklch(27% 0.087 248.6)",
+          "oklch(39% 0.101 248.6)",
+          "oklch(51% 0.115 248.6)",
+          "oklch(63% 0.111 248.6)",
+          "oklch(75% 0.096 248.6)",
+          "oklch(87% 0.082 248.6)",
+          "oklch(95% 0.072 248.6)"
         ]
       },
       "section-blue": {
         "role": "secondary",
-        "displayName": "Solapa Azul",
+        "displayName": "Azul de Inicio",
         "canonical": "oklch(44.0% 0.120 248.6)",
         "tonalRamp": [
-          "oklch(15% 0.053 248.6)",
-          "oklch(27% 0.073 248.6)",
-          "oklch(39% 0.093 248.6)",
-          "oklch(51% 0.114 248.6)",
-          "oklch(63% 0.107 248.6)",
-          "oklch(75% 0.087 248.6)",
-          "oklch(87% 0.066 248.6)",
-          "oklch(95% 0.053 248.6)"
+          "oklch(15% 0.072 248.6)",
+          "oklch(27% 0.087 248.6)",
+          "oklch(39% 0.101 248.6)",
+          "oklch(51% 0.115 248.6)",
+          "oklch(63% 0.111 248.6)",
+          "oklch(75% 0.096 248.6)",
+          "oklch(87% 0.082 248.6)",
+          "oklch(95% 0.072 248.6)"
         ]
       },
       "section-green": {
         "role": "secondary",
-        "displayName": "Solapa Verde",
+        "displayName": "Verde de Admisiones",
         "canonical": "oklch(53.2% 0.093 162.4)",
         "tonalRamp": [
-          "oklch(15% 0.041 162.4)",
-          "oklch(27% 0.057 162.4)",
-          "oklch(39% 0.072 162.4)",
-          "oklch(51% 0.088 162.4)",
-          "oklch(63% 0.083 162.4)",
-          "oklch(75% 0.067 162.4)",
-          "oklch(87% 0.051 162.4)",
-          "oklch(95% 0.041 162.4)"
+          "oklch(15% 0.056 162.4)",
+          "oklch(27% 0.067 162.4)",
+          "oklch(39% 0.078 162.4)",
+          "oklch(51% 0.089 162.4)",
+          "oklch(63% 0.086 162.4)",
+          "oklch(75% 0.074 162.4)",
+          "oklch(87% 0.063 162.4)",
+          "oklch(95% 0.056 162.4)"
         ]
       },
       "section-ochre": {
         "role": "secondary",
-        "displayName": "Solapa Ocre",
+        "displayName": "Ocre de Huéspedes",
         "canonical": "oklch(62.9% 0.127 69.9)",
         "tonalRamp": [
-          "oklch(15% 0.056 69.9)",
-          "oklch(27% 0.077 69.9)",
-          "oklch(39% 0.099 69.9)",
-          "oklch(51% 0.120 69.9)",
-          "oklch(63% 0.113 69.9)",
-          "oklch(75% 0.092 69.9)",
-          "oklch(87% 0.070 69.9)",
-          "oklch(95% 0.056 69.9)"
+          "oklch(15% 0.076 69.9)",
+          "oklch(27% 0.092 69.9)",
+          "oklch(39% 0.107 69.9)",
+          "oklch(51% 0.122 69.9)",
+          "oklch(63% 0.117 69.9)",
+          "oklch(75% 0.102 69.9)",
+          "oklch(87% 0.087 69.9)",
+          "oklch(95% 0.076 69.9)"
         ]
       },
       "section-plum": {
         "role": "secondary",
-        "displayName": "Solapa Ciruela",
+        "displayName": "Ciruela de Epicrisis",
         "canonical": "oklch(48.7% 0.140 3.5)",
         "tonalRamp": [
-          "oklch(15% 0.061 3.5)",
-          "oklch(27% 0.085 3.5)",
-          "oklch(39% 0.108 3.5)",
-          "oklch(51% 0.132 3.5)",
-          "oklch(63% 0.124 3.5)",
-          "oklch(75% 0.101 3.5)",
-          "oklch(87% 0.077 3.5)",
-          "oklch(95% 0.061 3.5)"
-        ]
-      },
-      "destructive": {
-        "role": "tertiary",
-        "displayName": "Rojo de Señal",
-        "canonical": "oklch(0.577 0.245 27.325)",
-        "tonalRamp": [
-          "oklch(15% 0.108 27.3)",
-          "oklch(27% 0.149 27.3)",
-          "oklch(39% 0.190 27.3)",
-          "oklch(51% 0.231 27.3)",
-          "oklch(63% 0.218 27.3)",
-          "oklch(75% 0.176 27.3)",
-          "oklch(87% 0.135 27.3)",
-          "oklch(95% 0.108 27.3)"
+          "oklch(15% 0.084 3.5)",
+          "oklch(27% 0.101 3.5)",
+          "oklch(39% 0.117 3.5)",
+          "oklch(51% 0.134 3.5)",
+          "oklch(63% 0.129 3.5)",
+          "oklch(75% 0.112 3.5)",
+          "oklch(87% 0.095 3.5)",
+          "oklch(95% 0.084 3.5)"
         ]
       },
       "background": {
         "role": "neutral",
-        "displayName": "Fondo Base",
-        "canonical": "oklch(1 0 0)",
+        "displayName": "Blanco de Trabajo",
+        "canonical": "oklch(100.0% 0.000 0.0)",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(27% 0 0)",
-          "oklch(39% 0 0)",
-          "oklch(51% 0 0)",
-          "oklch(63% 0 0)",
-          "oklch(75% 0 0)",
-          "oklch(87% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.000 0.0)",
+          "oklch(27% 0.000 0.0)",
+          "oklch(39% 0.000 0.0)",
+          "oklch(51% 0.000 0.0)",
+          "oklch(63% 0.000 0.0)",
+          "oklch(75% 0.000 0.0)",
+          "oklch(87% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
         ]
       },
       "foreground": {
         "role": "neutral",
         "displayName": "Tinta Azulada",
-        "canonical": "oklch(26.7% 0.028 248.9)",
+        "canonical": "oklch(24.2% 0.029 247.2)",
         "tonalRamp": [
-          "oklch(15% 0.012 248.9)",
-          "oklch(27% 0.017 248.9)",
-          "oklch(39% 0.022 248.9)",
-          "oklch(51% 0.026 248.9)",
-          "oklch(63% 0.025 248.9)",
-          "oklch(75% 0.020 248.9)",
-          "oklch(87% 0.015 248.9)",
-          "oklch(95% 0.012 248.9)"
+          "oklch(15% 0.018 247.2)",
+          "oklch(27% 0.021 247.2)",
+          "oklch(39% 0.025 247.2)",
+          "oklch(51% 0.028 247.2)",
+          "oklch(63% 0.027 247.2)",
+          "oklch(75% 0.024 247.2)",
+          "oklch(87% 0.020 247.2)",
+          "oklch(95% 0.018 247.2)"
         ]
       },
       "card": {
         "role": "neutral",
-        "displayName": "Hoja Blanca",
-        "canonical": "oklch(1 0 0)",
+        "displayName": "Blanco de Trabajo (card)",
+        "canonical": "oklch(100.0% 0.000 0.0)",
         "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(27% 0 0)",
-          "oklch(39% 0 0)",
-          "oklch(51% 0 0)",
-          "oklch(63% 0 0)",
-          "oklch(75% 0 0)",
-          "oklch(87% 0 0)",
-          "oklch(95% 0 0)"
+          "oklch(15% 0.000 0.0)",
+          "oklch(27% 0.000 0.0)",
+          "oklch(39% 0.000 0.0)",
+          "oklch(51% 0.000 0.0)",
+          "oklch(63% 0.000 0.0)",
+          "oklch(75% 0.000 0.0)",
+          "oklch(87% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
         ]
       },
       "muted": {
         "role": "neutral",
-        "displayName": "Mesa Celeste",
-        "canonical": "oklch(96.1% 0.009 242.8)",
+        "displayName": "Gris Suave",
+        "canonical": "oklch(95.9% 0.006 239.8)",
         "tonalRamp": [
-          "oklch(15% 0.004 242.8)",
-          "oklch(27% 0.006 242.8)",
-          "oklch(39% 0.007 242.8)",
+          "oklch(15% 0.004 239.8)",
+          "oklch(27% 0.004 239.8)",
+          "oklch(39% 0.005 239.8)",
+          "oklch(51% 0.006 239.8)",
+          "oklch(63% 0.005 239.8)",
+          "oklch(75% 0.005 239.8)",
+          "oklch(87% 0.004 239.8)",
+          "oklch(95% 0.004 239.8)"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Tinta Secundaria",
+        "canonical": "oklch(50.6% 0.034 248.5)",
+        "tonalRamp": [
+          "oklch(15% 0.020 248.5)",
+          "oklch(27% 0.025 248.5)",
+          "oklch(39% 0.029 248.5)",
+          "oklch(51% 0.033 248.5)",
+          "oklch(63% 0.031 248.5)",
+          "oklch(75% 0.027 248.5)",
+          "oklch(87% 0.023 248.5)",
+          "oklch(95% 0.020 248.5)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "oklch(92.5% 0.009 242.8)",
+        "tonalRamp": [
+          "oklch(15% 0.006 242.8)",
+          "oklch(27% 0.007 242.8)",
+          "oklch(39% 0.008 242.8)",
           "oklch(51% 0.009 242.8)",
-          "oklch(63% 0.008 242.8)",
-          "oklch(75% 0.007 242.8)",
-          "oklch(87% 0.005 242.8)",
-          "oklch(95% 0.004 242.8)"
+          "oklch(63% 0.009 242.8)",
+          "oklch(75% 0.008 242.8)",
+          "oklch(87% 0.006 242.8)",
+          "oklch(95% 0.006 242.8)"
         ]
       },
       "input": {
@@ -189,14 +204,134 @@
         "displayName": "Trazo de Campo",
         "canonical": "oklch(64.3% 0.039 245.9)",
         "tonalRamp": [
-          "oklch(15% 0.017 245.9)",
-          "oklch(27% 0.024 245.9)",
-          "oklch(39% 0.030 245.9)",
-          "oklch(51% 0.037 245.9)",
-          "oklch(63% 0.035 245.9)",
-          "oklch(75% 0.028 245.9)",
-          "oklch(87% 0.022 245.9)",
-          "oklch(95% 0.017 245.9)"
+          "oklch(15% 0.024 245.9)",
+          "oklch(27% 0.028 245.9)",
+          "oklch(39% 0.033 245.9)",
+          "oklch(51% 0.038 245.9)",
+          "oklch(63% 0.036 245.9)",
+          "oklch(75% 0.031 245.9)",
+          "oklch(87% 0.027 245.9)",
+          "oklch(95% 0.024 245.9)"
+        ]
+      },
+      "destructive": {
+        "role": "tertiary",
+        "displayName": "Rojo de Señal",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": [
+          "oklch(15% 0.147 27.3)",
+          "oklch(27% 0.176 27.3)",
+          "oklch(39% 0.206 27.3)",
+          "oklch(51% 0.235 27.3)",
+          "oklch(63% 0.225 27.3)",
+          "oklch(75% 0.196 27.3)",
+          "oklch(87% 0.167 27.3)",
+          "oklch(95% 0.147 27.3)"
+        ]
+      },
+      "sidebar": {
+        "role": "neutral",
+        "displayName": "Gris Azulado de Barra",
+        "canonical": "oklch(97.2% 0.005 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.003 247.9)",
+          "oklch(27% 0.004 247.9)",
+          "oklch(39% 0.004 247.9)",
+          "oklch(51% 0.005 247.9)",
+          "oklch(63% 0.005 247.9)",
+          "oklch(75% 0.004 247.9)",
+          "oklch(87% 0.003 247.9)",
+          "oklch(95% 0.003 247.9)"
+        ]
+      },
+      "sidebar-foreground": {
+        "role": "neutral",
+        "displayName": "Tinta de Barra",
+        "canonical": "oklch(38.7% 0.041 251.5)",
+        "tonalRamp": [
+          "oklch(15% 0.025 251.5)",
+          "oklch(27% 0.030 251.5)",
+          "oklch(39% 0.035 251.5)",
+          "oklch(51% 0.040 251.5)",
+          "oklch(63% 0.038 251.5)",
+          "oklch(75% 0.033 251.5)",
+          "oklch(87% 0.028 251.5)",
+          "oklch(95% 0.025 251.5)"
+        ]
+      },
+      "sidebar-primary": {
+        "role": "primary",
+        "displayName": "Cuadro de Marca",
+        "canonical": "oklch(44.0% 0.120 248.6)",
+        "tonalRamp": [
+          "oklch(15% 0.072 248.6)",
+          "oklch(27% 0.087 248.6)",
+          "oklch(39% 0.101 248.6)",
+          "oklch(51% 0.115 248.6)",
+          "oklch(63% 0.111 248.6)",
+          "oklch(75% 0.096 248.6)",
+          "oklch(87% 0.082 248.6)",
+          "oklch(95% 0.072 248.6)"
+        ]
+      },
+      "sidebar-primary-foreground": {
+        "role": "primary",
+        "displayName": "Tinta de Cuadro de Marca",
+        "canonical": "oklch(100.0% 0.000 0.0)",
+        "tonalRamp": [
+          "oklch(15% 0.000 0.0)",
+          "oklch(27% 0.000 0.0)",
+          "oklch(39% 0.000 0.0)",
+          "oklch(51% 0.000 0.0)",
+          "oklch(63% 0.000 0.0)",
+          "oklch(75% 0.000 0.0)",
+          "oklch(87% 0.000 0.0)",
+          "oklch(95% 0.000 0.0)"
+        ]
+      },
+      "sidebar-accent": {
+        "role": "neutral",
+        "displayName": "Hover de Barra",
+        "canonical": "oklch(93.4% 0.010 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.006 247.9)",
+          "oklch(27% 0.007 247.9)",
+          "oklch(39% 0.009 247.9)",
+          "oklch(51% 0.010 247.9)",
+          "oklch(63% 0.010 247.9)",
+          "oklch(75% 0.008 247.9)",
+          "oklch(87% 0.007 247.9)",
+          "oklch(95% 0.006 247.9)"
+        ]
+      },
+      "sidebar-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Tinta de Hover de Barra",
+        "canonical": "oklch(24.2% 0.029 247.2)",
+        "tonalRamp": [
+          "oklch(15% 0.018 247.2)",
+          "oklch(27% 0.021 247.2)",
+          "oklch(39% 0.025 247.2)",
+          "oklch(51% 0.028 247.2)",
+          "oklch(63% 0.027 247.2)",
+          "oklch(75% 0.024 247.2)",
+          "oklch(87% 0.020 247.2)",
+          "oklch(95% 0.018 247.2)"
+        ]
+      },
+      "sidebar-border": {
+        "role": "neutral",
+        "displayName": "Filete de Barra",
+        "canonical": "oklch(92.5% 0.009 242.8)",
+        "tonalRamp": [
+          "oklch(15% 0.006 242.8)",
+          "oklch(27% 0.007 242.8)",
+          "oklch(39% 0.008 242.8)",
+          "oklch(51% 0.009 242.8)",
+          "oklch(63% 0.009 242.8)",
+          "oklch(75% 0.008 242.8)",
+          "oklch(87% 0.006 242.8)",
+          "oklch(95% 0.006 242.8)"
         ]
       },
       "primary-dark": {
@@ -204,14 +339,14 @@
         "displayName": "Azul Madre Teresa, oscuro",
         "canonical": "oklch(71.0% 0.119 243.9)",
         "tonalRamp": [
-          "oklch(15% 0.052 243.9)",
-          "oklch(27% 0.072 243.9)",
-          "oklch(39% 0.092 243.9)",
-          "oklch(51% 0.112 243.9)",
-          "oklch(63% 0.105 243.9)",
-          "oklch(75% 0.086 243.9)",
-          "oklch(87% 0.066 243.9)",
-          "oklch(95% 0.052 243.9)"
+          "oklch(15% 0.071 243.9)",
+          "oklch(27% 0.086 243.9)",
+          "oklch(39% 0.100 243.9)",
+          "oklch(51% 0.114 243.9)",
+          "oklch(63% 0.109 243.9)",
+          "oklch(75% 0.095 243.9)",
+          "oklch(87% 0.081 243.9)",
+          "oklch(95% 0.071 243.9)"
         ]
       },
       "primary-foreground-dark": {
@@ -219,89 +354,164 @@
         "displayName": "Texto sobre Azul, oscuro",
         "canonical": "oklch(24.3% 0.058 249.8)",
         "tonalRamp": [
-          "oklch(15% 0.025 249.8)",
-          "oklch(27% 0.035 249.8)",
-          "oklch(39% 0.045 249.8)",
-          "oklch(51% 0.055 249.8)",
-          "oklch(63% 0.051 249.8)",
-          "oklch(75% 0.042 249.8)",
-          "oklch(87% 0.032 249.8)",
-          "oklch(95% 0.025 249.8)"
-        ]
-      },
-      "ring-dark": {
-        "role": "primary",
-        "displayName": "Foco Azul, oscuro",
-        "canonical": "oklch(71.0% 0.119 243.9)",
-        "tonalRamp": [
-          "oklch(15% 0.052 243.9)",
-          "oklch(27% 0.072 243.9)",
-          "oklch(39% 0.092 243.9)",
-          "oklch(51% 0.112 243.9)",
-          "oklch(63% 0.105 243.9)",
-          "oklch(75% 0.086 243.9)",
-          "oklch(87% 0.066 243.9)",
-          "oklch(95% 0.052 243.9)"
+          "oklch(15% 0.035 249.8)",
+          "oklch(27% 0.042 249.8)",
+          "oklch(39% 0.049 249.8)",
+          "oklch(51% 0.056 249.8)",
+          "oklch(63% 0.053 249.8)",
+          "oklch(75% 0.046 249.8)",
+          "oklch(87% 0.039 249.8)",
+          "oklch(95% 0.035 249.8)"
         ]
       },
       "section-blue-dark": {
         "role": "secondary",
-        "displayName": "Solapa Azul, oscuro",
+        "displayName": "Azul de Inicio, oscuro",
         "canonical": "oklch(56.0% 0.131 249.2)",
         "tonalRamp": [
-          "oklch(15% 0.057 249.2)",
-          "oklch(27% 0.079 249.2)",
-          "oklch(39% 0.101 249.2)",
-          "oklch(51% 0.123 249.2)",
-          "oklch(63% 0.116 249.2)",
-          "oklch(75% 0.094 249.2)",
-          "oklch(87% 0.072 249.2)",
-          "oklch(95% 0.057 249.2)"
-        ]
-      },
-      "section-green-dark": {
-        "role": "secondary",
-        "displayName": "Solapa Verde, oscuro",
-        "canonical": "oklch(62.0% 0.106 162.4)",
-        "tonalRamp": [
-          "oklch(15% 0.047 162.4)",
-          "oklch(27% 0.064 162.4)",
-          "oklch(39% 0.082 162.4)",
-          "oklch(51% 0.100 162.4)",
-          "oklch(63% 0.094 162.4)",
-          "oklch(75% 0.076 162.4)",
-          "oklch(87% 0.058 162.4)",
-          "oklch(95% 0.047 162.4)"
+          "oklch(15% 0.078 249.2)",
+          "oklch(27% 0.094 249.2)",
+          "oklch(39% 0.110 249.2)",
+          "oklch(51% 0.125 249.2)",
+          "oklch(63% 0.120 249.2)",
+          "oklch(75% 0.105 249.2)",
+          "oklch(87% 0.089 249.2)",
+          "oklch(95% 0.078 249.2)"
         ]
       },
       "section-ochre-dark": {
         "role": "secondary",
-        "displayName": "Solapa Ocre, oscuro",
-        "canonical": "oklch(69.8% 0.132 72.8)",
+        "displayName": "Ocre de Huéspedes, oscuro",
+        "canonical": "oklch(66.4% 0.131 71.3)",
         "tonalRamp": [
-          "oklch(15% 0.058 72.8)",
-          "oklch(27% 0.080 72.8)",
-          "oklch(39% 0.103 72.8)",
-          "oklch(51% 0.125 72.8)",
-          "oklch(63% 0.117 72.8)",
-          "oklch(75% 0.095 72.8)",
-          "oklch(87% 0.073 72.8)",
-          "oklch(95% 0.058 72.8)"
+          "oklch(15% 0.079 71.3)",
+          "oklch(27% 0.095 71.3)",
+          "oklch(39% 0.110 71.3)",
+          "oklch(51% 0.126 71.3)",
+          "oklch(63% 0.121 71.3)",
+          "oklch(75% 0.105 71.3)",
+          "oklch(87% 0.089 71.3)",
+          "oklch(95% 0.079 71.3)"
         ]
       },
       "section-plum-dark": {
         "role": "secondary",
-        "displayName": "Solapa Ciruela, oscuro",
+        "displayName": "Ciruela de Epicrisis, oscuro",
         "canonical": "oklch(56.5% 0.149 2.0)",
         "tonalRamp": [
-          "oklch(15% 0.065 2.0)",
-          "oklch(27% 0.090 2.0)",
-          "oklch(39% 0.115 2.0)",
-          "oklch(51% 0.140 2.0)",
-          "oklch(63% 0.132 2.0)",
-          "oklch(75% 0.107 2.0)",
-          "oklch(87% 0.082 2.0)",
-          "oklch(95% 0.065 2.0)"
+          "oklch(15% 0.089 2.0)",
+          "oklch(27% 0.107 2.0)",
+          "oklch(39% 0.125 2.0)",
+          "oklch(51% 0.143 2.0)",
+          "oklch(63% 0.137 2.0)",
+          "oklch(75% 0.119 2.0)",
+          "oklch(87% 0.101 2.0)",
+          "oklch(95% 0.089 2.0)"
+        ]
+      },
+      "background-dark": {
+        "role": "neutral",
+        "displayName": "Blanco de Trabajo, oscuro",
+        "canonical": "oklch(24.3% 0.026 249.0)",
+        "tonalRamp": [
+          "oklch(15% 0.016 249.0)",
+          "oklch(27% 0.019 249.0)",
+          "oklch(39% 0.022 249.0)",
+          "oklch(51% 0.025 249.0)",
+          "oklch(63% 0.024 249.0)",
+          "oklch(75% 0.021 249.0)",
+          "oklch(87% 0.018 249.0)",
+          "oklch(95% 0.016 249.0)"
+        ]
+      },
+      "foreground-dark": {
+        "role": "neutral",
+        "displayName": "Tinta Azulada, oscuro",
+        "canonical": "oklch(94.6% 0.010 247.9)",
+        "tonalRamp": [
+          "oklch(15% 0.006 247.9)",
+          "oklch(27% 0.007 247.9)",
+          "oklch(39% 0.009 247.9)",
+          "oklch(51% 0.010 247.9)",
+          "oklch(63% 0.010 247.9)",
+          "oklch(75% 0.008 247.9)",
+          "oklch(87% 0.007 247.9)",
+          "oklch(95% 0.006 247.9)"
+        ]
+      },
+      "card-dark": {
+        "role": "neutral",
+        "displayName": "Blanco de Trabajo (card), oscuro",
+        "canonical": "oklch(27.5% 0.029 246.9)",
+        "tonalRamp": [
+          "oklch(15% 0.017 246.9)",
+          "oklch(27% 0.021 246.9)",
+          "oklch(39% 0.024 246.9)",
+          "oklch(51% 0.027 246.9)",
+          "oklch(63% 0.026 246.9)",
+          "oklch(75% 0.023 246.9)",
+          "oklch(87% 0.019 246.9)",
+          "oklch(95% 0.017 246.9)"
+        ]
+      },
+      "muted-dark": {
+        "role": "neutral",
+        "displayName": "Gris Suave, oscuro",
+        "canonical": "oklch(29.1% 0.031 247.0)",
+        "tonalRamp": [
+          "oklch(15% 0.018 247.0)",
+          "oklch(27% 0.022 247.0)",
+          "oklch(39% 0.026 247.0)",
+          "oklch(51% 0.029 247.0)",
+          "oklch(63% 0.028 247.0)",
+          "oklch(75% 0.024 247.0)",
+          "oklch(87% 0.021 247.0)",
+          "oklch(95% 0.018 247.0)"
+        ]
+      },
+      "muted-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Tinta Secundaria, oscuro",
+        "canonical": "oklch(73.3% 0.030 246.6)",
+        "tonalRamp": [
+          "oklch(15% 0.018 246.6)",
+          "oklch(27% 0.022 246.6)",
+          "oklch(39% 0.025 246.6)",
+          "oklch(51% 0.029 246.6)",
+          "oklch(63% 0.028 246.6)",
+          "oklch(75% 0.024 246.6)",
+          "oklch(87% 0.020 246.6)",
+          "oklch(95% 0.018 246.6)"
+        ]
+      },
+      "border-dark": {
+        "role": "neutral",
+        "displayName": "Filete, oscuro",
+        "canonical": "oklch(31.9% 0.031 248.8)",
+        "tonalRamp": [
+          "oklch(15% 0.019 248.8)",
+          "oklch(27% 0.023 248.8)",
+          "oklch(39% 0.026 248.8)",
+          "oklch(51% 0.030 248.8)",
+          "oklch(63% 0.029 248.8)",
+          "oklch(75% 0.025 248.8)",
+          "oklch(87% 0.021 248.8)",
+          "oklch(95% 0.019 248.8)"
+        ]
+      },
+      "input-dark": {
+        "role": "neutral",
+        "displayName": "Trazo de Campo, oscuro",
+        "canonical": "oklch(54.7% 0.039 248.5)",
+        "tonalRamp": [
+          "oklch(15% 0.024 248.5)",
+          "oklch(27% 0.028 248.5)",
+          "oklch(39% 0.033 248.5)",
+          "oklch(51% 0.038 248.5)",
+          "oklch(63% 0.036 248.5)",
+          "oklch(75% 0.031 248.5)",
+          "oklch(87% 0.027 248.5)",
+          "oklch(95% 0.024 248.5)"
         ]
       },
       "destructive-dark": {
@@ -309,129 +519,143 @@
         "displayName": "Rojo de Señal, oscuro",
         "canonical": "oklch(0.704 0.191 22.216)",
         "tonalRamp": [
-          "oklch(15% 0.084 22.2)",
-          "oklch(27% 0.116 22.2)",
-          "oklch(39% 0.148 22.2)",
-          "oklch(51% 0.180 22.2)",
-          "oklch(63% 0.170 22.2)",
-          "oklch(75% 0.138 22.2)",
-          "oklch(87% 0.105 22.2)",
-          "oklch(95% 0.084 22.2)"
+          "oklch(15% 0.115 22.2)",
+          "oklch(27% 0.138 22.2)",
+          "oklch(39% 0.160 22.2)",
+          "oklch(51% 0.183 22.2)",
+          "oklch(63% 0.176 22.2)",
+          "oklch(75% 0.153 22.2)",
+          "oklch(87% 0.130 22.2)",
+          "oklch(95% 0.115 22.2)"
         ]
       },
-      "background-dark": {
+      "sidebar-dark": {
         "role": "neutral",
-        "displayName": "Fondo Base, oscuro",
-        "canonical": "oklch(24.3% 0.026 249.0)",
+        "displayName": "Gris Azulado de Barra, oscuro",
+        "canonical": "oklch(20.5% 0.022 249.0)",
         "tonalRamp": [
-          "oklch(15% 0.012 249.0)",
+          "oklch(15% 0.013 249.0)",
           "oklch(27% 0.016 249.0)",
-          "oklch(39% 0.020 249.0)",
-          "oklch(51% 0.025 249.0)",
-          "oklch(63% 0.023 249.0)",
-          "oklch(75% 0.019 249.0)",
+          "oklch(39% 0.019 249.0)",
+          "oklch(51% 0.022 249.0)",
+          "oklch(63% 0.021 249.0)",
+          "oklch(75% 0.018 249.0)",
           "oklch(87% 0.015 249.0)",
-          "oklch(95% 0.012 249.0)"
+          "oklch(95% 0.013 249.0)"
         ]
       },
-      "foreground-dark": {
+      "sidebar-foreground-dark": {
         "role": "neutral",
-        "displayName": "Tinta Clara",
-        "canonical": "oklch(96.2% 0.009 247.9)",
+        "displayName": "Tinta de Barra, oscuro",
+        "canonical": "oklch(85.1% 0.022 245.9)",
+        "tonalRamp": [
+          "oklch(15% 0.013 245.9)",
+          "oklch(27% 0.016 245.9)",
+          "oklch(39% 0.018 245.9)",
+          "oklch(51% 0.021 245.9)",
+          "oklch(63% 0.020 245.9)",
+          "oklch(75% 0.018 245.9)",
+          "oklch(87% 0.015 245.9)",
+          "oklch(95% 0.013 245.9)"
+        ]
+      },
+      "sidebar-primary-dark": {
+        "role": "primary",
+        "displayName": "Cuadro de Marca, oscuro",
+        "canonical": "oklch(56.0% 0.131 249.2)",
+        "tonalRamp": [
+          "oklch(15% 0.078 249.2)",
+          "oklch(27% 0.094 249.2)",
+          "oklch(39% 0.110 249.2)",
+          "oklch(51% 0.125 249.2)",
+          "oklch(63% 0.120 249.2)",
+          "oklch(75% 0.105 249.2)",
+          "oklch(87% 0.089 249.2)",
+          "oklch(95% 0.078 249.2)"
+        ]
+      },
+      "sidebar-accent-dark": {
+        "role": "neutral",
+        "displayName": "Hover de Barra, oscuro",
+        "canonical": "oklch(29.1% 0.031 247.0)",
+        "tonalRamp": [
+          "oklch(15% 0.018 247.0)",
+          "oklch(27% 0.022 247.0)",
+          "oklch(39% 0.026 247.0)",
+          "oklch(51% 0.029 247.0)",
+          "oklch(63% 0.028 247.0)",
+          "oklch(75% 0.024 247.0)",
+          "oklch(87% 0.021 247.0)",
+          "oklch(95% 0.018 247.0)"
+        ]
+      },
+      "sidebar-accent-foreground-dark": {
+        "role": "neutral",
+        "displayName": "Tinta de Hover de Barra, oscuro",
+        "canonical": "oklch(96.8% 0.007 247.9)",
         "tonalRamp": [
           "oklch(15% 0.004 247.9)",
           "oklch(27% 0.005 247.9)",
-          "oklch(39% 0.007 247.9)",
-          "oklch(51% 0.008 247.9)",
-          "oklch(63% 0.008 247.9)",
-          "oklch(75% 0.006 247.9)",
+          "oklch(39% 0.006 247.9)",
+          "oklch(51% 0.007 247.9)",
+          "oklch(63% 0.006 247.9)",
+          "oklch(75% 0.005 247.9)",
           "oklch(87% 0.005 247.9)",
           "oklch(95% 0.004 247.9)"
-        ]
-      },
-      "card-dark": {
-        "role": "neutral",
-        "displayName": "Hoja, oscuro",
-        "canonical": "oklch(27.5% 0.029 246.9)",
-        "tonalRamp": [
-          "oklch(15% 0.013 246.9)",
-          "oklch(27% 0.017 246.9)",
-          "oklch(39% 0.022 246.9)",
-          "oklch(51% 0.027 246.9)",
-          "oklch(63% 0.025 246.9)",
-          "oklch(75% 0.021 246.9)",
-          "oklch(87% 0.016 246.9)",
-          "oklch(95% 0.013 246.9)"
-        ]
-      },
-      "muted-dark": {
-        "role": "neutral",
-        "displayName": "Mesa, oscuro",
-        "canonical": "oklch(20.9% 0.025 249.1)",
-        "tonalRamp": [
-          "oklch(15% 0.011 249.1)",
-          "oklch(27% 0.015 249.1)",
-          "oklch(39% 0.019 249.1)",
-          "oklch(51% 0.023 249.1)",
-          "oklch(63% 0.022 249.1)",
-          "oklch(75% 0.018 249.1)",
-          "oklch(87% 0.014 249.1)",
-          "oklch(95% 0.011 249.1)"
-        ]
-      },
-      "input-dark": {
-        "role": "neutral",
-        "displayName": "Trazo de Campo, oscuro",
-        "canonical": "oklch(1 0 0 / 35%)",
-        "tonalRamp": [
-          "oklch(15% 0 0)",
-          "oklch(27% 0 0)",
-          "oklch(39% 0 0)",
-          "oklch(51% 0 0)",
-          "oklch(63% 0 0)",
-          "oklch(75% 0 0)",
-          "oklch(87% 0 0)",
-          "oklch(95% 0 0)"
         ]
       }
     },
     "typographyMeta": {
       "headline": {
         "displayName": "Headline",
-        "purpose": "Título de la hoja."
+        "purpose": "\"Iniciar sesión\", único título del acceso."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Título de cada pantalla autenticada, con el ícono de la sección a 28 px."
       },
       "action": {
         "displayName": "Action",
         "purpose": "Rótulo del botón principal."
       },
-      "label": {
-        "displayName": "Label",
-        "purpose": "Rótulos de campo y enlace de recuperación."
+      "nav": {
+        "displayName": "Nav",
+        "purpose": "Destinos de la barra lateral y nombre de la cuenta; el activo sube a 600."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Texto que la persona escribe en un campo."
+        "purpose": "Texto escrito en un campo, enlace de recuperación y mensaje del estado vacío."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Rótulos de campo en muted-foreground, rótulos de la navegación móvil e iniciales del avatar."
       }
     },
     "shadows": [
       {
-        "name": "hoja-apoyada",
-        "value": "0 14px 34px rgb(11 59 102 / 0.1)",
-        "purpose": "Solo en la hoja; se define en la propia pantalla y todavía no es un token."
+        "name": "panel-inset",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        "purpose": "shadow-sm de shadcn/ui; solo el panel de contenido del shell desde 768 px."
+      },
+      {
+        "name": "pildora-de-ingreso",
+        "value": "0 10px 24px -8px rgb(0 85 145 / 0.55)",
+        "purpose": "Solo el botón principal del acceso, en modo claro; ninguna en oscuro."
       }
     ],
     "motion": [
       {
+        "name": "sidebar-colapso",
+        "value": "200ms linear",
+        "purpose": "Ancho y posición de la Sidebar al contraer o expandir (shadcn/ui)."
+      },
+      {
         "name": "transicion-de-estado",
         "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
-        "purpose": "Valor por defecto de Tailwind en botones y campos de shadcn/ui."
+        "purpose": "Valor por defecto de Tailwind en botones, campos y destinos."
       }
     ],
     "breakpoints": [
-      {
-        "name": "sm",
-        "value": "640px"
-      },
       {
         "name": "md",
         "value": "768px"
@@ -440,103 +664,130 @@
   },
   "components": [
     {
-      "name": "Botón principal",
+      "name": "Botón principal del acceso",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Acción principal de la hoja, a todo el ancho.",
+      "description": "Píldora azul a todo el ancho con sombra suave azul (sin sombra en oscuro).",
       "html": "<button class=\"ds-btn-primary\">Ingresar</button>",
-      "css": ".ds-btn-primary { width: 100%; height: 52px; padding: 0 10px; border: 1px solid transparent; border-radius: var(--radius); background: var(--primary); background-clip: padding-box; color: var(--primary-foreground); font-size: 1.125rem; font-weight: 600; outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: color-mix(in oklab, var(--primary) 80%, transparent); background-clip: padding-box; } .ds-btn-primary:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); } .ds-btn-primary:active { transform: translateY(1px); }"
+      "css": ".ds-btn-primary { width: 100%; height: 48px; padding: 0 10px; border: 1px solid transparent; border-radius: 9999px; background: var(--primary); color: var(--primary-foreground); font-size: 1rem; font-weight: 600; box-shadow: 0 10px 24px -8px rgb(0 85 145 / 0.55); outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: color-mix(in oklab, var(--primary) 80%, transparent); } .ds-btn-primary:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); } .ds-btn-primary:active { transform: translateY(1px); }"
     },
     {
       "name": "Botón enlace",
       "kind": "button",
       "refersTo": "button-link",
-      "description": "Acción secundaria en forma de enlace, subrayada de forma permanente.",
+      "description": "Acción secundaria en azul, subrayada al pasar el puntero.",
       "html": "<button class=\"ds-btn-link\">¿Olvidaste tu contraseña?</button>",
-      "css": ".ds-btn-link { height: 44px; padding: 0 10px; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--primary); font-size: 1rem; font-weight: 500; text-decoration: underline; text-underline-offset: 4px; outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-link:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); } .ds-btn-link:active { transform: translateY(1px); }"
+      "css": ".ds-btn-link { height: 44px; padding: 0 10px; border: 0; border-radius: var(--radius); background: transparent; color: var(--primary); font-size: 1rem; font-weight: 400; text-underline-offset: 4px; outline: none; cursor: pointer; } .ds-btn-link:hover { text-decoration: underline; } .ds-btn-link:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }"
     },
     {
-      "name": "Campo con rótulo obligatorio",
+      "name": "Cambio de tema",
+      "kind": "button",
+      "refersTo": "button-theme-toggle",
+      "description": "Botón fantasma redondo con luna (sol en oscuro).",
+      "html": "<button class=\"ds-theme-toggle\" aria-label=\"Cambiar entre modo claro y oscuro\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z\"/></svg></button>",
+      "css": ".ds-theme-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 9999px; background: transparent; color: var(--muted-foreground); outline: none; cursor: pointer; } .ds-theme-toggle:hover { background: var(--muted); color: var(--foreground); } .ds-theme-toggle:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }"
+    },
+    {
+      "name": "Campo de línea con rótulo obligatorio",
       "kind": "input",
-      "refersTo": "input",
-      "description": "Rótulo compartido con asterisco y control de 48 px.",
+      "refersTo": "input-underline",
+      "description": "Rótulo chico en gris con asterisco rojo y campo de línea inferior que pasa a azul al enfocar.",
       "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-email\">Correo electrónico<span class=\"ds-field-required\" aria-hidden=\"true\">*</span></label><input class=\"ds-input\" id=\"ds-email\" type=\"email\" required></div>",
-      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; } .ds-field-label { display: flex; gap: 8px; color: var(--foreground); font-size: 1rem; font-weight: 500; line-height: 1.5; } .ds-field-required { color: var(--destructive); } .ds-input { width: 100%; height: 48px; padding: 4px 14px; border: 1px solid var(--input); border-radius: var(--radius); background: transparent; color: var(--foreground); caret-color: var(--primary); font-size: 1rem; outline: none; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-input:focus-visible { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }"
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 8px; width: 384px; } .ds-field-label { display: flex; gap: 8px; color: var(--muted-foreground); font-size: 0.875rem; font-weight: 500; } .ds-field-required { color: var(--destructive); } .ds-input { height: 44px; padding: 0 4px; border: 0; border-bottom: 1px solid var(--input); border-radius: 0; background: transparent; color: var(--foreground); caret-color: var(--primary); font-size: 1rem; outline: none; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-input:focus-visible { border-bottom-color: var(--primary); box-shadow: inset 0 -1px 0 var(--primary); }"
     },
     {
-      "name": "Hoja",
-      "kind": "card",
-      "refersTo": "sheet",
-      "description": "Superficie blanca apoyada sobre la mesa celeste.",
-      "html": "<div class=\"ds-sheet\"><h1 class=\"ds-sheet-title\">Iniciar sesión</h1></div>",
-      "css": ".ds-sheet { width: 100%; max-width: 480px; padding: 44px; border-radius: calc(var(--radius) * 1.4); background: var(--card); color: var(--card-foreground); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 14px 34px rgb(11 59 102 / 0.1); } .ds-sheet-title { margin: 0; text-align: center; font-size: 1.5rem; font-weight: 600; line-height: 1.333; }"
+      "name": "Barra lateral inset",
+      "kind": "nav",
+      "refersTo": "sidebar",
+      "description": "Sidebar de shadcn/ui: destinos con ícono del color de su sección; activo con tinte azul al 10% y texto azul.",
+      "html": "<nav class=\"ds-sidebar\"><a class=\"ds-nav-item\" aria-current=\"page\" href=\"#\"><span class=\"ds-icon ds-icon-blue\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg></span>Inicio</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-icon ds-icon-green\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"2\"/></svg></span>Admisiones</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-icon ds-icon-ochre\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/></svg></span>Huéspedes</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-icon ds-icon-plum\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M6 3h9l3 3v15H6z\"/></svg></span>Epicrisis</a><a class=\"ds-nav-item\" href=\"#\"><span class=\"ds-icon ds-icon-neutral\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><circle cx=\"12\" cy=\"12\" r=\"9\"/></svg></span>Administración</a></nav>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; gap: 4px; width: 16rem; padding: 8px; background: var(--sidebar); color: var(--sidebar-foreground); } .ds-nav-item { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 8px; border-radius: var(--radius); color: var(--sidebar-foreground); font-size: 1rem; font-weight: 500; text-decoration: none; outline: none; transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-nav-item:hover { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); } .ds-nav-item[aria-current=page] { background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); font-weight: 600; } .ds-nav-item:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); } .ds-icon { display: inline-flex; } .ds-icon-blue { color: var(--section-blue); } .ds-icon-green { color: var(--section-green); } .ds-icon-ochre { color: var(--section-ochre); } .ds-icon-plum { color: var(--section-plum); } .ds-icon-neutral { color: var(--sidebar-foreground); }"
     },
     {
-      "name": "Solapas de carpeta",
+      "name": "Barra lateral contraída",
+      "kind": "nav",
+      "refersTo": "sidebar-item-collapsed-active",
+      "description": "Riel de 3.5rem: isotipo en cuadro azul y destinos de 40 px; el activo con tinte al 20% y anillo azul al 40%.",
+      "html": "<nav class=\"ds-rail\"><span class=\"ds-isotype\" aria-hidden=\"true\"></span><a class=\"ds-rail-item\" aria-current=\"page\" href=\"#\" title=\"Inicio\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg></a></nav>",
+      "css": ".ds-rail { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 3.5rem; padding: 8px 0; background: var(--sidebar); } .ds-isotype { width: 40px; height: 40px; border-radius: var(--radius); background: var(--sidebar-primary); } .ds-rail-item { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius); color: var(--section-blue); outline: none; } .ds-rail-item:hover { background: var(--sidebar-accent); } .ds-rail-item[aria-current=page] { background: color-mix(in oklab, var(--primary) 20%, transparent); box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent); } .ds-rail-item:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); }"
+    },
+    {
+      "name": "Panel con título y estado vacío",
       "kind": "custom",
-      "refersTo": "folder-tab-blue",
-      "description": "Cuatro solapas de color que asoman del borde derecho; sin sección asignada.",
-      "html": "<div class=\"ds-folder\"><div class=\"ds-folder-tabs\" aria-hidden=\"true\"><span class=\"ds-tab ds-tab-blue\"></span><span class=\"ds-tab ds-tab-green\"></span><span class=\"ds-tab ds-tab-ochre\"></span><span class=\"ds-tab ds-tab-plum\"></span></div><div class=\"ds-folder-sheet\"></div></div>",
-      "css": ".ds-folder { position: relative; width: 240px; height: 480px; margin-right: 40px; } .ds-folder-tabs { position: absolute; top: 56px; right: -40px; display: flex; flex-direction: column; gap: 12px; } .ds-tab { display: block; width: 56px; height: 96px; border-radius: 0 var(--radius) var(--radius) 0; } .ds-tab-blue { background: var(--section-blue); } .ds-tab-green { background: var(--section-green); } .ds-tab-ochre { background: var(--section-ochre); } .ds-tab-plum { background: var(--section-plum); } .ds-folder-sheet { position: relative; height: 100%; border-radius: calc(var(--radius) * 1.4); background: var(--card); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground) 10%, transparent), 0 14px 34px rgb(11 59 102 / 0.1); }"
+      "refersTo": "content-panel",
+      "description": "Panel inset blanco: encabezado de 64 px, título con ícono de sección y Empty con borde punteado.",
+      "html": "<div class=\"ds-panel\"><header class=\"ds-panel-header\"></header><main class=\"ds-panel-main\"><h1 class=\"ds-title\"><span class=\"ds-icon-blue\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg></span>Inicio</h1><div class=\"ds-empty\"><span class=\"ds-empty-media\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"3\"/><path d=\"M9 15v-3M12 15V9M15 15v-5\"/></svg></span><p class=\"ds-empty-text\">Todavía no hay reportes para mostrar.</p></div></main></div>",
+      "css": ".ds-panel { display: flex; flex-direction: column; width: 640px; min-height: 360px; border-radius: calc(var(--radius) * 1.4); background: var(--background); color: var(--foreground); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); } .ds-panel-header { height: 64px; border-bottom: 1px solid var(--border); } .ds-panel-main { display: flex; flex: 1; flex-direction: column; gap: 24px; padding: 24px; } .ds-title { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.025em; } .ds-icon-blue { display: inline-flex; color: var(--section-blue); } .ds-empty { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; border: 1px dashed color-mix(in oklab, var(--input) 60%, transparent); border-radius: calc(var(--radius) * 1.4); } .ds-empty-media { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 9999px; background: var(--muted); color: var(--primary); } .ds-empty-text { margin: 0; color: var(--foreground); font-size: 1rem; }"
+    },
+    {
+      "name": "Navegación inferior móvil",
+      "kind": "nav",
+      "refersTo": "mobile-nav-bar",
+      "description": "Barra fija por debajo de 768 px con los destinos del teléfono y Menú, que abre la Sidebar.",
+      "html": "<nav class=\"ds-mobile-nav\" aria-label=\"Navegación principal\"><a class=\"ds-mobile-item\" aria-current=\"page\" href=\"#\"><span class=\"ds-mobile-surface\"><span class=\"ds-icon-blue\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/></svg></span>Inicio</span></a><button class=\"ds-mobile-item\" type=\"button\"><span class=\"ds-mobile-surface\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 6h16M4 12h16M4 18h16\"/></svg>Menú</span></button></nav>",
+      "css": ".ds-mobile-nav { display: flex; width: 390px; border-top: 1px solid var(--sidebar-border); background: var(--sidebar); } .ds-mobile-item { display: flex; flex: 1; padding: 6px; border: 0; background: transparent; color: var(--sidebar-foreground); font: inherit; font-size: 0.875rem; font-weight: 500; text-decoration: none; outline: none; cursor: pointer; } .ds-mobile-item:focus-visible { box-shadow: inset 0 0 0 2px var(--sidebar-ring); } .ds-mobile-surface { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 56px; border-radius: var(--radius); } .ds-mobile-item:hover .ds-mobile-surface { background: var(--sidebar-accent); } .ds-mobile-item[aria-current=page] .ds-mobile-surface { background: color-mix(in oklab, var(--primary) 10%, transparent); color: var(--primary); font-weight: 600; } .ds-icon-blue { display: inline-flex; color: var(--section-blue); }"
     }
   ],
   "narrative": {
-    "northStar": "La carpeta de historia clínica",
-    "overview": "Hospicare se apoya en un objeto que el equipo del hospice ya conoce: la carpeta de papel con hojas y solapas de color. La hoja blanca descansa sobre una mesa celeste muy clara, y las solapas asoman por su borde derecho. El sistema rechaza tanto el formulario gris intercambiable como la portada emotiva de ONG.\n\nEl azul institucional del logo ordena la interacción: acción principal, enlace y foco. Las solapas aportan el único color adicional y todavía no tienen significado asignado; ver la decisión pendiente en Colors. El resto es neutro con un leve tinte azul, para que nada decorativo compita con el dato clínico.\n\nLa base técnica es shadcn/ui en estilo radix-nova con IBM Plex Sans e íconos HugeIcons. CLAUDE.md, sección 7, manda sobre componentes, tipografía e íconos. Lo registrado aquí proviene de la única superficie construida, el inicio de sesión; las pantallas autenticadas todavía no tienen evidencia propia.",
+    "northStar": "shadcn/ui tal cual, en el azul de la casa",
+    "overview": "Hospicare usa los componentes de shadcn/ui sin disfrazarlos: la `Sidebar` en variante inset y contraíble a íconos, campos, botones, `Empty`, menús. La identidad no sale de una metáfora ni de bloques de color, sino de tres decisiones chicas y constantes: el azul institucional del logo (`primary`) es la única voz de acción, una sola familia tipográfica (IBM Plex Sans) y esquinas suaves en todo. El resto es neutro con un leve tinte azul, para que nada decorativo compita con el dato clínico.\n\nEl color de sección sigue existiendo, pero en su medida más chica: tiñe solo el ícono del destino en la barra lateral y el ícono del título de la pantalla. Inicio es azul, Admisiones verde, Huéspedes ocre y Epicrisis ciruela; Administración, Documentación y Mi cuenta son neutras. Así cada sección se reconoce sin que el color se mezcle con la acción.\n\nDos superficies están construidas y son la base de este registro: el inicio de sesión (una columna centrada sobre blanco, tomada de una imagen de referencia del usuario) y el shell autenticado con Inicio (el bloque sidebar-08 de shadcn/ui, fijado por el usuario). CLAUDE.md, sección 7, manda sobre componentes, tipografía e íconos.",
     "keyCharacteristics": [
-      "Mesa celeste, hoja blanca y cuatro solapas de color.",
-      "Una sola familia tipográfica, con tres pesos.",
-      "Un solo azul para actuar, enlazar y enfocar.",
-      "Dos radios: controles y hoja.",
-      "Controles planos; la profundidad pertenece a la hoja."
+      "Componentes de shadcn/ui con sus variantes; los ajustes son de tamaño, no de identidad.",
+      "Un solo azul para acción, enlace, foco y destino activo.",
+      "Color de sección solo en íconos de navegación y de título.",
+      "Una familia tipográfica, tres pesos (400, 500, 600).",
+      "Esquinas suaves: curva de control, curva de panel y círculo para la píldora y los íconos redondos.",
+      "Planos y tonales; la única sombra con intención es la del botón de ingreso."
     ],
     "rules": [
       {
         "name": "La Regla del Azul Único",
-        "body": "Acción principal, enlace y foco usan siempre el azul institucional; ningún color de solapa cumple esas funciones.",
+        "body": "Acción, enlace, foco y destino activo usan siempre `primary`; ningún color de sección cumple esas funciones.",
         "section": "colors"
       },
       {
-        "name": "La Regla de las Solapas sin Dueño",
-        "body": "Ninguna superficie asocia un color de solapa con una sección hasta que esa asignación esté decidida.",
+        "name": "La Regla del Color en el Ícono",
+        "body": "El color de sección solo tiñe el ícono del destino y el ícono del título de su pantalla. No rellena fondos, bandas, insignias ni texto.",
         "section": "colors"
       },
       {
-        "name": "La Regla de Mesa y Hoja",
-        "body": "La página es el plano más bajo y la hoja se recorta por encima, en modo claro y en modo oscuro.",
+        "name": "La Regla de una Sección, un Color",
+        "body": "Inicio azul, Admisiones verde, Huéspedes ocre, Epicrisis ciruela; todo otro destino es neutro. Un color no se presta a otra sección.",
         "section": "colors"
       },
       {
         "name": "La Regla de la Familia Única",
-        "body": "Todo el producto usa IBM Plex Sans, en los pesos cargados 400, 500 y 600.",
+        "body": "Todo el producto usa IBM Plex Sans en 400, 500 y 600; no se agregan pesos ni familias.",
         "section": "typography"
       },
       {
-        "name": "La Regla de la Hoja Apoyada",
-        "body": "La sombra describe una hoja sobre la mesa; filas, celdas y controles no la llevan.",
+        "name": "La Regla de lo Plano",
+        "body": "Ningún control lleva sombra propia salvo la píldora de ingreso; la separación se resuelve con tono y filete.",
         "section": "elevation"
       },
       {
-        "name": "La Regla de las Dos Curvas",
-        "body": "Los controles llevan la curva chica y la superficie contenedora la grande; no se introducen radios fuera de la escala.",
+        "name": "La Regla de la Escala",
+        "body": "Ningún radio fuera de `lg`, `xl` y `full`.",
         "section": "shapes"
       }
     ],
     "dos": [
       "**Do** partir siempre de `src/components/ui/` y seguir el orden de CLAUDE.md, sección 7, antes de crear un componente.",
-      "**Do** usar tokens semánticos y la escala de radios de `globals.css`.",
-      "**Do** resolver cada pantalla en modo claro y oscuro con sus tokens `-dark` equivalentes.",
-      "**Do** marcar todo campo obligatorio con el rótulo compartido y sumar `required` al control.",
-      "**Do** usar el logo azul en modo claro y el blanco en modo oscuro.",
+      "**Do** usar tokens semánticos y la escala de radios de `globals.css`, y resolver cada pantalla en claro y oscuro.",
+      "**Do** declarar cada destino nuevo en `navigation.ts` con su color de sección o `null` si es neutro.",
+      "**Do** abrir toda pantalla autenticada con `SectionSheet`, para que el título lleve el ícono de su sección.",
+      "**Do** marcar todo campo obligatorio con `RequiredFieldLabel` y sumar `required` al control.",
+      "**Do** usar el logo azul en modo claro, el blanco en oscuro y el isotipo blanco sobre `sidebar-primary` con la barra contraída.",
       "**Do** usar íconos HugeIcons, y Sonner para los resultados de operaciones."
     ],
     "donts": [
-      "**Don't** asignar un color de solapa a una sección sin la decisión pendiente resuelta.",
-      "**Don't** usar un color de solapa para acción, enlace o foco.",
+      "**Don't** usar un color de sección para acción, enlace, foco, fondo, banda, insignia o texto.",
+      "**Don't** dar color de sección a Administración, Documentación o Mi cuenta, ni prestar un color de una sección a otra.",
+      "**Don't** agregar sombras a controles o superficies fuera de las dos registradas.",
       "**Don't** convertir las tarjetas en el patrón dominante de las pantallas de trabajo.",
       "**Don't** usar `<select>` nativo ni `<input type=\"date\">`.",
       "**Don't** reemplazar variantes y tokens de shadcn/ui por estilos propios, ni modificar `src/components/ui/` sin aprobación.",
-      "**Don't** extender las alturas del acceso a pantallas de trabajo sin decidirlo antes."
+      "**Don't** extender el campo de línea ni las alturas del acceso a pantallas de trabajo sin decidirlo antes."
     ]
   }
 }

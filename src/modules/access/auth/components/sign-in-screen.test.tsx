@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { SignInScreen } from "./sign-in-screen";
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace: vi.fn(), refresh: vi.fn() }),
+}));
 
 function getEmailInput() {
   return screen.getByLabelText(/Correo electrónico/);
@@ -32,8 +36,8 @@ describe("SignInScreen", () => {
     render(<SignInScreen />);
 
     expect(
-      screen.getByRole("button", { name: "¿Olvidaste tu contraseña?" }),
-    ).toBeInTheDocument();
+      screen.getByRole("link", { name: "¿Olvidaste tu contraseña?" }),
+    ).toHaveAttribute("href", "/recuperar-contrasena");
   });
 
   it("RF-UX-02: marca correo y contraseña como obligatorios", () => {
@@ -44,21 +48,21 @@ describe("SignInScreen", () => {
     expect(screen.getAllByText("*")).toHaveLength(2);
   });
 
+  it("RF-ACC-02: el ícono de persona es decorativo y no se anuncia", () => {
+    const { container } = render(<SignInScreen />);
+
+    const decorativeIcons = container.querySelectorAll(
+      '[aria-hidden="true"] svg',
+    );
+    expect(decorativeIcons.length).toBeGreaterThan(0);
+    expect(screen.queryByRole("img", { name: /usuario|persona/i })).toBeNull();
+  });
+
   it("RNF-17: muestra el logo del hospice", () => {
     render(<SignInScreen />);
 
     expect(
       screen.getAllByAltText("Hospice Madre Teresa").length,
     ).toBeGreaterThan(0);
-  });
-
-  it("no envía los datos mientras el ingreso no esté disponible", () => {
-    const { container } = render(<SignInScreen />);
-
-    expect(container.querySelector('[type="submit"]')).toBeNull();
-    expect(screen.getByRole("button", { name: "Ingresar" })).toHaveAttribute(
-      "type",
-      "button",
-    );
   });
 });

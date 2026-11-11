@@ -1,0 +1,90 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794282017557,
+      "tag": "0000_access_and_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794282022103,
+      "tag": "0001_audit_triggers_and_seeds",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794334378551,
+      "tag": "0002_role_permissions",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794334385405,
+      "tag": "0003_role_permissions_audit_and_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794339765700,
+      "tag": "0004_invitations_and_access_revocation",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794339772415,
+      "tag": "0005_invitations_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794351999101,
+      "tag": "0006_password_reset_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794353236223,
+      "tag": "0007_two_factor",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794353262292,
+      "tag": "0008_two_factor_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794354736726,
+      "tag": "0009_password_updated_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794364175230,
+      "tag": "0010_table_column_preferences",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794364177003,
+      "tag": "0011_table_column_preferences_audit",
+      "breakpoints": true
+    }
+  ]
+}

@@ -12,7 +12,7 @@ Definir qué debe hacer el sistema, de forma independiente de cómo está progra
 
 ### 1.2 Alcance del producto
 
-Hospicare es el sistema de operación clínica y administrativa del Hospice Madre Teresa (HMT). Cubre el ciclo completo de una persona atendida: entrevista de admisión, alta como huésped, seguimiento clínico, epicrisis de cierre e impresión de la carpeta completa. También cubre usuarios, roles, catálogos, configuración, bitácora, tablero de reportes y manual de uso.
+Hospicare es el sistema de operación clínica y administrativa del Hospice Madre Teresa (HMT). Cubre el ciclo completo de una persona atendida: entrevista de admisión, alta como huésped, seguimiento clínico, epicrisis de cierre e impresión de la carpeta completa. También cubre usuarios, roles, catálogos, configuración, registro de actividad, tablero de reportes y manual de uso.
 
 Quedan fuera del producto actual: facturación a obras sociales, farmacia y stock, agenda de turnos, indicaciones médicas estructuradas, registro de voluntariado, portal para familias e interoperabilidad con sistemas externos de salud.
 
@@ -35,7 +35,7 @@ Dirigida a la dirección y equipo clínico del hospice (validación), a quienes 
 | Epicrisis | Documento médico-legal de cierre, por alta o fallecimiento. |
 | Carpeta del huésped | PDF único con toda la información registrada de una persona. |
 | Ventana de edición | Plazo posterior a la creación durante el cual un registro todavía se puede modificar. |
-| Bitácora | Registro de acciones sobre los datos, consultable en administración. |
+| Registro de actividad | Constancia de las acciones sobre los datos y el acceso, consultable en administración. |
 | Anular | Dejar un registro sin efecto sin borrarlo físicamente. |
 
 ### 1.5 Convenciones de requisitos
@@ -69,7 +69,7 @@ El sistema nace de las planillas que el hospice ya usaba: Historia Clínica, Epi
 | Trabajo social, psicología, asistencia espiritual | Evoluciones y notas aclaratorias. | Rol a crear por administración. |
 | Administración o admisión | Entrevistas, adjuntos, catálogos y usuarios. | Rol a crear por administración. |
 | Voluntariado | Mencionado por el hospice; sin definición de permisos. | Sin definir (ver sección 14). |
-| Sistema | Registra eventos automáticos, como inicios de sesión y bitácora. | Automático. |
+| Sistema | Registra eventos automáticos, como inicios de sesión y registro de actividad. | Automático. |
 
 La matriz definitiva de qué rol hace qué sigue pendiente de definición por parte del hospice. El sistema la resuelve con roles dinámicos, de modo que no depende del código.
 
@@ -127,12 +127,12 @@ El sistema tiene 29 pantallas y 2 documentos PDF, organizados en 7 destinos de n
 | `/epicrisis/[id]` | Detalle de epicrisis | `epicrises.records.view` |
 | `/epicrisis/[id]/editar` | Edición de epicrisis | `epicrises.records.update` |
 | `/epicrisis/[id]/pdf` | PDF de epicrisis | `epicrises.records.view` |
-| `/admin` | Resumen administrativo | Cualquier permiso `admin.*` |
+| `/admin` | Lleva a la primera sección permitida | Cualquier permiso `admin.*` |
 | `/admin/team` | Equipo y roles | `admin.roles.view`, `admin.users.view` |
 | `/admin/invitaciones` | Invitaciones | `admin.invitations.view` |
 | `/admin/catalogos` | Catálogos clínicos | `admin.*_options.view` por catálogo |
 | `/admin/configuracion` | Configuración general | `admin.system_settings.view` |
-| `/admin/logs` | Bitácora | `admin.logs.view` |
+| `/admin/logs` | Registro de actividad | `admin.logs.view` |
 
 **Navegación principal:** Inicio, Admisiones, Huéspedes, Epicrisis, Administración, Documentación y Mi cuenta. Cada destino aparece solo si el rol tiene acceso.
 
@@ -192,7 +192,7 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | Huéspedes | 22 | Registros (5), CAM (4), evaluaciones físicas (4), adjuntos físicos (4), evoluciones (4) e imprimir carpeta (1) |
 | Epicrisis | 4 | Ver, crear, modificar y anular |
 | Configuración | 2 | Ver y modificar |
-| Bitácora | 1 | Ver |
+| Registro de actividad | 1 | Ver |
 
 ### 5.2 Requisitos
 
@@ -220,9 +220,8 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | RF-CFG-01 | Administración debe poder configurar la ventana de edición de epicrisis. | Bloqueo inmediato o duración de 1 minuto a 30 días, en minutos, horas o días. Valor inicial: 24 horas. |
 | RF-CFG-02 | Administración debe poder configurar la ventana de edición de evoluciones diarias. | Mismas opciones y valor inicial. |
 | RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Epicrisis: vale solo para las nuevas, porque el límite se fija al emitir. Evoluciones: vale también para las ya registradas. |
-| RF-ADM-01 | El resumen administrativo debe mostrar los totales de acceso. | Roles, usuarios, usuarios activos e invitaciones pendientes. |
-| RF-LOG-01 | Administración debe poder consultar la bitácora. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado. |
-| RF-LOG-02 | La bitácora debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. 10, 25, 50 o 100 filas por página. |
+| RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado. |
+| RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. 50, 100 o 150 filas por página, como todo listado. |
 
 ## 6. Requisitos funcionales: operación clínica
 
@@ -271,7 +270,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | --- | --- | --- |
 | RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Busca por huésped, DNI, obra social u origen. Ordena por alta, huésped, DNI o creación. Exporta. Excluye anulados. |
 | RF-HUE-02 | Aceptar una entrevista debe crear el huésped una sola vez. | Copia nombre, apellido, nacimiento, DNI, cobertura y dirección. Fecha de alta: hoy en Buenos Aires. Si ya existe, lleva al existente. Origen: admisión. |
-| RF-HUE-03 | Un rol autorizado debe poder dar de alta un huésped sin entrevista. | Permiso propio. Origen: manual. La bitácora indica que se omitió la admisión. |
+| RF-HUE-03 | Un rol autorizado debe poder dar de alta un huésped sin entrevista. | Permiso propio. Origen: manual. El registro de actividad indica que se omitió la admisión. |
 | RF-HUE-04 | El personal debe ver la ficha del huésped en 4 pestañas. | Generales, Evolución diaria, Evaluación CAM y Evaluación física. La pestaña activa queda en la dirección de la página. Cada una respeta su permiso. |
 | RF-HUE-05 | El personal debe poder editar datos del huésped. | Bloqueado con epicrisis activa; la acción se oculta y el servidor la rechaza. |
 | RF-HUE-06 | Un rol autorizado debe poder anular un huésped. | Bloqueado con epicrisis activa. No borra el registro. |
@@ -385,7 +384,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | RF-DOC-03 | La carpeta debe seguir un orden fijo. | Portada e índice, Admisión, Datos generales, Evolución diaria, CAM, Evaluación física, Anexos y Epicrisis. Cada parte en hoja nueva. Registros de más antiguo a más reciente. |
 | RF-DOC-04 | Todas las hojas deben estar identificadas. | Marca de agua, nombre y DNI, y "Página X de Y", incluidos los adjuntos. |
 | RF-DOC-05 | Los adjuntos deben integrarse a la carpeta. | Imágenes JPG y PNG en hoja propia, PDF hoja por hoja. Lo no imprimible figura en el índice con su motivo. |
-| RF-DOC-06 | Cada generación de carpeta debe quedar en bitácora. | Quién, cuándo, cantidad de páginas y adjuntos. |
+| RF-DOC-06 | Cada generación de carpeta debe quedar en el registro de actividad. | Quién, cuándo, cantidad de páginas y adjuntos. |
 
 ## 7. Requisitos funcionales: catálogos, tablero y funciones transversales
 
@@ -450,11 +449,12 @@ Todas las ventanas temporales son de 7 días y se calculan en hora de Buenos Air
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-TAB-01 | Los listados deben tener búsqueda, orden y paginación. | El estado queda en la dirección de la página. |
+| RF-TAB-01 | Los listados deben tener búsqueda, orden y paginación. | El estado queda en la dirección de la página. 50, 100 o 150 filas por página; 50 por defecto. |
 | RF-TAB-02 | Los listados deben poder exportarse a Excel. | Exporta las filas de la página visible. |
 | RF-TAB-03 | Un clic debe marcar la fila. | Solo una fila marcada por tabla. |
 | RF-TAB-04 | Doble clic debe abrir el registro. | Solo donde existe detalle. |
 | RF-TAB-05 | Clic derecho debe mostrar las acciones de la fila. | En táctil, mantener presionado. Respeta permisos; acciones destructivas en rojo. |
+| RF-TAB-06 | El usuario debe poder elegir qué columnas ver en cada listado. | Selección múltiple; la columna principal no se oculta. Se guarda por persona y listado en la base, no en el navegador. |
 
 ### 7.5 Manual funcional
 
@@ -560,7 +560,7 @@ flowchart TD
   E -->|1 a N| A
 ```
 
-Transversales a todas las entidades: catálogos (28 listas de opciones), usuarios y roles, bitácora y configuración.
+Transversales a todas las entidades: catálogos (28 listas de opciones), usuarios y roles, registro de actividad y configuración.
 
 Un huésped puede existir sin entrevista cuando nace de un alta manual.
 
@@ -570,10 +570,10 @@ Un huésped puede existir sin entrevista cuando nace de un alta manual.
 | Rol | Responsabilidad operativa | Nombre, descripción, de sistema | Física, solo sin uso |
 | Permiso de rol | Acción habilitada a un rol | Rol, permiso | Física |
 | Sesión, cuenta, verificación, segundo factor, límite de intentos | Soporte de autenticación | Vencimientos, IP, navegador, secretos cifrados | Automática |
+| Preferencia de tabla | Columnas que cada persona oculta en cada listado | Persona, listado, columnas ocultas, fecha de cambio | Con la persona |
 | Invitación | Alta cerrada | Correo, nombre, rol, token en hash, estado, vencimiento, quién invitó | Revocación |
 | Configuración | Parámetros operativos | Clave, valor, etiqueta, último editor | No aplica |
-| Bitácora de datos | Trazabilidad | Acción, operación, recurso, id, responsable, destino, estado, datos, fecha | No aplica |
-| Bitácora de autenticación | Trazabilidad de acceso | Evento, responsable, destino, IP, navegador, datos, fecha | No aplica |
+| Registro de actividad | Trazabilidad de datos y de acceso | Acción, operación, recurso, id, responsable, destino, estado, valor anterior y nuevo, IP y navegador en eventos de acceso, fecha | No aplica |
 | Entrevista | Datos previos al ingreso | Identidad, cobertura, entrevistado, clínica inicial, red de cuidado | Anulación con motivo |
 | Condición crónica | Enfermedad y tratamientos de la entrevista | Tumor, metástasis, tratamiento, cirugías, opioides, estudios | Con la entrevista |
 | Huésped | Registro de internación | Identidad, cobertura, fecha de alta, origen, entrevista vinculada, motivos y síntomas | Anulación |
@@ -587,7 +587,7 @@ Un huésped puede existir sin entrevista cuando nace de un alta manual.
 | Opción de catálogo | Listas de formularios | Etiqueta, descripción, activa, de sistema, orden, autor | Desactivación |
 | Profesional de salud | Catálogo de personas | Nombre, especialidad, matrícula, teléfono, correo, activo | Desactivación |
 
-Entrevistas, huéspedes, evaluaciones y epicrisis guardan quién las creó y quién las modificó por última vez. Las evoluciones guardan solo su autor: quién las editó o anuló consta únicamente en la bitácora.
+Entrevistas, huéspedes, evaluaciones y epicrisis guardan quién las creó y quién las modificó por última vez. Las evoluciones guardan solo su autor: quién las editó o anuló consta únicamente en el registro de actividad.
 
 ## 10. Reglas de negocio transversales
 
@@ -614,17 +614,17 @@ Estas reglas aplican a todos los módulos y deben resolverse en un único lugar 
 
 | ID | Regla |
 | --- | --- |
-| RN-20 | Todo cambio de datos debe generar una entrada en la bitácora. |
+| RN-20 | Todo cambio de datos debe generar una entrada en el registro de actividad. |
 | RN-21 | Cada entrada registra acción, operación, recurso, id afectado, responsable, usuario destino, estado, datos adicionales y fecha. |
 | RN-22 | Operaciones válidas: alta, actualización, eliminación, acceso, sesión y seguridad. |
 | RN-23 | Los eventos de autenticación guardan además IP y navegador. |
-| RN-24 | La bitácora es de solo lectura desde la aplicación. |
+| RN-24 | El registro de actividad es de solo lectura desde la aplicación. |
 | RN-25 | Si el usuario responsable se elimina, la entrada se conserva sin responsable. |
 
 | Familia de eventos | Acciones registradas |
 | --- | --- |
 | Sesión | Sesión iniciada, sesión revocada |
-| Usuarios | Creado, actualizado, correo verificado, contraseña restablecida, rol actualizado, acceso revocado, acceso restaurado |
+| Usuarios | Creado, actualizado, correo verificado, contraseña restablecida o cambiada, rol actualizado, acceso revocado, acceso restaurado, segundo factor activado, segundo factor desactivado, códigos de respaldo regenerados |
 | Invitaciones | Creada, aceptada, revocada |
 | Roles | Creado, actualizado, eliminado, permisos actualizados |
 | Catálogos | Opción creada, actualizada, desactivada, reordenada |
@@ -718,8 +718,8 @@ La reconstrucción se acepta cuando cada escenario crítico de esta tabla pasa c
 | CA-15 | Motivo Alta | Se emite la epicrisis | No se guarda ni imprime lugar de fallecimiento | Campos de epicrisis, RN-12 |
 | CA-16 | Epicrisis dentro de ventana | Se anula con motivo | El huésped queda desbloqueado | RF-EPI-09, RN-06 |
 | CA-17 | Un adjunto Word | Se genera la carpeta | Figura en el índice con su motivo | RF-DOC-05 |
-| CA-18 | Una carpeta generada | Se consulta la bitácora | Figura quién la generó y cuándo | RF-DOC-06 |
-| CA-19 | Un cambio sobre cualquier entidad | Se consulta la bitácora | Hay una entrada con acción, responsable y recurso | RN-20 |
+| CA-18 | Una carpeta generada | Se consulta el registro de actividad | Figura quién la generó y cuándo | RF-DOC-06 |
+| CA-19 | Un cambio sobre cualquier entidad | Se consulta el registro de actividad | Hay una entrada con acción, responsable y recurso | RN-20 |
 | CA-20 | Un rol sin permiso de un reporte | Abre el inicio | El reporte no se calcula ni se muestra | RF-DAS-01 |
 
 ### 13.2 Trazabilidad con el sistema actual
@@ -751,7 +751,7 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | ID | Prioridad | Hallazgo | Consecuencia | Referencia |
 | --- | --- | --- | --- | --- |
 | R-01 | Alta | Quien puede modificar usuarios se puede asignar a sí mismo el rol Super user. Quien invita o crea usuarios también puede otorgarlo. | Un permiso operativo termina en acceso total. | `src/lib/auth/permissions.ts:475` |
-| R-02 | Alta | Editar una evolución, epicrisis, entrevista u huésped sobrescribe el dato; la bitácora no guarda el valor anterior. | No se puede reconstruir qué decía el registro, pese a la inviolabilidad pedida por el hospice. | `src/lib/daily-evolutions/service.ts:158` |
+| R-02 | Alta | Editar una evolución, epicrisis, entrevista u huésped sobrescribe el dato; el registro de actividad no guarda el valor anterior. | No se puede reconstruir qué decía el registro, pese a la inviolabilidad pedida por el hospice. | `src/lib/daily-evolutions/service.ts:158` |
 | R-03 | Alta | Cualquiera con permiso puede editar o anular evoluciones de otra persona, y la firma original se mantiene. | Un texto puede quedar firmado por quien no lo escribió. | `src/lib/daily-evolutions/actions.ts:75` |
 | R-04 | Alta | Los adjuntos clínicos se abren con un enlace directo al proveedor, sin pasar por la sesión del sistema. | Confirmar la privacidad configurada: quien tenga el enlace podría abrir el archivo. | `src/components/admissions/admission-attachments-panel.tsx:244` |
 | R-05 | Alta | Eliminar un adjunto borra el archivo físicamente en el proveedor. | Se pierde documentación clínica de forma irreversible. | `src/lib/admissions/service.ts:1857` |
@@ -760,7 +760,7 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | R-08 | Alta | No hay respaldos ni plazo de conservación definidos en el proyecto. | Riesgo de pérdida o incumplimiento sobre historias clínicas. | Sin definición |
 | R-09 | Media | El segundo factor es opcional, incluso para Super user, y un correo sin verificar no impide entrar. | Menor protección sobre datos de salud. | `src/lib/auth.ts:276` |
 | R-10 | Media | Las lecturas no se auditan: ver una ficha, imprimir una epicrisis o exportar a Excel no deja rastro. Solo la carpeta se registra. | No se puede saber quién consultó datos de un huésped. | `src/app/epicrisis/[id]/pdf/route.ts` |
-| R-11 | Media | La bitácora se escribe después del cambio y fuera de su transacción; el estado "fallido" nunca se usa. | Puede haber cambios sin registro y los intentos fallidos no constan. | `src/lib/audit/database-action-logs.ts:52` |
+| R-11 | Media | El registro de actividad se escribe después del cambio y fuera de su transacción; el estado "fallido" nunca se usa. | Puede haber cambios sin registro y los intentos fallidos no constan. | `src/lib/audit/database-action-logs.ts:52` |
 | R-12 | Media | La carpeta "completa" omite las evoluciones anuladas. | El documento impreso no refleja todo lo ocurrido. | `src/lib/guests/folder/service.ts:64` |
 | R-13 | Media | El DNI no es único ni se advierte su repetición. | Huéspedes duplicados, contra la identificación inequívoca pedida. | `src/db/schema.ts:704` |
 | R-14 | Media | Tras anular un huésped creado desde admisión, aceptar de nuevo la entrevista falla por una restricción de unicidad. | La entrevista queda sin salida y el usuario ve un error técnico. | `src/db/schema.ts:700` |
@@ -878,7 +878,7 @@ flowchart TD
   P[Personal del hospice] --> CF[Cloudflare: TLS, WAF, DDoS, filtro de país y límites de intentos]
   P -->|Enlace firmado de 60 segundos| R2[Cloudflare R2: adjuntos, PDF emitidos y copias de la base, con bloqueo contra borrado]
   subgraph Railway [Railway: producción, sin dominios públicos]
-    T[cloudflared: dos réplicas, conexión saliente] --> APP[Aplicación: valida sesión y permisos, bitácora de cada cambio]
+    T[cloudflared: dos réplicas, conexión saliente] --> APP[Aplicación: valida sesión y permisos, registro de actividad de cada cambio]
     APP --> PG[PostgreSQL: recuperación y respaldos, sin acceso público]
     PG --> BK[Copia externa: diaria y cifrada]
   end
@@ -905,15 +905,18 @@ src/
       schemas.ts        Validación de datos
       permissions.ts    Permisos del dominio
       index.ts          API pública de servidor
+      <subdominio>/     Opcional: misma estructura (components/, actions.ts, service.ts...)
   components/
     ui/                 shadcn/ui
     shared/             Composiciones reutilizables de shadcn/ui
   platform/             Base de datos, autenticación, archivos y fechas
 ```
 
+Un dominio grande se divide en subdominios dentro de su carpeta. Cada subdominio repite la estructura de capas y componentes; las tablas, los permisos, `index.ts` y `components/index.ts` siguen siendo del dominio. `access` se divide en `auth` (ingreso, sesión, recuperación y segundo factor), `authorization` (permisos vigentes y shell autenticado), `roles`, `users`, `invitations`, `account` (Mi cuenta) y `administration` (navegación de Administración).
+
 | Módulo | Responsabilidad | Requisitos |
 | --- | --- | --- |
-| `access` | Cuenta, roles, usuarios, invitaciones y resumen administrativo | RF-ACC, RF-ROL, RF-USR, RF-INV, RF-ADM |
+| `access` | Cuenta, roles, usuarios e invitaciones | RF-ACC, RF-ROL, RF-USR, RF-INV |
 | `admissions` | Entrevistas de admisión | RF-ENT |
 | `guests` | Registro y ficha del huésped | RF-HUE |
 | `daily-evolutions` | Evoluciones y notas aclaratorias | RF-EVO |
@@ -924,7 +927,7 @@ src/
 | `catalogs` | Listas configurables | RF-CAT |
 | `dashboard` | Reportes del inicio | RF-DAS |
 | `settings` | Parámetros operativos | RF-CFG |
-| `audit` | Registro y consulta de bitácora | RF-LOG, RN-20 a RN-25 |
+| `audit` | Escritura y consulta del registro de actividad | RF-LOG, RN-20 a RN-25 |
 | `help` | Manual y búsqueda global | RF-MAN, RF-BUS |
 
 | Regla | Definición |
@@ -934,7 +937,7 @@ src/
 | Capas | `actions` llama a `service`, y `service` a `repository`. Ninguna capa se saltea. |
 | Propiedad de datos | Cada tabla pertenece a un módulo, y solo su `repository` la consulta. |
 | Transacciones | Una operación entre módulos la coordina un servicio, que comparte la misma transacción. |
-| Ciclos | Si dos módulos se necesitan mutuamente, la regla compartida se extrae a un módulo propio. |
+| Ciclos | Si dos módulos se necesitan mutuamente, la regla compartida se extrae a un módulo propio. Vale también entre subdominios. |
 | Control automático | `no-restricted-imports` de ESLint hace cumplir estos límites en integración continua. |
 
 ## 16. Estándares de seguridad del despliegue
@@ -993,7 +996,7 @@ La aplicabilidad concreta de estas normas al hospice debe confirmarla asesoría 
 | SB-02 | Respaldos nativos | Diario, semanal y mensual, con retención de 6, 27 y 89 días. |
 | SB-03 | Copia externa | `pg_dump` diario, cifrado con clave guardada fuera de Railway, en un bucket R2 bloqueado. Retención propuesta: 35 copias diarias y 12 mensuales. |
 | SB-04 | Alertas | Avisar si falla el archivado o la copia externa. Si la cola de archivado llega a 5 GiB, se pierde continuidad de recuperación. |
-| SB-05 | Mínimo privilegio | Rol de aplicación sin cambios de esquema. Rol separado para migraciones. Bitácora y versiones solo admiten insertar y leer. |
+| SB-05 | Mínimo privilegio | Rol de aplicación sin cambios de esquema. Rol separado para migraciones. El registro de actividad y las versiones solo admiten insertar y leer. |
 | SB-06 | Migraciones | Respaldo manual antes de cada migración; cambios compatibles con la versión anterior. |
 | SB-07 | Simulacro | Restauración completa cada trimestre en un entorno aislado, con resultado registrado. |
 | SB-08 | Objetivos | Propuestos: pérdida máxima de 15 minutos de datos y recuperación en 4 horas. Railway no publica un compromiso de disponibilidad y el cambio a la base restaurada es manual. |
@@ -1005,7 +1008,7 @@ La aplicabilidad concreta de estas normas al hospice debe confirmarla asesoría 
 | --- | --- | --- |
 | SA-01 | Privacidad | Buckets privados, separados por entorno y por uso. Sin acceso público ni dominio propio. |
 | SA-02 | Conservación | Bucket Lock sobre adjuntos, documentos emitidos y copias. Eliminar un adjunto solo lo desvincula. |
-| SA-03 | Descarga | Enlace firmado de hasta 60 segundos, emitido tras validar sesión y permiso, y registrado en bitácora. |
+| SA-03 | Descarga | Enlace firmado de hasta 60 segundos, emitido tras validar sesión y permiso, y anotado en el registro de actividad. |
 | SA-04 | Carga | Enlace firmado de un solo archivo, validando tipo y tamaño según RF-ADJ-01. |
 | SA-05 | Credenciales | Tokens limitados a cada bucket y solo disponibles en el servidor. |
 
@@ -1042,7 +1045,7 @@ Railway no tiene región en Sudamérica, R2 tampoco ofrece esa ubicación, y Clo
 | CS-08 | Restaurar a un momento dado y desde la copia externa | Datos íntegros dentro del objetivo | SB-01, SB-03, SB-07 |
 | CS-09 | Intentar borrar un objeto bloqueado | R2 lo rechaza | SA-02 |
 | CS-10 | Usar un enlace firmado vencido | Acceso denegado | SA-03 |
-| CS-11 | Intentar modificar la bitácora con el rol de aplicación | La base lo rechaza | SB-05 |
+| CS-11 | Intentar modificar el registro de actividad con el rol de aplicación | La base lo rechaza | SB-05 |
 | CS-12 | Publicar en `development` | Producción no cambia | SP-01 |
 | CS-13 | Publicar con una prueba fallida | La publicación se detiene | SP-02 |
 | CS-14 | Revisar las cabeceras en producción | Están todas las exigidas | SC-04, SP-06 |
