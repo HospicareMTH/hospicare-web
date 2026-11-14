@@ -6,11 +6,22 @@ import type { ActionResult } from "@/platform/operation-result";
 const UNEXPECTED_ERROR_MESSAGE =
   "No pudimos guardar el cambio. Probá de nuevo en unos minutos.";
 
-export async function runAction(
-  action: () => Promise<ActionResult>,
-  successMessage: string,
-): Promise<ActionResult | null> {
-  let result: ActionResult;
+type SuccessResult<Result extends ActionResult> = Extract<
+  Result,
+  { status: "success" }
+>;
+
+function isSuccess<Result extends ActionResult>(
+  result: Result,
+): result is SuccessResult<Result> {
+  return result.status === "success";
+}
+
+export async function runAction<Result extends ActionResult>(
+  action: () => Promise<Result>,
+  successMessage: string | ((result: SuccessResult<Result>) => string),
+): Promise<Result | null> {
+  let result: Result;
   try {
     result = await action();
   } catch (error) {
@@ -20,8 +31,12 @@ export async function runAction(
     return null;
   }
 
-  if (result.status === "success") {
-    toast.success(successMessage);
+  if (isSuccess(result)) {
+    toast.success(
+      typeof successMessage === "string"
+        ? successMessage
+        : successMessage(result),
+    );
   }
   if (result.status === "rejected") {
     toast.error(result.message);

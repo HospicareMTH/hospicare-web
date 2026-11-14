@@ -55,10 +55,49 @@ test("RF-ROL-09: un catálogo sin permiso muestra acceso restringido", async ({
   await expect(
     page.getByRole("link", { name: "Huéspedes", exact: true }),
   ).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Nueva opción" })).toHaveCount(
+    0,
+  );
 
   await page.goto(`${CATALOGS_PATH}?catalogo=vinculos`);
   await expect(
     page.getByRole("heading", { level: 1, name: "Acceso restringido" }),
   ).toBeVisible();
   await expect(page.getByRole("table")).toHaveCount(0);
+});
+
+test("RF-CAT-01, RF-CAT-02: crea, edita, desactiva y reactiva una opción", async ({
+  page,
+}) => {
+  await page.goto(`${CATALOGS_PATH}?catalogo=cirugia`);
+  await signIn(page);
+
+  await page.getByRole("button", { name: "Nueva opción" }).click();
+  await page.getByLabel("Nombre").fill("Colectomía");
+  await page.getByRole("button", { name: "Crear opción" }).click();
+  await expect(page.getByText("Opción creada.")).toBeVisible();
+
+  const optionRow = page.getByRole("row", { name: /Colectomía/ });
+  await optionRow
+    .getByRole("button", { name: "Acciones de Colectomía" })
+    .click();
+  await page.getByRole("menuitem", { name: "Editar" }).click();
+  await page.getByLabel("Nombre").fill("Colectomía parcial");
+  await page.getByRole("button", { name: "Guardar cambios" }).click();
+  await expect(page.getByText("Opción actualizada.")).toBeVisible();
+
+  await optionRow.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Desactivar" }).click();
+  await page.getByRole("button", { name: "Desactivar", exact: true }).click();
+  await expect(page.getByText("Opción desactivada.")).toBeVisible();
+  await expect(optionRow).toHaveCount(0);
+
+  await page.getByRole("combobox", { name: "Filtrar por estado" }).click();
+  await page.getByRole("option", { name: "Inactivas" }).click();
+  await expect(optionRow).toContainText("Inactiva");
+  await optionRow.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Reactivar" }).click();
+  await page.getByRole("button", { name: "Reactivar", exact: true }).click();
+  await expect(page.getByText("Opción reactivada.")).toBeVisible();
+  await expect(optionRow).toHaveCount(0);
 });

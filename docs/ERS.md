@@ -416,7 +416,7 @@ Los formularios clínicos se alimentan de 28 listas configurables, y el inicio m
 | RF-CAT-03 | Administración debe poder reordenar opciones. | El orden se respeta en los selectores. Requiere permiso de modificar. |
 | RF-CAT-04 | Debe poder crearse una opción sin salir del formulario. | Solo con permiso de creación. En selección única queda elegida; en múltiple, marcada. |
 | RF-CAT-05 | La obra social debe validarse según el permiso de quien carga. | Sin permiso de crear obras sociales, solo admite una activa del catálogo. |
-| RF-CAT-06 | Crear una opción existente no debe duplicarla. | En cada catálogo compara sin distinguir mayúsculas ni acentos. Si estaba inactiva, la reactiva. |
+| RF-CAT-06 | Crear una opción existente no debe duplicarla. | En cada catálogo compara sin distinguir mayúsculas ni acentos. Si estaba inactiva, la reactiva; con permiso de crear alcanza. |
 | RF-CAT-07 | Los formularios deben rechazar opciones inactivas nuevas. | Validación en el servidor. |
 
 ### 7.2 Inicio operativo

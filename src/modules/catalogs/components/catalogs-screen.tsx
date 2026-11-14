@@ -5,10 +5,12 @@ import { DataTableSkeleton } from "@/components/shared/data-table/data-table-ske
 import {
   getCurrentUser,
   getHiddenColumns,
+  hasPermission,
   saveHiddenColumnsAction,
 } from "@/modules/access";
 import { readSearchParam, type SearchParams } from "@/platform/list-query";
 
+import { catalogPermission } from "../definitions";
 import {
   CATALOG_OPTIONS_TABLE_KEY,
   CATALOG_PARAMETER,
@@ -57,11 +59,26 @@ async function CatalogsContent({
       />
       <CatalogOptionsTable
         key={catalog.key}
+        catalogKey={catalog.key}
         catalogLabel={catalog.label}
         optionPage={optionPage}
         query={query}
         hiddenColumns={hiddenColumns}
         saveHiddenColumnsAction={saveHiddenColumnsAction}
+        abilities={{
+          canCreate: hasPermission(
+            access,
+            catalogPermission(catalog, "create"),
+          ),
+          canUpdate: hasPermission(
+            access,
+            catalogPermission(catalog, "update"),
+          ),
+          canDeactivate: hasPermission(
+            access,
+            catalogPermission(catalog, "delete"),
+          ),
+        }}
       />
     </div>
   );

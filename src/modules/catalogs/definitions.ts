@@ -1,4 +1,4 @@
-import type { Permission } from "@/modules/access";
+import type { CatalogPermissionGroup, Permission } from "@/modules/access";
 
 import type { catalog } from "./tables";
 
@@ -13,15 +13,22 @@ export const CATALOG_GROUP_LABELS: Record<CatalogGroup, string> = {
   guests: "Huéspedes",
 };
 
+type CatalogPermissionAction = "view" | "create" | "update" | "delete";
+
 export type CatalogDefinition = {
   key: CatalogKey;
   slug: string;
   label: string;
   group: CatalogGroup;
-  viewPermission: Permission;
+  permissionGroup: CatalogPermissionGroup;
 };
 
-const GUEST_VIEW_PERMISSION = "admin.guest_clinical_catalog_options.view";
+export function catalogPermission(
+  definition: CatalogDefinition,
+  action: CatalogPermissionAction,
+): Permission {
+  return `admin.${definition.permissionGroup}.${action}`;
+}
 
 function guestCatalog(
   key: CatalogKey,
@@ -33,7 +40,7 @@ function guestCatalog(
     slug,
     label,
     group: "guests",
-    viewPermission: GUEST_VIEW_PERMISSION,
+    permissionGroup: "guest_clinical_catalog_options",
   };
 }
 
@@ -43,56 +50,56 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     slug: "vinculos",
     label: "Vínculos",
     group: "admissions",
-    viewPermission: "admin.relationship_types.view",
+    permissionGroup: "relationship_types",
   },
   {
     key: "health_insurance",
     slug: "obras-sociales",
     label: "Obras sociales",
     group: "admissions",
-    viewPermission: "admin.health_insurance_providers.view",
+    permissionGroup: "health_insurance_providers",
   },
   {
     key: "information_awareness",
     slug: "informacion-general",
     label: "Información general",
     group: "admissions",
-    viewPermission: "admin.information_awareness_options.view",
+    permissionGroup: "information_awareness_options",
   },
   {
     key: "religion",
     slug: "religion",
     label: "Religión",
     group: "admissions",
-    viewPermission: "admin.religion_options.view",
+    permissionGroup: "religion_options",
   },
   {
     key: "ecog_score",
     slug: "ecog",
     label: "ECOG",
     group: "admissions",
-    viewPermission: "admin.ecog_score_options.view",
+    permissionGroup: "ecog_score_options",
   },
   {
     key: "oncological_treatment",
     slug: "tratamiento-oncologico",
     label: "Tratamiento oncológico",
     group: "admissions",
-    viewPermission: "admin.oncological_treatment_options.view",
+    permissionGroup: "oncological_treatment_options",
   },
   {
     key: "metastasis_location",
     slug: "lugar-de-metastasis",
     label: "Lugar de metástasis",
     group: "admissions",
-    viewPermission: "admin.metastasis_location_options.view",
+    permissionGroup: "metastasis_location_options",
   },
   {
     key: "surgery",
     slug: "cirugia",
     label: "Cirugía",
     group: "admissions",
-    viewPermission: "admin.surgery_options.view",
+    permissionGroup: "surgery_options",
   },
   guestCatalog(
     "hospitalization_reason",
@@ -142,3 +149,13 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     "Motivos de sedación en epicrisis",
   ),
 ];
+
+export function findCatalogByKey(key: CatalogKey): CatalogDefinition {
+  const definition = CATALOG_DEFINITIONS.find(
+    (candidate) => candidate.key === key,
+  );
+  if (!definition) {
+    throw new Error(`El catálogo ${key} no tiene definición.`);
+  }
+  return definition;
+}

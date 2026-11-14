@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   type ListQuery,
   type ListSort,
@@ -69,3 +71,38 @@ export function parseCatalogOptionListQuery(
     ),
   };
 }
+
+const OPTION_LABEL_MIN_LENGTH = 2;
+
+export const OPTION_LABEL_MAX_LENGTH = 120;
+
+export const OPTION_DESCRIPTION_MAX_LENGTH = 500;
+
+export const catalogOptionIdSchema = z.uuid({
+  error: "La opción no es válida.",
+});
+
+export const catalogOptionDetailsSchema = z.object({
+  label: z
+    .string()
+    .trim()
+    .min(OPTION_LABEL_MIN_LENGTH, {
+      error: `El nombre debe tener al menos ${OPTION_LABEL_MIN_LENGTH} caracteres.`,
+    })
+    .max(OPTION_LABEL_MAX_LENGTH, {
+      error: `El nombre no puede superar los ${OPTION_LABEL_MAX_LENGTH} caracteres.`,
+    }),
+  description: z
+    .string()
+    .trim()
+    .max(OPTION_DESCRIPTION_MAX_LENGTH, {
+      error: `La descripción no puede superar los ${OPTION_DESCRIPTION_MAX_LENGTH} caracteres.`,
+    })
+    .transform((description) => description || null),
+});
+
+export type CatalogOptionDetailsInput = z.input<
+  typeof catalogOptionDetailsSchema
+>;
+
+export type CatalogOptionDetails = z.output<typeof catalogOptionDetailsSchema>;

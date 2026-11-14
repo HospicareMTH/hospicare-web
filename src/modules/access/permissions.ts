@@ -39,6 +39,9 @@ const CATALOG_PERMISSION_GROUPS = [
   ),
 ] as const;
 
+export type CatalogPermissionGroup =
+  (typeof CATALOG_PERMISSION_GROUPS)[number]["key"];
+
 export const CATALOG_VIEW_PERMISSIONS = CATALOG_PERMISSION_GROUPS.map(
   (group) => group.permissions[0].key,
 );

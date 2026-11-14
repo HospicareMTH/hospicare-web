@@ -1,18 +1,35 @@
 import { hasPermission, type UserAccess } from "@/modules/access";
+import { runInTransactionAs } from "@/platform/database/client";
+import { isUniqueViolation } from "@/platform/database/errors";
 import {
   type Comparator,
   compareText,
   type ListPage,
   paginateList,
 } from "@/platform/list-query";
+import {
+  type ActionResult,
+  type FailedActionResult,
+  type OperationResult,
+  reject,
+  SUCCESS,
+} from "@/platform/operation-result";
 
 import {
   CATALOG_DEFINITIONS,
   type CatalogDefinition,
+  catalogPermission,
   type CatalogKey,
 } from "./definitions";
-import { type CatalogOptionRecord, listCatalogOptions } from "./repository";
+import {
+  type CatalogOptionRecord,
+  insertOrReactivateOption,
+  listCatalogOptions,
+  setOptionActive,
+  updateOptionDetails,
+} from "./repository";
 import type {
+  CatalogOptionDetails,
   CatalogOptionListQuery,
   CatalogOptionSortKey,
   CatalogOptionState,
@@ -32,7 +49,7 @@ const CATALOG_OPTION_COMPARATORS: Record<
 
 export function listVisibleCatalogs(access: UserAccess): CatalogDefinition[] {
   return CATALOG_DEFINITIONS.filter((definition) =>
-    hasPermission(access, definition.viewPermission),
+    hasPermission(access, catalogPermission(definition, "view")),
   );
 }
 
@@ -76,4 +93,65 @@ export async function searchCatalogOptions(
     (option) => `${option.label} ${option.description ?? ""}`,
     CATALOG_OPTION_COMPARATORS,
   );
+}
+
+export const CATALOG_REJECTION_MESSAGES = {
+  optionMissing: "La opción ya no existe. Actualizá la pantalla.",
+} as const;
+
+function rejectDuplicateLabel(label: string): FailedActionResult {
+  return {
+    status: "invalid",
+    fieldErrors: { label: [`Ya existe «${label}» en este catálogo.`] },
+  };
+}
+
+export type CreateCatalogOptionResult =
+  FailedActionResult | { status: "success"; wasReactivated: boolean };
+
+export async function createCatalogOption(
+  actorUserId: string,
+  catalog: CatalogKey,
+  details: CatalogOptionDetails,
+): Promise<CreateCatalogOptionResult> {
+  const outcome = await runInTransactionAs(actorUserId, (transaction) =>
+    insertOrReactivateOption(transaction, catalog, details, actorUserId),
+  );
+  if (outcome === "duplicate") {
+    return rejectDuplicateLabel(details.label);
+  }
+  return { status: "success", wasReactivated: outcome === "reactivated" };
+}
+
+export async function updateCatalogOption(
+  actorUserId: string,
+  optionId: string,
+  details: CatalogOptionDetails,
+): Promise<ActionResult> {
+  try {
+    const wasUpdated = await runInTransactionAs(actorUserId, (transaction) =>
+      updateOptionDetails(transaction, optionId, details, actorUserId),
+    );
+    return wasUpdated
+      ? SUCCESS
+      : reject(CATALOG_REJECTION_MESSAGES.optionMissing);
+  } catch (error) {
+    if (isUniqueViolation(error)) {
+      return rejectDuplicateLabel(details.label);
+    }
+    throw error;
+  }
+}
+
+export async function setCatalogOptionActive(
+  actorUserId: string,
+  optionId: string,
+  isActive: boolean,
+): Promise<OperationResult> {
+  const optionExists = await runInTransactionAs(actorUserId, (transaction) =>
+    setOptionActive(transaction, optionId, isActive, actorUserId),
+  );
+  return optionExists
+    ? SUCCESS
+    : reject(CATALOG_REJECTION_MESSAGES.optionMissing);
 }
