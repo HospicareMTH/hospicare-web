@@ -315,14 +315,16 @@ describe("catálogos: cambios de opciones", () => {
       moveCatalogOptionAction(otra.id, { targetOptionId: osde.id }),
     ).resolves.toEqual({
       status: "rejected",
-      message: "Solo se puede mover entre opciones activas del mismo catálogo.",
+      message:
+        "Esa opción ya no se puede mover a ese lugar. Actualizá la pantalla.",
     });
     await deactivateCatalogOptionAction(otra.id);
     await expect(
       moveCatalogOptionAction(otra.id, { targetOptionId: ninguna.id }),
     ).resolves.toEqual({
       status: "rejected",
-      message: "Solo se puede mover entre opciones activas del mismo catálogo.",
+      message:
+        "Esa opción ya no se puede mover a ese lugar. Actualizá la pantalla.",
     });
     expect((await listActiveLabels("religion"))[0]).toBe("Ninguna");
   });

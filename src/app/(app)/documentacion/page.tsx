@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ManualScreen } from "@/modules/help";
+import { ManualHome } from "@/modules/help";
 
 export const metadata: Metadata = {
   title: "Documentación",
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function DocumentationPage() {
-  return <ManualScreen />;
+  return <ManualHome />;
 }

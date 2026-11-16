@@ -95,10 +95,19 @@ export function EmailVerificationPanel({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-base">
-        Verificá tu correo para poder activar el segundo factor. Te enviamos un
-        código de 6 números a{" "}
-        <span className="font-medium break-all">{email}</span>, que vence en 5
-        minutos.
+        {isCodeSent ? (
+          <>
+            Te enviamos un código de 6 números a{" "}
+            <span className="font-medium break-all">{email}</span>. Vence en 5
+            minutos.
+          </>
+        ) : (
+          <>
+            Verificá tu correo para poder cambiar tu nombre y tu contraseña, y
+            activar el segundo factor. Te vamos a enviar un código de 6 números
+            a <span className="font-medium break-all">{email}</span>.
+          </>
+        )}
       </p>
       {isCodeSent ? (
         <form

@@ -210,7 +210,7 @@ export function AppShell({
             title={TOGGLE_SIDEBAR_LABEL}
           />
         </Sidebar>
-        <SidebarInset>
+        <SidebarInset className="h-svh overflow-hidden md:h-[calc(100svh-1rem)]">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
             <SidebarTrigger
               aria-label={TOGGLE_SIDEBAR_LABEL}
@@ -221,7 +221,7 @@ export function AppShell({
             </div>
             <ThemeToggle className="ml-auto size-10" />
           </header>
-          <main className="flex flex-1 flex-col p-4 pb-24 md:p-6">
+          <main className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-24 md:p-6">
             {children}
           </main>
         </SidebarInset>

@@ -88,13 +88,15 @@ export function getInvitationState(
 export const INVITATION_REJECTION_MESSAGES = {
   roleNotFound: "El rol elegido ya no existe. Actualizá la pantalla.",
   superUserRoleOnly: "Solo un Super user puede invitar con el rol Super user.",
-  roleNotAllowed: "Solo podés invitar con un rol cuyos permisos tengas.",
+  roleNotAllowed:
+    "Solo podés invitar con un rol si vos tenés todos sus permisos.",
   emailRegistered: "Ese correo ya tiene una cuenta.",
   invitationPending: "Ese correo ya tiene una invitación pendiente.",
   mailFailed:
     "No pudimos enviar el correo, así que la invitación quedó revocada. Probá de nuevo en unos minutos.",
   invitationNotFound: "La invitación ya no existe. Actualizá la pantalla.",
-  invitationNotPending: "Solo se pueden revocar invitaciones pendientes.",
+  invitationNotPending:
+    "Esta invitación ya no está pendiente, así que no se puede revocar. Actualizá la pantalla.",
   invalidLink:
     "Este enlace ya no es válido. Pedile una nueva invitación a un administrador.",
 } as const;

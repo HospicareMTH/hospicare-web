@@ -13,7 +13,7 @@ export function ManualSectionArticle({ section }: { section: ManualSection }) {
     <section
       id={section.id}
       aria-labelledby={titleId}
-      className="flex scroll-mt-6 flex-col gap-6 text-base"
+      className="flex flex-col gap-6 text-base"
     >
       <header className="flex flex-col gap-2">
         <h2

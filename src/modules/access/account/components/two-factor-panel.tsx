@@ -41,6 +41,14 @@ const PASSWORD_SUBMIT_LABELS: Record<PasswordPurpose, string> = {
   disable: "Desactivar segundo factor",
 };
 
+const PASSWORD_PURPOSE_DESCRIPTIONS: Record<PasswordPurpose, string> = {
+  enable: "Para activar el segundo factor, confirmá con tu contraseña.",
+  regenerate:
+    "Tus códigos de respaldo actuales van a dejar de funcionar. Para generar códigos nuevos, confirmá con tu contraseña.",
+  disable:
+    "Desde ahora vas a entrar solo con tu contraseña. Para desactivar el segundo factor, confirmá con tu contraseña.",
+};
+
 const MANUAL_KEY_GROUP_PATTERN = /.{1,4}/g;
 
 function formatManualKey(totpUri: string): string {
@@ -92,6 +100,7 @@ function PasswordConfirmationForm({
       className="flex max-w-sm flex-col gap-4"
       aria-label="Confirmar con tu contraseña"
     >
+      <p className="text-base">{PASSWORD_PURPOSE_DESCRIPTIONS[purpose]}</p>
       <Field>
         <RequiredFieldLabel htmlFor="two-factor-password">
           Tu contraseña
@@ -198,7 +207,8 @@ function AuthenticatorSetup({
     <div className="flex flex-col gap-4">
       <p className="text-base">
         Escaneá el código con tu aplicación autenticadora o escribí la clave a
-        mano. Después ingresá el código de 6 números que te muestra.
+        mano. Después escribí el código de 6 números que te muestra la
+        aplicación.
       </p>
       <div className="flex flex-wrap items-center gap-6">
         {qrCode && (
@@ -347,9 +357,9 @@ export function TwoFactorPanel({
     return (
       <div className="flex flex-col gap-4">
         <p className="text-base">
-          Además de la contraseña, al ingresar se te va a pedir un código de una
-          aplicación autenticadora, un código por correo o un código de
-          respaldo.
+          Cada vez que entres, además de la contraseña, el sistema te va a pedir
+          un código: de una aplicación autenticadora, del correo o de respaldo.
+          Para activarlo necesitás una aplicación autenticadora en tu teléfono.
         </p>
         <Button
           type="button"

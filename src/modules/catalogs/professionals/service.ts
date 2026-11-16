@@ -198,7 +198,7 @@ export function setHealthcareProfessionalActive(
       ));
     if (isEmailTaken) {
       return reject(
-        `No se puede reactivar: ya hay un profesional activo con el correo ${professional.email}.`,
+        `No se puede reactivar porque ya hay un profesional activo con el correo ${professional.email}. Para reactivarlo, primero cambiá el correo de uno de los dos.`,
       );
     }
     await saveProfessionalActive(

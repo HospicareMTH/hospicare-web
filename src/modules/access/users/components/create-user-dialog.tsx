@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import {
   Field,
+  FieldContent,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -111,9 +113,9 @@ export function CreateUserDialog({
         <DialogHeader>
           <DialogTitle className="text-lg">Crear usuario</DialogTitle>
           <DialogDescription className="text-base">
-            La persona entra con este correo y la contraseña que definas.
-            Siempre que se pueda, conviene invitarla para que elija su
-            contraseña.
+            La persona va a entrar con este correo y la contraseña que escribas
+            acá. Si podés, invitala en lugar de crear el usuario: así elige su
+            propia contraseña.
           </DialogDescription>
         </DialogHeader>
         <form id={FORM_ID} onSubmit={createUser} noValidate>
@@ -168,13 +170,21 @@ export function CreateUserDialog({
                 onCheckedChange={(checked) =>
                   setIsEmailVerified(checked === true)
                 }
+                aria-describedby="create-user-email-verified-hint"
               />
-              <FieldLabel
-                htmlFor="create-user-email-verified"
-                className="text-base font-normal"
-              >
-                Correo verificado
-              </FieldLabel>
+              <FieldContent>
+                <FieldLabel
+                  htmlFor="create-user-email-verified"
+                  className="text-base font-normal"
+                >
+                  Correo verificado
+                </FieldLabel>
+                <FieldDescription id="create-user-email-verified-hint">
+                  Marcalo solo si sabés que el correo es de esta persona. Si no,
+                  va a tener que verificarlo desde Mi cuenta para poder cambiar
+                  su nombre y su contraseña.
+                </FieldDescription>
+              </FieldContent>
             </Field>
           </FieldGroup>
         </form>

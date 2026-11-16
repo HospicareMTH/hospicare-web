@@ -90,7 +90,7 @@ export function AccountPasswordPanel({
       form.reset();
     } catch (error) {
       console.error("El cambio de contraseña no pudo completarse.", error);
-      toast.error(ACCOUNT_SECURITY_MESSAGES.unavailable);
+      toast.error(ACCOUNT_SECURITY_MESSAGES.passwordChangeUnconfirmed);
     } finally {
       setIsSaving(false);
     }

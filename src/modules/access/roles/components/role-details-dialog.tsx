@@ -80,8 +80,8 @@ export function RoleDetailsDialog({
           </DialogTitle>
           <DialogDescription className="text-base">
             {isEditing
-              ? "Cambiá el nombre o la descripción. Los permisos se editan aparte."
-              : "El rol nace sin permisos. Después podés asignarle los que necesite."}
+              ? "Cambiá el nombre o la descripción. Los permisos se cambian desde «Permisos»."
+              : "El rol nuevo no tiene permisos. Después se los asignás desde «Permisos»."}
           </DialogDescription>
         </DialogHeader>
         <form id="role-details-form" onSubmit={save} noValidate>

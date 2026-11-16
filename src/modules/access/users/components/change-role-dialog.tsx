@@ -61,8 +61,8 @@ export function ChangeRoleDialog({
         <DialogHeader>
           <DialogTitle className="text-lg">Cambiar rol</DialogTitle>
           <DialogDescription className="text-base">
-            {user.name} pasa a tener los permisos del rol nuevo desde su próxima
-            acción, sin volver a ingresar.
+            {user.name} va a tener los permisos del rol nuevo desde la próxima
+            pantalla que abra. No hace falta que vuelva a entrar.
           </DialogDescription>
         </DialogHeader>
         <form id={FORM_ID} onSubmit={changeRole} noValidate>

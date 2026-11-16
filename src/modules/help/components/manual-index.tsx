@@ -2,6 +2,8 @@
 
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,13 +13,14 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-export type ManualIndexEntry = { id: string; title: string };
+export type ManualIndexEntry = { title: string; href: string };
 
 export function ManualIndex({ entries }: { entries: ManualIndexEntry[] }) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <nav aria-label="Secciones del manual" className="lg:sticky lg:top-4">
+    <nav aria-label="Secciones del manual" className="lg:sticky lg:top-14">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
           <Button
@@ -43,14 +46,15 @@ export function ManualIndex({ entries }: { entries: ManualIndexEntry[] }) {
           </p>
           <ul className="flex flex-col gap-1">
             {entries.map((entry) => (
-              <li key={entry.id}>
-                <a
-                  href={`#${entry.id}`}
+              <li key={entry.href}>
+                <Link
+                  href={entry.href}
+                  aria-current={pathname === entry.href ? "page" : undefined}
                   onClick={() => setIsOpen(false)}
-                  className="block rounded-lg px-3 py-2 text-base text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                  className="block rounded-lg px-3 py-2 text-base text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none aria-[current=page]:bg-primary/10 aria-[current=page]:font-semibold aria-[current=page]:text-primary"
                 >
                   {entry.title}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

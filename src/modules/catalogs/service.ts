@@ -121,7 +121,7 @@ export const CATALOG_REJECTION_MESSAGES = {
   alreadyFirst: "La opción ya está en el primer lugar.",
   alreadyLast: "La opción ya está en el último lugar.",
   invalidMoveTarget:
-    "Solo se puede mover entre opciones activas del mismo catálogo.",
+    "Esa opción ya no se puede mover a ese lugar. Actualizá la pantalla.",
 } as const;
 
 function rejectDuplicateLabel(label: string): FailedActionResult {
