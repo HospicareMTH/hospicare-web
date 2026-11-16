@@ -1,9 +1,15 @@
 "use client";
 
-import { ClipboardPlusIcon } from "@hugeicons/core-free-icons";
+import {
+  ClipboardPlusIcon,
+  PencilEdit02Icon,
+  ViewIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
+import type { RowAction } from "@/components/shared/data-table/action-table-row";
 import {
   DataTable,
   type DataTableColumn,
@@ -22,6 +28,8 @@ import {
   ADMISSION_INTERVIEWS_TABLE_KEY,
   type AdmissionInterviewListQuery,
   type AdmissionInterviewSortKey,
+  buildAdmissionInterviewPath,
+  buildEditAdmissionInterviewPath,
   DEFAULT_ADMISSION_INTERVIEW_SORT,
   NEW_ADMISSION_INTERVIEW_PATH,
   PRIMARY_DOCTOR_FILTER_PARAMETER,
@@ -122,14 +130,43 @@ export function AdmissionInterviewsTable({
   hiddenColumns,
   saveHiddenColumnsAction,
   canCreate,
+  canUpdate,
 }: {
   interviewList: AdmissionInterviewList;
   query: AdmissionInterviewListQuery;
   hiddenColumns: string[];
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
   canCreate: boolean;
+  canUpdate: boolean;
 }) {
+  const router = useRouter();
   const { page, relationshipOptions, primaryDoctorOptions } = interviewList;
+
+  function openInterview(interview: AdmissionInterviewListItem) {
+    router.push(buildAdmissionInterviewPath(interview.id));
+  }
+
+  function getInterviewActions(
+    interview: AdmissionInterviewListItem,
+  ): RowAction[] {
+    const actions: RowAction[] = [
+      {
+        label: "Ver entrevista",
+        icon: ViewIcon,
+        isDestructive: false,
+        open: () => openInterview(interview),
+      },
+    ];
+    if (canUpdate) {
+      actions.push({
+        label: "Editar",
+        icon: PencilEdit02Icon,
+        isDestructive: false,
+        open: () => router.push(buildEditAdmissionInterviewPath(interview.id)),
+      });
+    }
+    return actions;
+  }
 
   return (
     <DataTable
@@ -173,7 +210,8 @@ export function AdmissionInterviewsTable({
       emptyMessage={describeEmptyList(query)}
       totalLabel={describeInterviewCount(page.totalCount)}
       paginationLabel="Páginas de entrevistas"
-      getRowActions={() => []}
+      getRowActions={getInterviewActions}
+      onOpenRow={openInterview}
       getActionsLabel={(interview) =>
         `Acciones de la entrevista de ${interview.guestFullName}`
       }

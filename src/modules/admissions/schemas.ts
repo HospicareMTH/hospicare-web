@@ -17,6 +17,19 @@ import {
 export const ADMISSIONS_PATH = "/admisiones";
 export const NEW_ADMISSION_INTERVIEW_PATH = "/admisiones/nueva";
 
+export function buildAdmissionInterviewPath(interviewId: string): string {
+  return `${ADMISSIONS_PATH}/${interviewId}`;
+}
+
+export function buildEditAdmissionInterviewPath(interviewId: string): string {
+  return `${buildAdmissionInterviewPath(interviewId)}/editar`;
+}
+
+export const admissionInterviewIdSchema = z.uuid({
+  error:
+    "No encontramos esta entrevista. Volvé a Admisiones y buscala de nuevo.",
+});
+
 export const ADMISSION_INTERVIEWS_TABLE_KEY = "admission-interviews";
 
 export const RELATIONSHIP_FILTER_PARAMETER = "vinculo";

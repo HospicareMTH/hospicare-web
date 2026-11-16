@@ -4,6 +4,12 @@ import { createFirstSuperUser } from "@/modules/access";
 import type { CatalogKey } from "@/modules/catalogs";
 import { getDatabase } from "@/platform/database/client";
 
+import {
+  type AdmissionInterviewDetails,
+  admissionInterviewDetailsSchema,
+  type AdmissionInterviewDetailsInput,
+  buildEmptyInterview,
+} from "./schemas";
 import { admissionInterviews } from "./tables";
 
 const FICTITIOUS_ACTOR = {
@@ -110,4 +116,38 @@ export async function deactivateCatalogOption(optionId: string): Promise<void> {
   await getDatabase().execute(
     sql`update catalog_options set is_active = false where id = ${optionId}`,
   );
+}
+
+export async function buildValidInput(
+  overrides: Partial<AdmissionInterviewDetailsInput> = {},
+): Promise<AdmissionInterviewDetailsInput> {
+  return {
+    ...buildEmptyInterview("2026-11-10"),
+    guestFirstName: "Persona",
+    guestLastName: "Ficticia",
+    guestBirthDate: "1950-01-01",
+    guestDni: "11.222.333",
+    guestAddress: "Calle Ficticia 123",
+    informationAwarenessOptionId: await findSeededOptionId(
+      "information_awareness",
+      "Total, conoce el diagnóstico y el pronóstico",
+    ),
+    religionOptionId: await findSeededOptionId("religion", "Ninguna"),
+    ecogScoreOptionId: await findSeededOptionId(
+      "ecog_score",
+      "Asintomático, actividad normal",
+    ),
+    intervieweeFullName: "Familiar Ficticio",
+    oncologicalTreatmentOptionId: await findSeededOptionId(
+      "oncological_treatment",
+      "No recibirá",
+    ),
+    ...overrides,
+  };
+}
+
+export function parseDetails(
+  input: AdmissionInterviewDetailsInput,
+): AdmissionInterviewDetails {
+  return admissionInterviewDetailsSchema.parse(input);
 }

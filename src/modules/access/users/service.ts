@@ -30,6 +30,7 @@ import { SUPER_USER_SYSTEM_KEY } from "../authorization/repository";
 import type { UserAccess } from "../authorization/service";
 import {
   deleteUserSessions,
+  findUserNamesByIds,
   hasPendingInvitation,
   insertUserWithPassword,
   isEmailRegistered,
@@ -304,4 +305,15 @@ export async function changeUserRole(
     await updateUserRole(transaction, target.id, roleId);
     return SUCCESS;
   });
+}
+
+export async function findUserNames(
+  userIds: readonly string[],
+): Promise<Map<string, string>> {
+  const uniqueUserIds = [...new Set(userIds)];
+  if (uniqueUserIds.length === 0) {
+    return new Map();
+  }
+  const records = await findUserNamesByIds(uniqueUserIds);
+  return new Map(records.map(({ id, name }) => [id, name]));
 }

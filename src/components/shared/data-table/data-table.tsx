@@ -76,6 +76,7 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
   paginationLabel,
   getRowActions,
   getActionsLabel,
+  onOpenRow,
   hiddenColumns,
   onHiddenColumnsChange,
   reorder,
@@ -92,6 +93,7 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
   paginationLabel: string;
   getRowActions: (row: Row) => RowAction[];
   getActionsLabel: (row: Row) => string;
+  onOpenRow?: (row: Row) => void;
   hiddenColumns: string[];
   onHiddenColumnsChange: (hiddenColumns: string[]) => void;
   reorder?: RowReorder<Row>;
@@ -223,6 +225,7 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
               actionsLabel: getActionsLabel(row.original),
               isSelected: row.id === selectedRowId,
               onSelect: () => setSelectedRowId(row.id),
+              onOpen: onOpenRow ? () => onOpenRow(row.original) : undefined,
               children: row.getVisibleCells().map((cell) => {
                 const column = columnsById.get(cell.column.id);
                 return (

@@ -35,6 +35,7 @@ async function AdmissionInterviewsContent({
       hiddenColumns={hiddenColumns}
       saveHiddenColumnsAction={saveHiddenColumnsAction}
       canCreate={hasPermission(access, "admissions.interviews.create")}
+      canUpdate={hasPermission(access, "admissions.interviews.update")}
     />
   );
 }

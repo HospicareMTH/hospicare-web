@@ -1,4 +1,4 @@
-import type { UserAccess } from "@/modules/access";
+import { findUserNames, type UserAccess } from "@/modules/access";
 import {
   canCreateCatalogEntries,
   type CatalogKey,
@@ -17,23 +17,53 @@ import {
 } from "@/platform/database/client";
 import { removeDniSeparators } from "@/platform/dni";
 import { type ListPage, resolvePageWindow } from "@/platform/list-query";
-import type { FailedActionResult } from "@/platform/operation-result";
+import { type FailedActionResult, reject } from "@/platform/operation-result";
 
 import {
+  type AdmissionInterviewRecord,
   countAdmissionInterviewRecords,
+  findAdmissionInterviewRecord,
   hasActiveInterviewWithDni,
   insertAdmissionInterview,
   listAdmissionInterviewRecords,
   listUsedFilterIds,
+  lockAdmissionInterviewRecord,
+  updateAdmissionInterviewRecord,
 } from "./repository";
-import type {
-  AdmissionInterviewDetails,
-  AdmissionInterviewField,
-  AdmissionInterviewListQuery,
+import {
+  type AdmissionInterviewDetails,
+  type AdmissionInterviewDetailsInput,
+  type AdmissionInterviewField,
+  admissionInterviewIdSchema,
+  type AdmissionInterviewListQuery,
 } from "./schemas";
 
 export type CreateAdmissionInterviewResult =
   { status: "success"; interviewId: string } | FailedActionResult;
+
+export type UpdateAdmissionInterviewResult =
+  { status: "success" } | FailedActionResult;
+
+export const ADMISSION_INTERVIEW_REJECTION_MESSAGES = {
+  notFound:
+    "No encontramos esta entrevista. Volvé a Admisiones y buscala de nuevo.",
+  annulled: "Esta entrevista está anulada y ya no se puede modificar.",
+  changedMeanwhile:
+    "Otra persona cambió esta entrevista mientras la editabas, así que tus cambios no se guardaron. Actualizá la pantalla para ver la versión actual.",
+} as const;
+
+type CatalogSelectionSource = Pick<
+  AdmissionInterviewDetails,
+  | "healthInsuranceOptionId"
+  | "informationAwarenessOptionId"
+  | "religionOptionId"
+  | "ecogScoreOptionId"
+  | "intervieweeRelationshipOptionId"
+  | "metastasisLocationOptionId"
+  | "oncologicalTreatmentOptionId"
+  | "surgeryOptionIds"
+  | "primaryDoctorId"
+>;
 
 type FieldErrors = Partial<Record<AdmissionInterviewField, string[]>>;
 
@@ -58,7 +88,7 @@ function singleSelection(
 }
 
 function listCatalogSelectionChecks(
-  details: AdmissionInterviewDetails,
+  details: CatalogSelectionSource,
 ): CatalogSelectionCheck[] {
   return [
     singleSelection(
@@ -103,23 +133,28 @@ function listCatalogSelectionChecks(
 async function findSelectionErrors(
   transaction: DatabaseTransaction,
   details: AdmissionInterviewDetails,
+  saved: CatalogSelectionSource | null,
 ): Promise<FieldErrors> {
   const checks = listCatalogSelectionChecks(details);
+  const savedChecks = saved ? listCatalogSelectionChecks(saved) : [];
+  const savedPrimaryDoctorIds = saved?.primaryDoctorId
+    ? [saved.primaryDoctorId]
+    : [];
   const [catalogResults, primaryDoctorResult] = await Promise.all([
     Promise.all(
-      checks.map((check) =>
+      checks.map((check, index) =>
         validateCatalogSelection(
           transaction,
           check.catalog,
           check.selectedIds,
-          [],
+          savedChecks[index]?.selectedIds ?? [],
         ),
       ),
     ),
     validateHealthcareProfessionalSelection(
       transaction,
       details.primaryDoctorId ? [details.primaryDoctorId] : [],
-      [],
+      savedPrimaryDoctorIds,
     ),
   ]);
   const fieldErrors: FieldErrors = {};
@@ -157,7 +192,11 @@ export async function createAdmissionInterview(
     return resolvedDetails;
   }
   return runInTransactionAs(actorUserId, async (transaction) => {
-    const fieldErrors = await findSelectionErrors(transaction, resolvedDetails);
+    const fieldErrors = await findSelectionErrors(
+      transaction,
+      resolvedDetails,
+      null,
+    );
     if (Object.keys(fieldErrors).length > 0) {
       return invalidFields(fieldErrors);
     }
@@ -170,8 +209,145 @@ export async function createAdmissionInterview(
   });
 }
 
-export function isDniInActiveInterview(dni: string): Promise<boolean> {
-  return hasActiveInterviewWithDni(dni);
+function toVersion(updatedAt: Date): string {
+  return updatedAt.toISOString();
+}
+
+export async function updateAdmissionInterview(
+  actorUserId: string,
+  interviewId: string,
+  expectedVersion: string,
+  details: AdmissionInterviewDetails,
+): Promise<UpdateAdmissionInterviewResult> {
+  const resolvedDetails = await resolveReligionDetail(details);
+  if ("status" in resolvedDetails) {
+    return resolvedDetails;
+  }
+  return runInTransactionAs(actorUserId, async (transaction) => {
+    const saved = await lockAdmissionInterviewRecord(transaction, interviewId);
+    if (!saved) {
+      return reject(ADMISSION_INTERVIEW_REJECTION_MESSAGES.notFound);
+    }
+    if (saved.annulledAt) {
+      return reject(ADMISSION_INTERVIEW_REJECTION_MESSAGES.annulled);
+    }
+    if (toVersion(saved.updatedAt) !== expectedVersion) {
+      return reject(ADMISSION_INTERVIEW_REJECTION_MESSAGES.changedMeanwhile);
+    }
+    const fieldErrors = await findSelectionErrors(
+      transaction,
+      resolvedDetails,
+      saved,
+    );
+    if (Object.keys(fieldErrors).length > 0) {
+      return invalidFields(fieldErrors);
+    }
+    await updateAdmissionInterviewRecord(
+      transaction,
+      interviewId,
+      resolvedDetails,
+      saved.surgeryOptionIds,
+      actorUserId,
+    );
+    return { status: "success" };
+  });
+}
+
+export function isDniInActiveInterview(
+  dni: string,
+  excludedInterviewId: string | null,
+): Promise<boolean> {
+  return hasActiveInterviewWithDni(dni, excludedInterviewId);
+}
+
+export type AdmissionInterviewView = {
+  id: string;
+  details: AdmissionInterviewDetailsInput;
+  version: string;
+  isAnnulled: boolean;
+  createdAt: Date;
+  createdByName: string | null;
+  updatedAt: Date;
+  updatedByName: string | null;
+};
+
+function toDetailsInput(
+  record: AdmissionInterviewRecord,
+): AdmissionInterviewDetailsInput {
+  return {
+    interviewDate: record.interviewDate,
+    guestFirstName: record.guestFirstName,
+    guestLastName: record.guestLastName,
+    guestBirthDate: record.guestBirthDate,
+    guestDni: record.guestDni,
+    guestAddress: record.guestAddress,
+    healthInsuranceOptionId: record.healthInsuranceOptionId ?? "",
+    healthInsuranceMemberNumber: record.healthInsuranceMemberNumber ?? "",
+    informationAwarenessOptionId: record.informationAwarenessOptionId,
+    religionOptionId: record.religionOptionId,
+    religionDetail: record.religionDetail ?? "",
+    ecogScoreOptionId: record.ecogScoreOptionId,
+    personalHistory: record.personalHistory ?? "",
+    intervieweeFullName: record.intervieweeFullName,
+    intervieweePhone: record.intervieweePhone ?? "",
+    intervieweeRelationshipOptionId:
+      record.intervieweeRelationshipOptionId ?? "",
+    familyComposition: record.familyComposition ?? "",
+    referredBy: record.referredBy ?? "",
+    primaryDoctorId: record.primaryDoctorId ?? "",
+    hasHomeCareDifficulties: record.hasHomeCareDifficulties,
+    hasFuneralService: record.hasFuneralService,
+    hasHomeCare: record.hasHomeCare,
+    hasEmergencyService: record.hasEmergencyService,
+    tumor: record.tumor ?? "",
+    hasMetastasis: record.hasMetastasis,
+    metastasisLocationOptionId: record.metastasisLocationOptionId ?? "",
+    oncologicalTreatmentOptionId: record.oncologicalTreatmentOptionId,
+    nonOncologicalDisease: record.nonOncologicalDisease ?? "",
+    surgeryOptionIds: record.surgeryOptionIds,
+    radiotherapy: record.radiotherapy ?? "",
+    chemotherapy: record.chemotherapy ?? "",
+    hemotherapy: record.hemotherapy ?? "",
+    hasOpioidTreatment: record.hasOpioidTreatment,
+    opioid: record.opioid ?? "",
+    otherMedications: record.otherMedications ?? "",
+    complementaryStudies: record.complementaryStudies ?? "",
+  };
+}
+
+function nameOf(
+  namesById: ReadonlyMap<string, string>,
+  userId: string | null,
+): string | null {
+  return userId ? (namesById.get(userId) ?? null) : null;
+}
+
+export async function findAdmissionInterview(
+  candidateId: string,
+): Promise<AdmissionInterviewView | null> {
+  const parsedId = admissionInterviewIdSchema.safeParse(candidateId);
+  if (!parsedId.success) {
+    return null;
+  }
+  const record = await findAdmissionInterviewRecord(parsedId.data);
+  if (!record) {
+    return null;
+  }
+  const userNames = await findUserNames(
+    [record.createdByUserId, record.updatedByUserId].flatMap((userId) =>
+      userId ? [userId] : [],
+    ),
+  );
+  return {
+    id: record.id,
+    details: toDetailsInput(record),
+    version: toVersion(record.updatedAt),
+    isAnnulled: record.annulledAt !== null,
+    createdAt: record.createdAt,
+    createdByName: nameOf(userNames, record.createdByUserId),
+    updatedAt: record.updatedAt,
+    updatedByName: nameOf(userNames, record.updatedByUserId),
+  };
 }
 
 export type AdmissionInterviewListItem = {
@@ -292,29 +468,36 @@ export type InterviewFormOptions = {
   religionOtherOptionId: string | null;
 };
 
+function toSavedIds(optionId: string | undefined): string[] {
+  return optionId ? [optionId] : [];
+}
+
 async function loadCatalogField(
   access: UserAccess,
   catalog: CatalogKey,
+  savedIds: string[],
 ): Promise<CatalogFieldData> {
   return {
     catalog,
-    options: await listSelectableCatalogOptions(catalog),
+    options: await listSelectableCatalogOptions(catalog, savedIds),
     canCreate: canCreateCatalogEntries(access, catalog),
   };
 }
 
 async function loadPrimaryDoctorField(
   access: UserAccess,
+  savedIds: string[],
 ): Promise<CatalogFieldData> {
   return {
     catalog: HEALTHCARE_PROFESSIONALS_PICKER,
-    options: await listSelectableHealthcareProfessionals(),
+    options: await listSelectableHealthcareProfessionals(savedIds),
     canCreate: canCreateCatalogEntries(access, HEALTHCARE_PROFESSIONALS_PICKER),
   };
 }
 
 export async function loadInterviewFormOptions(
   access: UserAccess,
+  saved: AdmissionInterviewDetailsInput | null,
 ): Promise<InterviewFormOptions> {
   const [
     healthInsurance,
@@ -328,15 +511,39 @@ export async function loadInterviewFormOptions(
     surgery,
     religionOtherOptionId,
   ] = await Promise.all([
-    loadCatalogField(access, "health_insurance"),
-    loadCatalogField(access, "information_awareness"),
-    loadCatalogField(access, "religion"),
-    loadCatalogField(access, "ecog_score"),
-    loadCatalogField(access, "relationship"),
-    loadPrimaryDoctorField(access),
-    loadCatalogField(access, "metastasis_location"),
-    loadCatalogField(access, "oncological_treatment"),
-    loadCatalogField(access, "surgery"),
+    loadCatalogField(
+      access,
+      "health_insurance",
+      toSavedIds(saved?.healthInsuranceOptionId),
+    ),
+    loadCatalogField(
+      access,
+      "information_awareness",
+      toSavedIds(saved?.informationAwarenessOptionId),
+    ),
+    loadCatalogField(access, "religion", toSavedIds(saved?.religionOptionId)),
+    loadCatalogField(
+      access,
+      "ecog_score",
+      toSavedIds(saved?.ecogScoreOptionId),
+    ),
+    loadCatalogField(
+      access,
+      "relationship",
+      toSavedIds(saved?.intervieweeRelationshipOptionId),
+    ),
+    loadPrimaryDoctorField(access, toSavedIds(saved?.primaryDoctorId)),
+    loadCatalogField(
+      access,
+      "metastasis_location",
+      toSavedIds(saved?.metastasisLocationOptionId),
+    ),
+    loadCatalogField(
+      access,
+      "oncological_treatment",
+      toSavedIds(saved?.oncologicalTreatmentOptionId),
+    ),
+    loadCatalogField(access, "surgery", saved?.surgeryOptionIds ?? []),
     findReligionOtherOptionId(),
   ]);
   return {

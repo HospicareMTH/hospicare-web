@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, inArray } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -18,6 +18,15 @@ import {
 } from "../tables";
 
 const CREDENTIAL_PROVIDER_ID = "credential";
+
+export function findUserNamesByIds(
+  userIds: readonly string[],
+): Promise<{ id: string; name: string }[]> {
+  return getDatabase()
+    .select({ id: users.id, name: users.name })
+    .from(users)
+    .where(inArray(users.id, [...userIds]));
+}
 
 export async function isEmailRegistered(
   transaction: DatabaseTransaction,

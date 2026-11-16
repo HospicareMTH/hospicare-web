@@ -13,70 +13,15 @@ import {
 } from "./schemas";
 import { createAdmissionInterview, isDniInActiveInterview } from "./service";
 import {
+  buildValidInput,
   createActorUserId,
   deactivateCatalogOption,
   findSeededOptionId,
   insertCatalogOption,
   insertHealthcareProfessional,
   insertInterview,
+  parseDetails,
 } from "./test-fixtures";
-
-async function buildValidInput(
-  overrides: Partial<AdmissionInterviewDetailsInput> = {},
-): Promise<AdmissionInterviewDetailsInput> {
-  return {
-    interviewDate: "2026-11-10",
-    guestFirstName: "Persona",
-    guestLastName: "Ficticia",
-    guestBirthDate: "1950-01-01",
-    guestDni: "11.222.333",
-    guestAddress: "Calle Ficticia 123",
-    healthInsuranceOptionId: "",
-    healthInsuranceMemberNumber: "",
-    informationAwarenessOptionId: await findSeededOptionId(
-      "information_awareness",
-      "Total, conoce el diagnóstico y el pronóstico",
-    ),
-    religionOptionId: await findSeededOptionId("religion", "Ninguna"),
-    religionDetail: "",
-    ecogScoreOptionId: await findSeededOptionId(
-      "ecog_score",
-      "Asintomático, actividad normal",
-    ),
-    personalHistory: "",
-    intervieweeFullName: "Familiar Ficticio",
-    intervieweePhone: "",
-    intervieweeRelationshipOptionId: "",
-    familyComposition: "",
-    referredBy: "",
-    primaryDoctorId: "",
-    hasHomeCareDifficulties: false,
-    hasFuneralService: false,
-    hasHomeCare: false,
-    hasEmergencyService: false,
-    tumor: "",
-    hasMetastasis: false,
-    metastasisLocationOptionId: "",
-    oncologicalTreatmentOptionId: await findSeededOptionId(
-      "oncological_treatment",
-      "No recibirá",
-    ),
-    nonOncologicalDisease: "",
-    surgeryOptionIds: [],
-    radiotherapy: "",
-    chemotherapy: "",
-    hemotherapy: "",
-    hasOpioidTreatment: false,
-    opioid: "",
-    otherMedications: "",
-    complementaryStudies: "",
-    ...overrides,
-  };
-}
-
-function parseDetails(input: AdmissionInterviewDetailsInput) {
-  return admissionInterviewDetailsSchema.parse(input);
-}
 
 function fieldErrorsOf(input: AdmissionInterviewDetailsInput) {
   const result = admissionInterviewDetailsSchema.safeParse(input);
@@ -279,7 +224,7 @@ describe("admisiones: alta de entrevista", () => {
       annulmentReason: "Motivo ficticio",
     });
 
-    expect(await isDniInActiveInterview("30111222")).toBe(true);
-    expect(await isDniInActiveInterview("30333444")).toBe(false);
+    expect(await isDniInActiveInterview("30111222", null)).toBe(true);
+    expect(await isDniInActiveInterview("30333444", null)).toBe(false);
   });
 });

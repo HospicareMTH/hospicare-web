@@ -4,8 +4,10 @@ import {
   count,
   desc,
   eq,
+  inArray,
   isNotNull,
   isNull,
+  ne,
   type SQL,
   sql,
 } from "drizzle-orm";
@@ -50,7 +52,10 @@ export async function insertAdmissionInterview(
   return interview.id;
 }
 
-export async function hasActiveInterviewWithDni(dni: string): Promise<boolean> {
+export async function hasActiveInterviewWithDni(
+  dni: string,
+  excludedInterviewId: string | null,
+): Promise<boolean> {
   const [interview] = await getDatabase()
     .select({ id: admissionInterviews.id })
     .from(admissionInterviews)
@@ -58,10 +63,104 @@ export async function hasActiveInterviewWithDni(dni: string): Promise<boolean> {
       and(
         eq(admissionInterviews.guestDni, dni),
         isNull(admissionInterviews.annulledAt),
+        excludedInterviewId
+          ? ne(admissionInterviews.id, excludedInterviewId)
+          : undefined,
       ),
     )
     .limit(1);
   return interview !== undefined;
+}
+
+export type AdmissionInterviewRecord =
+  typeof admissionInterviews.$inferSelect & {
+    surgeryOptionIds: string[];
+  };
+
+async function listSurgeryOptionIds(
+  database: DatabaseTransaction | ReturnType<typeof getDatabase>,
+  interviewId: string,
+): Promise<string[]> {
+  const surgeries = await database
+    .select({ surgeryOptionId: admissionInterviewSurgeries.surgeryOptionId })
+    .from(admissionInterviewSurgeries)
+    .where(eq(admissionInterviewSurgeries.admissionInterviewId, interviewId));
+  return surgeries.map(({ surgeryOptionId }) => surgeryOptionId);
+}
+
+export async function findAdmissionInterviewRecord(
+  interviewId: string,
+): Promise<AdmissionInterviewRecord | null> {
+  const database = getDatabase();
+  const [interview] = await database
+    .select()
+    .from(admissionInterviews)
+    .where(eq(admissionInterviews.id, interviewId));
+  if (!interview) {
+    return null;
+  }
+  return {
+    ...interview,
+    surgeryOptionIds: await listSurgeryOptionIds(database, interviewId),
+  };
+}
+
+export async function lockAdmissionInterviewRecord(
+  transaction: DatabaseTransaction,
+  interviewId: string,
+): Promise<AdmissionInterviewRecord | null> {
+  const [interview] = await transaction
+    .select()
+    .from(admissionInterviews)
+    .where(eq(admissionInterviews.id, interviewId))
+    .for("update");
+  if (!interview) {
+    return null;
+  }
+  return {
+    ...interview,
+    surgeryOptionIds: await listSurgeryOptionIds(transaction, interviewId),
+  };
+}
+
+export async function updateAdmissionInterviewRecord(
+  transaction: DatabaseTransaction,
+  interviewId: string,
+  { surgeryOptionIds, ...details }: AdmissionInterviewDetails,
+  savedSurgeryOptionIds: readonly string[],
+  actorUserId: string,
+): Promise<void> {
+  await transaction
+    .update(admissionInterviews)
+    .set({ ...details, updatedByUserId: actorUserId, updatedAt: sql`now()` })
+    .where(eq(admissionInterviews.id, interviewId));
+  const removedSurgeryOptionIds = savedSurgeryOptionIds.filter(
+    (optionId) => !surgeryOptionIds.includes(optionId),
+  );
+  const addedSurgeryOptionIds = surgeryOptionIds.filter(
+    (optionId) => !savedSurgeryOptionIds.includes(optionId),
+  );
+  if (removedSurgeryOptionIds.length > 0) {
+    await transaction
+      .delete(admissionInterviewSurgeries)
+      .where(
+        and(
+          eq(admissionInterviewSurgeries.admissionInterviewId, interviewId),
+          inArray(
+            admissionInterviewSurgeries.surgeryOptionId,
+            removedSurgeryOptionIds,
+          ),
+        ),
+      );
+  }
+  if (addedSurgeryOptionIds.length > 0) {
+    await transaction.insert(admissionInterviewSurgeries).values(
+      addedSurgeryOptionIds.map((surgeryOptionId) => ({
+        admissionInterviewId: interviewId,
+        surgeryOptionId,
+      })),
+    );
+  }
 }
 
 export type AdmissionInterviewListRecord = {

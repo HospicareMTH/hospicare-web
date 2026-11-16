@@ -68,7 +68,13 @@ test("RF-ENT-02: se carga una entrevista en tres secciones y aparece en el lista
   await page.getByRole("button", { name: "Guardar entrevista" }).click();
 
   await expect(page.getByText("Entrevista guardada.")).toBeVisible();
-  await expect(page).toHaveURL(ADMISSIONS_PATH);
+  await expect(page).toHaveURL(/\/admisiones\/[0-9a-f-]{36}$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Clara Alta Ficticia" }),
+  ).toBeVisible();
+  await expect(page.getByText("20.333.444")).toBeVisible();
+
+  await page.getByRole("link", { name: "Volver a Admisiones" }).click();
   await expect(
     page.getByRole("row", { name: /Clara Alta Ficticia.*DNI 20\.333\.444/ }),
   ).toBeVisible();

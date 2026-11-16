@@ -11,11 +11,12 @@ import { AdmissionInterviewForm } from "./admission-interview-form";
 async function NewAdmissionInterviewContent() {
   const { access } = await requirePermission("admissions.interviews.create");
   const { catalogFields, religionOtherOptionId } =
-    await loadInterviewFormOptions(access);
+    await loadInterviewFormOptions(access, null);
   const today = getBusinessDate(new Date());
 
   return (
     <AdmissionInterviewForm
+      mode={{ kind: "create" }}
       initialInterview={buildEmptyInterview(today)}
       catalogFields={catalogFields}
       religionOtherOptionId={religionOtherOptionId}

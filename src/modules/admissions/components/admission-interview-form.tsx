@@ -17,10 +17,12 @@ import { FieldGroup } from "@/components/ui/field";
 import {
   checkDniInActiveInterviewAction,
   createAdmissionInterviewAction,
+  updateAdmissionInterviewAction,
 } from "../actions";
 import {
   ADDRESS_LIMITS,
   ADMISSIONS_PATH,
+  buildAdmissionInterviewPath,
   type AdmissionInterviewDetailsInput,
   type AdmissionInterviewField,
   CLINICAL_TEXT_MAX_LENGTH,
@@ -29,66 +31,31 @@ import {
   RELIGION_DETAIL_MAX_LENGTH,
   SHORT_TEXT_MAX_LENGTH,
 } from "../schemas";
-import type { InterviewCatalogFields } from "../service";
+import type {
+  CreateAdmissionInterviewResult,
+  InterviewCatalogFields,
+} from "../service";
 import {
   DateInputField,
   OptionField,
   TextField,
   YesNoField,
 } from "./interview-fields";
+import {
+  INTERVIEW_SECTION_FIELDS,
+  INTERVIEW_SECTION_IDS,
+  INTERVIEW_SECTION_LABELS,
+  INTERVIEW_SECTIONS_LABEL,
+  type InterviewSectionId,
+  YES_NO_FIELD_LABELS,
+} from "./interview-sections";
 
 type FieldErrors = Partial<Record<string, string[]>>;
 
-type InterviewTabId = "guest" | "interviewee" | "clinical";
+type FormMode =
+  { kind: "create" } | { kind: "edit"; interviewId: string; version: string };
 
 const FORM_ID_PREFIX = "admission-interview";
-
-const TAB_FIELDS: Record<InterviewTabId, AdmissionInterviewField[]> = {
-  guest: [
-    "interviewDate",
-    "guestFirstName",
-    "guestLastName",
-    "guestBirthDate",
-    "guestDni",
-    "guestAddress",
-    "healthInsuranceOptionId",
-    "healthInsuranceMemberNumber",
-    "informationAwarenessOptionId",
-    "religionOptionId",
-    "religionDetail",
-    "ecogScoreOptionId",
-    "personalHistory",
-  ],
-  interviewee: [
-    "intervieweeFullName",
-    "intervieweePhone",
-    "intervieweeRelationshipOptionId",
-    "primaryDoctorId",
-    "referredBy",
-    "familyComposition",
-  ],
-  clinical: [
-    "tumor",
-    "metastasisLocationOptionId",
-    "oncologicalTreatmentOptionId",
-    "nonOncologicalDisease",
-    "surgeryOptionIds",
-    "radiotherapy",
-    "chemotherapy",
-    "hemotherapy",
-    "opioid",
-    "otherMedications",
-    "complementaryStudies",
-  ],
-};
-
-const TAB_LABELS: Record<InterviewTabId, string> = {
-  guest: "Huésped",
-  interviewee: "Entrevistado y red de cuidado",
-  clinical: "Condición clínica",
-};
-
-const TAB_IDS: InterviewTabId[] = ["guest", "interviewee", "clinical"];
 
 const INVALID_FORM_MESSAGE =
   "Hay datos para corregir. Revisá las secciones marcadas.";
@@ -97,8 +64,10 @@ function fieldId(field: AdmissionInterviewField): string {
   return `${FORM_ID_PREFIX}-${field}`;
 }
 
-function hasTabErrors(tabId: InterviewTabId, fieldErrors: FieldErrors) {
-  return TAB_FIELDS[tabId].some((field) => fieldErrors[field]);
+function hasTabErrors(sectionId: InterviewSectionId, fieldErrors: FieldErrors) {
+  return INTERVIEW_SECTION_FIELDS[sectionId].some(
+    (field) => fieldErrors[field],
+  );
 }
 
 function toSingleSelection(optionId: string): string[] {
@@ -109,12 +78,34 @@ function fromSingleSelection(selectedIds: string[]): string {
   return selectedIds[0] ?? "";
 }
 
+async function saveInterview(
+  mode: FormMode,
+  interview: AdmissionInterviewDetailsInput,
+): Promise<CreateAdmissionInterviewResult | null> {
+  if (mode.kind === "create") {
+    return runAction(
+      () => createAdmissionInterviewAction(interview),
+      "Entrevista guardada.",
+    );
+  }
+  const result = await runAction(
+    () =>
+      updateAdmissionInterviewAction(mode.interviewId, mode.version, interview),
+    "Cambios guardados.",
+  );
+  return result?.status === "success"
+    ? { status: "success", interviewId: mode.interviewId }
+    : result;
+}
+
 export function AdmissionInterviewForm({
+  mode,
   initialInterview,
   catalogFields,
   religionOtherOptionId,
   today,
 }: {
+  mode: FormMode;
   initialInterview: AdmissionInterviewDetailsInput;
   catalogFields: InterviewCatalogFields;
   religionOtherOptionId: string | null;
@@ -123,7 +114,7 @@ export function AdmissionInterviewForm({
   const router = useRouter();
   const [interview, setInterview] = useState(initialInterview);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [activeTabId, setActiveTabId] = useState<InterviewTabId>("guest");
+  const [activeTabId, setActiveTabId] = useState<InterviewSectionId>("guest");
   const [hasDuplicateDni, setHasDuplicateDni] = useState(false);
   const [isSaving, startSaving] = useTransition();
   const [, startDniCheck] = useTransition();
@@ -147,7 +138,12 @@ export function AdmissionInterviewForm({
     const dni = interview.guestDni;
     startDniCheck(async () => {
       try {
-        setHasDuplicateDni(await checkDniInActiveInterviewAction(dni));
+        setHasDuplicateDni(
+          await checkDniInActiveInterviewAction(
+            dni,
+            mode.kind === "edit" ? mode.interviewId : null,
+          ),
+        );
       } catch (error) {
         console.error("No se pudo revisar si el DNI ya estaba cargado.", error);
         setHasDuplicateDni(false);
@@ -157,7 +153,7 @@ export function AdmissionInterviewForm({
 
   function showErrors(nextFieldErrors: FieldErrors) {
     setFieldErrors(nextFieldErrors);
-    const firstTabWithErrors = TAB_IDS.find((tabId) =>
+    const firstTabWithErrors = INTERVIEW_SECTION_IDS.find((tabId) =>
       hasTabErrors(tabId, nextFieldErrors),
     );
     if (firstTabWithErrors) {
@@ -169,19 +165,21 @@ export function AdmissionInterviewForm({
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     startSaving(async () => {
-      const result = await runAction(
-        () => createAdmissionInterviewAction(interview),
-        "Entrevista guardada.",
-      );
+      const result = await saveInterview(mode, interview);
       if (result?.status === "invalid") {
         showErrors(result.fieldErrors);
       }
-      if (result?.status === "success") {
-        router.push(ADMISSIONS_PATH);
+      if (result?.status !== "success") {
+        return;
       }
+      router.push(buildAdmissionInterviewPath(result.interviewId));
     });
   }
 
+  const cancelPath =
+    mode.kind === "edit"
+      ? buildAdmissionInterviewPath(mode.interviewId)
+      : ADMISSIONS_PATH;
   const isReligionOther =
     religionOtherOptionId !== null &&
     interview.religionOptionId === religionOtherOptionId;
@@ -190,10 +188,10 @@ export function AdmissionInterviewForm({
     <form onSubmit={save} noValidate className="flex flex-col gap-6">
       <SectionTabs
         idPrefix={FORM_ID_PREFIX}
-        label="Secciones de la entrevista"
-        tabs={TAB_IDS.map((tabId) => ({
+        label={INTERVIEW_SECTIONS_LABEL}
+        tabs={INTERVIEW_SECTION_IDS.map((tabId) => ({
           id: tabId,
-          label: TAB_LABELS[tabId],
+          label: INTERVIEW_SECTION_LABELS[tabId],
           hasErrors: hasTabErrors(tabId, fieldErrors),
         }))}
         activeTabId={activeTabId}
@@ -409,25 +407,25 @@ export function AdmissionInterviewForm({
           />
           <YesNoField
             id={fieldId("hasHomeCareDifficulties")}
-            label="Dificultades para cuidar en el domicilio"
+            label={YES_NO_FIELD_LABELS.hasHomeCareDifficulties}
             value={interview.hasHomeCareDifficulties}
             onValueChange={(value) => update("hasHomeCareDifficulties", value)}
           />
           <YesNoField
             id={fieldId("hasFuneralService")}
-            label="Servicio funerario"
+            label={YES_NO_FIELD_LABELS.hasFuneralService}
             value={interview.hasFuneralService}
             onValueChange={(value) => update("hasFuneralService", value)}
           />
           <YesNoField
             id={fieldId("hasHomeCare")}
-            label="Internación domiciliaria"
+            label={YES_NO_FIELD_LABELS.hasHomeCare}
             value={interview.hasHomeCare}
             onValueChange={(value) => update("hasHomeCare", value)}
           />
           <YesNoField
             id={fieldId("hasEmergencyService")}
-            label="Emergencia médica"
+            label={YES_NO_FIELD_LABELS.hasEmergencyService}
             value={interview.hasEmergencyService}
             onValueChange={(value) => update("hasEmergencyService", value)}
           />
@@ -451,7 +449,7 @@ export function AdmissionInterviewForm({
           />
           <YesNoField
             id={fieldId("hasMetastasis")}
-            label="Metástasis"
+            label={YES_NO_FIELD_LABELS.hasMetastasis}
             value={interview.hasMetastasis}
             onValueChange={(value) => update("hasMetastasis", value)}
           />
@@ -529,7 +527,7 @@ export function AdmissionInterviewForm({
           />
           <YesNoField
             id={fieldId("hasOpioidTreatment")}
-            label="Tratamiento con opioides"
+            label={YES_NO_FIELD_LABELS.hasOpioidTreatment}
             value={interview.hasOpioidTreatment}
             onValueChange={(value) => update("hasOpioidTreatment", value)}
           />
@@ -566,14 +564,18 @@ export function AdmissionInterviewForm({
 
       <div className="flex flex-col-reverse gap-2 border-t pt-4 sm:flex-row sm:justify-end">
         <Button asChild variant="outline" className={DIALOG_BUTTON_CLASS_NAME}>
-          <Link href={ADMISSIONS_PATH}>Cancelar</Link>
+          <Link href={cancelPath}>Cancelar</Link>
         </Button>
         <Button
           type="submit"
           disabled={isSaving}
           className={DIALOG_BUTTON_CLASS_NAME}
         >
-          {isSaving ? "Guardando…" : "Guardar entrevista"}
+          {isSaving
+            ? "Guardando…"
+            : mode.kind === "edit"
+              ? "Guardar cambios"
+              : "Guardar entrevista"}
         </Button>
       </div>
     </form>
