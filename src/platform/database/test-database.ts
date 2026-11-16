@@ -22,22 +22,37 @@ const SEED_ROLE_PERMISSIONS_SQL = `
   SELECT "id", 'documentation.app.view' FROM "roles" WHERE "system_key" = 'user'
 `;
 
-const CATALOG_SEED_MIGRATION = `${MIGRATIONS_FOLDER}/0013_catalog_options_audit_and_seed.sql`;
 const MIGRATION_STATEMENT_SEPARATOR = "--> statement-breakpoint";
-const CATALOG_SEED_STATEMENT_START = 'INSERT INTO "catalog_options"';
 
-async function readCatalogSeedSql(): Promise<string> {
-  const migration = await readFile(CATALOG_SEED_MIGRATION, "utf8");
-  const seedStatement = migration
+type MigrationStatement = {
+  migration: string;
+  statementStart: string;
+};
+
+const CATALOG_SEED_STATEMENTS: readonly MigrationStatement[] = [
+  {
+    migration: `${MIGRATIONS_FOLDER}/0013_catalog_options_audit_and_seed.sql`,
+    statementStart: 'INSERT INTO "catalog_options"',
+  },
+  {
+    migration: `${MIGRATIONS_FOLDER}/0017_admission_interviews_audit.sql`,
+    statementStart: 'UPDATE "catalog_options" SET "system_key"',
+  },
+];
+
+async function readMigrationStatement({
+  migration,
+  statementStart,
+}: MigrationStatement): Promise<string> {
+  const migrationSql = await readFile(migration, "utf8");
+  const statement = migrationSql
     .split(MIGRATION_STATEMENT_SEPARATOR)
-    .map((statement) => statement.trim())
-    .find((statement) => statement.startsWith(CATALOG_SEED_STATEMENT_START));
-  if (!seedStatement) {
-    throw new Error(
-      `No se encontró la siembra de catálogos en ${CATALOG_SEED_MIGRATION}.`,
-    );
+    .map((candidate) => candidate.trim())
+    .find((candidate) => candidate.startsWith(statementStart));
+  if (!statement) {
+    throw new Error(`No se encontró "${statementStart}" en ${migration}.`);
   }
-  return seedStatement;
+  return statement;
 }
 
 export function assertTestDatabase(databaseUrl: string | undefined): void {
@@ -89,9 +104,11 @@ export function resetTestDatabase(): Promise<void> {
     );
     await pool.query(`DELETE FROM "roles" WHERE "system_key" IS NULL`);
     await pool.query(SEED_ROLE_PERMISSIONS_SQL);
-    // CASCADE también vacía catalog_options, que referencia a users.
+    // CASCADE también vacía catalog_options y admission_interviews, que referencian a users.
     await pool.query(`TRUNCATE ${tableList} RESTART IDENTITY CASCADE`);
-    await pool.query(await readCatalogSeedSql());
+    for (const seedStatement of CATALOG_SEED_STATEMENTS) {
+      await pool.query(await readMigrationStatement(seedStatement));
+    }
     await pool.query(`TRUNCATE "audit_log" RESTART IDENTITY`);
   });
 }

@@ -21,3 +21,21 @@ export function formatDate(date: Date): string {
 export function formatDateTime(date: Date): string {
   return `${formatDate(date)} ${timeFormatter.format(date)}`;
 }
+
+const businessDateFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: BUSINESS_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+export function getBusinessDate(instant: Date): string {
+  return businessDateFormatter.format(instant);
+}
+
+export function isAfterBusinessToday(
+  isoDate: string,
+  now: Date = new Date(),
+): boolean {
+  return isoDate > getBusinessDate(now);
+}

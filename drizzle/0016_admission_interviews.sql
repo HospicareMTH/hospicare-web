@@ -1,0 +1,60 @@
+CREATE TABLE "admission_interview_surgeries" (
+	"admission_interview_id" uuid NOT NULL,
+	"surgery_option_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	CONSTRAINT "admission_interview_surgeries_pk" PRIMARY KEY("admission_interview_id","surgery_option_id")
+);
+--> statement-breakpoint
+CREATE TABLE "admission_interviews" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"interview_date" date NOT NULL,
+	"guest_first_name" text NOT NULL,
+	"guest_last_name" text NOT NULL,
+	"guest_birth_date" date NOT NULL,
+	"guest_dni" text NOT NULL,
+	"guest_address" text NOT NULL,
+	"health_insurance_option_id" uuid,
+	"health_insurance_member_number" text,
+	"information_awareness_option_id" uuid NOT NULL,
+	"religion_option_id" uuid NOT NULL,
+	"religion_detail" text,
+	"ecog_score_option_id" uuid NOT NULL,
+	"personal_history" text,
+	"interviewee_full_name" text NOT NULL,
+	"interviewee_phone" text,
+	"interviewee_relationship_option_id" uuid,
+	"family_composition" text,
+	"referred_by" text,
+	"primary_doctor_id" uuid,
+	"has_home_care_difficulties" boolean DEFAULT false NOT NULL,
+	"has_funeral_service" boolean DEFAULT false NOT NULL,
+	"has_home_care" boolean DEFAULT false NOT NULL,
+	"has_emergency_service" boolean DEFAULT false NOT NULL,
+	"tumor" text,
+	"has_metastasis" boolean DEFAULT false NOT NULL,
+	"metastasis_location_option_id" uuid,
+	"oncological_treatment_option_id" uuid NOT NULL,
+	"non_oncological_disease" text,
+	"radiotherapy" text,
+	"chemotherapy" text,
+	"hemotherapy" text,
+	"has_opioid_treatment" boolean DEFAULT false NOT NULL,
+	"opioid" text,
+	"other_medications" text,
+	"complementary_studies" text,
+	"created_by_user_id" text,
+	"updated_by_user_id" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"annulled_at" timestamp with time zone,
+	"annulled_by_user_id" text,
+	"annulment_reason" text,
+	CONSTRAINT "admission_interviews_guest_dni_format" CHECK ("admission_interviews"."guest_dni" ~ '^[1-9][0-9]{6,7}$'),
+	CONSTRAINT "admission_interviews_metastasis_location_dependency" CHECK ("admission_interviews"."has_metastasis" = ("admission_interviews"."metastasis_location_option_id" is not null)),
+	CONSTRAINT "admission_interviews_opioid_dependency" CHECK ("admission_interviews"."has_opioid_treatment" = ("admission_interviews"."opioid" is not null)),
+	CONSTRAINT "admission_interviews_annulment_completeness" CHECK (("admission_interviews"."annulled_at" is null) = ("admission_interviews"."annulment_reason" is null))
+);
+--> statement-breakpoint
+ALTER TABLE "catalog_options" ADD COLUMN "system_key" text;--> statement-breakpoint
+ALTER TABLE "admission_interview_surgeries" ADD CONSTRAINT "admission_interview_surgeries_interview_fk" FOREIGN KEY ("admission_interview_id") REFERENCES "public"."admission_interviews"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE UNIQUE INDEX "catalog_options_catalog_system_key_index" ON "catalog_options" USING btree ("catalog","system_key");

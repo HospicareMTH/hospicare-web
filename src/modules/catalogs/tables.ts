@@ -57,6 +57,7 @@ export const catalogOptions = pgTable(
     description: text(),
     isActive: boolean().notNull().default(true),
     isSystem: boolean().notNull().default(false),
+    systemKey: text(),
     sortOrder: integer().notNull(),
     createdByUserId: text(),
     updatedByUserId: text(),
@@ -65,6 +66,7 @@ export const catalogOptions = pgTable(
   },
   (table) => [
     uniqueIndex().on(table.catalog, table.normalizedLabel),
+    uniqueIndex().on(table.catalog, table.systemKey),
     index().on(table.catalog, table.sortOrder),
   ],
 );
