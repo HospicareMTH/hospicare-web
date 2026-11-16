@@ -2,6 +2,7 @@ export {
   type ActiveCatalogEntryCount,
   canCreateCatalogEntries,
   countActiveCatalogEntries,
+  findReligionOtherOptionId,
   listSelectableCatalogOptions,
   listVisibleCatalogs,
   validateCatalogSelection,

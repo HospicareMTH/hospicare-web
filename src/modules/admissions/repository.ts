@@ -10,14 +10,59 @@ import {
   sql,
 } from "drizzle-orm";
 
-import { getDatabase } from "@/platform/database/client";
+import {
+  type DatabaseTransaction,
+  getDatabase,
+} from "@/platform/database/client";
 import { normalizeTextSql } from "@/platform/database/text-normalization";
 
 import type {
+  AdmissionInterviewDetails,
   AdmissionInterviewListQuery,
   AdmissionInterviewSortKey,
 } from "./schemas";
-import { admissionInterviews } from "./tables";
+import { admissionInterviews, admissionInterviewSurgeries } from "./tables";
+
+export async function insertAdmissionInterview(
+  transaction: DatabaseTransaction,
+  { surgeryOptionIds, ...details }: AdmissionInterviewDetails,
+  actorUserId: string,
+): Promise<string> {
+  const [interview] = await transaction
+    .insert(admissionInterviews)
+    .values({
+      ...details,
+      createdByUserId: actorUserId,
+      updatedByUserId: actorUserId,
+    })
+    .returning({ id: admissionInterviews.id });
+  if (!interview) {
+    throw new Error("La base no devolvió la entrevista creada.");
+  }
+  if (surgeryOptionIds.length > 0) {
+    await transaction.insert(admissionInterviewSurgeries).values(
+      surgeryOptionIds.map((surgeryOptionId) => ({
+        admissionInterviewId: interview.id,
+        surgeryOptionId,
+      })),
+    );
+  }
+  return interview.id;
+}
+
+export async function hasActiveInterviewWithDni(dni: string): Promise<boolean> {
+  const [interview] = await getDatabase()
+    .select({ id: admissionInterviews.id })
+    .from(admissionInterviews)
+    .where(
+      and(
+        eq(admissionInterviews.guestDni, dni),
+        isNull(admissionInterviews.annulledAt),
+      ),
+    )
+    .limit(1);
+  return interview !== undefined;
+}
 
 export type AdmissionInterviewListRecord = {
   id: string;

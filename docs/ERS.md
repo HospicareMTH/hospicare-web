@@ -244,7 +244,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | Fecha de entrevista | Sí | No futura |
 | Nombre y apellido | Sí | Separados, de 2 a 80 caracteres cada uno |
 | Fecha de nacimiento | Sí | No futura |
-| DNI | Sí | Argentino, 7 u 8 dígitos, entre 1.000.000 y 99.999.999. Admite puntos y guiones al cargar. |
+| DNI | Sí | Argentino, 7 u 8 dígitos, entre 1.000.000 y 99.999.999. Admite puntos y guiones al cargar. Si ya hay otra entrevista vigente con el mismo DNI, se avisa sin impedir el guardado. |
 | Dirección | Sí | De 3 a 200 caracteres |
 | Obra social y número de afiliado | No | Catálogo; ver RF-CAT-05. Número de afiliado de hasta 40 caracteres. |
 | Información general | Sí | Catálogo |

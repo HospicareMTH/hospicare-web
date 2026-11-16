@@ -24,8 +24,10 @@ export const dniSchema = z
   .transform((digits) => String(Number(digits)));
 
 export function pastOrTodayDateSchema(fieldLabel: string) {
-  return z.iso
-    .date({ error: `${fieldLabel} no es válida.` })
+  return z
+    .string()
+    .min(1, { error: `Escribí ${fieldLabel.toLowerCase()}.` })
+    .pipe(z.iso.date({ error: `${fieldLabel} no es válida.` }))
     .refine((isoDate) => !isAfterBusinessToday(isoDate), {
       error: `${fieldLabel} no puede ser posterior a hoy.`,
     });

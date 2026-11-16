@@ -44,3 +44,27 @@ export function isAfterBusinessToday(
 ): boolean {
   return isoDate > getBusinessDate(now);
 }
+
+const SEPARATED_DISPLAY_DATE = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/;
+const COMPACT_DISPLAY_DATE = /^(\d{2})(\d{2})(\d{4})$/;
+
+function isCalendarDate(isoDate: string): boolean {
+  const instant = new Date(`${isoDate}T00:00:00Z`);
+  return (
+    !Number.isNaN(instant.getTime()) &&
+    instant.toISOString().startsWith(isoDate)
+  );
+}
+
+export function parseDisplayDate(text: string): string | null {
+  const trimmedText = text.trim();
+  const match =
+    SEPARATED_DISPLAY_DATE.exec(trimmedText) ??
+    COMPACT_DISPLAY_DATE.exec(trimmedText);
+  const [, day, month, year] = match ?? [];
+  if (!day || !month || !year) {
+    return null;
+  }
+  const isoDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  return isCalendarDate(isoDate) ? isoDate : null;
+}

@@ -37,6 +37,22 @@ export function listCatalogOptions(
     .orderBy(asc(catalogOptions.sortOrder), asc(catalogOptions.label));
 }
 
+export async function findOptionIdBySystemKey(
+  catalog: CatalogKey,
+  systemKey: string,
+): Promise<string | null> {
+  const [option] = await getDatabase()
+    .select({ id: catalogOptions.id })
+    .from(catalogOptions)
+    .where(
+      and(
+        eq(catalogOptions.catalog, catalog),
+        eq(catalogOptions.systemKey, systemKey),
+      ),
+    );
+  return option?.id ?? null;
+}
+
 export async function findCatalogOfOption(
   optionId: string,
 ): Promise<CatalogKey | null> {

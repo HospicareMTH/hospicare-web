@@ -1,5 +1,9 @@
 "use client";
 
+import { ClipboardPlusIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
+
 import {
   DataTable,
   type DataTableColumn,
@@ -9,6 +13,8 @@ import {
   type SaveHiddenColumnsAction,
   saveHiddenColumnsWith,
 } from "@/components/shared/data-table/save-hidden-columns";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
+import { Button } from "@/components/ui/button";
 import { formatDateTime, formatIsoDate } from "@/platform/dates";
 import { formatDni } from "@/platform/dni";
 
@@ -17,6 +23,7 @@ import {
   type AdmissionInterviewListQuery,
   type AdmissionInterviewSortKey,
   DEFAULT_ADMISSION_INTERVIEW_SORT,
+  NEW_ADMISSION_INTERVIEW_PATH,
   PRIMARY_DOCTOR_FILTER_PARAMETER,
   RELATIONSHIP_FILTER_PARAMETER,
 } from "../schemas";
@@ -114,11 +121,13 @@ export function AdmissionInterviewsTable({
   query,
   hiddenColumns,
   saveHiddenColumnsAction,
+  canCreate,
 }: {
   interviewList: AdmissionInterviewList;
   query: AdmissionInterviewListQuery;
   hiddenColumns: string[];
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
+  canCreate: boolean;
 }) {
   const { page, relationshipOptions, primaryDoctorOptions } = interviewList;
 
@@ -146,6 +155,20 @@ export function AdmissionInterviewsTable({
             options={primaryDoctorOptions}
           />
         </>
+      }
+      action={
+        canCreate && (
+          <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
+            <Link href={NEW_ADMISSION_INTERVIEW_PATH}>
+              <HugeiconsIcon
+                icon={ClipboardPlusIcon}
+                data-icon="inline-start"
+                aria-hidden="true"
+              />
+              Nueva entrevista
+            </Link>
+          </Button>
+        )
       }
       emptyMessage={describeEmptyList(query)}
       totalLabel={describeInterviewCount(page.totalCount)}

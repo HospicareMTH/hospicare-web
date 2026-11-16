@@ -67,7 +67,7 @@ describe("pastOrTodayDateSchema", () => {
     );
   });
 
-  it.each(["2026-02-30", "16/11/2026", ""])(
+  it.each(["2026-02-30", "16/11/2026"])(
     "rechaza una fecha inexistente o mal escrita: %j",
     (candidate) => {
       const result = schema.safeParse(candidate);
@@ -78,6 +78,12 @@ describe("pastOrTodayDateSchema", () => {
       );
     },
   );
+
+  it("pide la fecha cuando el campo está vacío", () => {
+    expect(firstErrorMessage(schema.safeParse(""))).toBe(
+      "Escribí la fecha de nacimiento.",
+    );
+  });
 });
 
 describe("requiredTextSchema", () => {

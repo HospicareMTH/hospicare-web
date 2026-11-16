@@ -6,7 +6,24 @@ import {
   formatIsoDate,
   getBusinessDate,
   isAfterBusinessToday,
+  parseDisplayDate,
 } from "./dates";
+
+describe("parseDisplayDate", () => {
+  it("RN-03: lee DD/MM/AAAA, con un dígito o con otros separadores", () => {
+    expect(parseDisplayDate("05/03/2026")).toBe("2026-03-05");
+    expect(parseDisplayDate(" 5/3/2026 ")).toBe("2026-03-05");
+    expect(parseDisplayDate("05-03-2026")).toBe("2026-03-05");
+    expect(parseDisplayDate("05032026")).toBe("2026-03-05");
+  });
+
+  it.each(["30/02/2026", "2026-03-05", "5/3/26", "", "hoy"])(
+    "no acepta %j",
+    (text) => {
+      expect(parseDisplayDate(text)).toBeNull();
+    },
+  );
+});
 
 describe("getBusinessDate", () => {
   it("RN-01: devuelve AAAA-MM-DD del día en Buenos Aires", () => {
