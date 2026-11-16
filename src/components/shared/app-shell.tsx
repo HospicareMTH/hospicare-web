@@ -105,7 +105,7 @@ type NavigationProps = {
 
 function SidebarNavigation({ destinations, pathname }: NavigationProps) {
   return (
-    <SidebarMenu>
+    <SidebarMenu className="gap-1">
       {destinations.map((destination) => (
         <SidebarMenuItem key={destination.href}>
           <SidebarMenuButton

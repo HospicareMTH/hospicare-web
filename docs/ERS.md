@@ -395,7 +395,7 @@ Los formularios clínicos se alimentan de 28 listas configurables, y el inicio m
 | Catálogo | Valores iniciales | Reordenable |
 | --- | --- | --- |
 | Vínculos del entrevistado | Hija/o, Cónyuge, Hermana/o, Madre, Padre, Nieto/a, Cuidador/a, Otro | No. Orden fijo de esta lista; las nuevas van al final. |
-| Profesionales de salud | Vacío. Nombre obligatorio; especialidad, matrícula, teléfono y correo opcionales | No. Orden alfabético. |
+| Profesionales de salud | Vacío. Nombre obligatorio; especialidad, matrícula, teléfono y correo opcionales. El correo, si se carga, es único entre los profesionales activos (RF-EVO-03). | No. Orden alfabético. |
 | Obras sociales | 18 coberturas precargadas, entre ellas OSDE, PAMI e IOMA | Sí |
 | Información general | 7 opciones sobre conocimiento del diagnóstico y pronóstico | Sí |
 | Religiones | Ninguna, Católico, Judío, Evangelista, Mormón, Testigo de Jehová, Otra | Sí |
@@ -413,10 +413,10 @@ Los formularios clínicos se alimentan de 28 listas configurables, y el inicio m
 | --- | --- | --- |
 | RF-CAT-01 | Administración debe poder crear, editar y desactivar opciones. | Etiqueta de 2 a 120 caracteres; descripción opcional de hasta 500. Permisos por catálogo. Reactivar requiere permiso de modificar. Las opciones de sistema se identifican como Base y se gestionan como las demás. |
 | RF-CAT-02 | Desactivar debe preservar los registros existentes. | Eliminar equivale a desactivar. La opción deja de ofrecerse, pero se sigue mostrando donde ya se usó. |
-| RF-CAT-03 | Administración debe poder reordenar opciones. | El orden se respeta en los selectores. Requiere permiso de modificar. |
+| RF-CAT-03 | Administración debe poder reordenar opciones. | El orden se respeta en los selectores. Requiere permiso de modificar. Se reordena con Subir y Bajar o arrastrando la fila, también con teclado, solo en la vista de opciones activas en su orden propio y sin búsqueda. Las opciones inactivas conservan su lugar. |
 | RF-CAT-04 | Debe poder crearse una opción sin salir del formulario. | Solo con permiso de creación. En selección única queda elegida; en múltiple, marcada. |
 | RF-CAT-05 | La obra social debe validarse según el permiso de quien carga. | Sin permiso de crear obras sociales, solo admite una activa del catálogo. |
-| RF-CAT-06 | Crear una opción existente no debe duplicarla. | En cada catálogo compara sin distinguir mayúsculas ni acentos. Si estaba inactiva, la reactiva; con permiso de crear alcanza. |
+| RF-CAT-06 | Crear una opción existente no debe duplicarla. | En cada catálogo compara sin distinguir mayúsculas ni acentos. Si estaba inactiva, la reactiva; con permiso de crear alcanza. En Profesionales compara el correo: crear con el de uno inactivo lo reactiva con los datos nuevos, y no se puede reactivar uno cuyo correo usa otro activo. |
 | RF-CAT-07 | Los formularios deben rechazar opciones inactivas nuevas. | Validación en el servidor. |
 
 ### 7.2 Inicio operativo
@@ -850,7 +850,7 @@ La reconstrucción se mantiene como un monolito modular sobre PostgreSQL, desple
 | Documentos | pdfkit y pdf-lib, con folio persistente y SHA-256 | Agrega folio, hash y copia bloqueada de cada emisión | B-04 |
 | Excel | ExcelJS en el servidor | Reemplaza `xlsx` | R-10, R-19, B-06 |
 | Correo | Resend | Se mantiene | Solo avisos de acceso, sin datos clínicos |
-| Interfaz | shadcn/ui (estilo radix-nova) como base obligatoria, con Tailwind | Única base de UI y una sola librería de primitivas | RNF-25 a RNF-27; hoy conviven Radix y Base UI |
+| Interfaz | shadcn/ui (estilo radix-nova) como base obligatoria, con Tailwind; @dnd-kit para arrastrar y reordenar filas | Única base de UI y una sola librería de primitivas | RNF-25 a RNF-27; hoy conviven Radix y Base UI |
 | Pruebas | Vitest y Playwright, contra PostgreSQL real | Agrega Playwright | Escenarios de la sección 13 |
 | Monitoreo | Sentry con datos personales filtrados | Nuevo | Detección de fallas |
 | Integración y publicación | GitHub Actions, con staging y producción separados | Se corrige el flujo | R-07 |
