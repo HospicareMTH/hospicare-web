@@ -18,13 +18,16 @@ import {
 import {
   CATALOG_ENTRIES,
   type CatalogEntry,
+  type CatalogGroup,
   catalogPermission,
   type CatalogKey,
   findCatalogByKey,
 } from "./definitions";
+import { countActiveHealthcareProfessionals } from "./professionals/service";
 import {
   type CatalogOptionRecord,
   type CatalogOrderEntry,
+  countActiveOptionsByCatalog,
   insertOrReactivateOption,
   listCatalogOptions,
   lockCatalogOrder,
@@ -240,4 +243,32 @@ export async function moveCatalogOption(
     );
     return SUCCESS;
   });
+}
+
+export type ActiveCatalogEntryCount = {
+  slug: string;
+  label: string;
+  group: CatalogGroup;
+  activeCount: number;
+};
+
+export async function countActiveCatalogEntries(): Promise<
+  ActiveCatalogEntryCount[]
+> {
+  const [optionCounts, activeProfessionalCount] = await Promise.all([
+    countActiveOptionsByCatalog(),
+    countActiveHealthcareProfessionals(),
+  ]);
+  const activeCountByCatalog = new Map(
+    optionCounts.map(({ catalog, activeCount }) => [catalog, activeCount]),
+  );
+  return CATALOG_ENTRIES.map((entry) => ({
+    slug: entry.slug,
+    label: entry.label,
+    group: entry.group,
+    activeCount:
+      entry.kind === "healthcareProfessionals"
+        ? activeProfessionalCount
+        : (activeCountByCatalog.get(entry.key) ?? 0),
+  }));
 }

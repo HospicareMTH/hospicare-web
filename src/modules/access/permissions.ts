@@ -79,6 +79,13 @@ export const PERMISSION_GROUPS = [
   },
   ...CATALOG_PERMISSION_GROUPS,
   {
+    key: "dashboard",
+    label: "Reportes del inicio",
+    permissions: [
+      { key: "dashboard.data_quality.view", label: "Calidad de datos" },
+    ],
+  },
+  {
     key: "documentation",
     label: "Documentación",
     permissions: [{ key: "documentation.app.view", label: "Ver" }],

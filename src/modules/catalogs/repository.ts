@@ -1,4 +1,4 @@
-import { and, asc, eq, sql } from "drizzle-orm";
+import { and, asc, count, eq, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -164,4 +164,14 @@ export async function setOptionActive(
       ),
     );
   return true;
+}
+
+export function countActiveOptionsByCatalog(): Promise<
+  { catalog: CatalogKey; activeCount: number }[]
+> {
+  return getDatabase()
+    .select({ catalog: catalogOptions.catalog, activeCount: count() })
+    .from(catalogOptions)
+    .where(eq(catalogOptions.isActive, true))
+    .groupBy(catalogOptions.catalog);
 }

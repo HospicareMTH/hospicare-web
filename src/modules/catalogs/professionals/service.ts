@@ -16,6 +16,7 @@ import {
 
 import type { CatalogOptionState } from "../schemas";
 import {
+  countActiveProfessionals,
   type HealthcareProfessionalRecord,
   hasOtherActiveProfessionalWithEmail,
   insertProfessional,
@@ -186,4 +187,8 @@ export function setHealthcareProfessionalActive(
     );
     return SUCCESS;
   });
+}
+
+export function countActiveHealthcareProfessionals(): Promise<number> {
+  return countActiveProfessionals();
 }

@@ -18,7 +18,7 @@ test("RF-ACC-02: ingresa y ve el Inicio dentro del shell", async ({ page }) => {
   await signInFromHome(page);
 
   await expect(
-    page.getByText("Todavía no hay reportes para mostrar."),
+    page.getByRole("heading", { level: 2, name: "Calidad de datos" }),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "Inicio" }).first(),

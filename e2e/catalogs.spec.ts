@@ -124,10 +124,15 @@ test("RF-CAT-03: reordena con los botones y arrastrando, y Vínculos conserva su
   await page.getByRole("button", { name: "Mover No recibirá" }).focus();
   await page.keyboard.press("Space");
   await expect(page.getByText("Tomaste No recibirá.")).toBeAttached();
-  await page.keyboard.press("ArrowDown");
-  await expect(
-    page.getByText("No recibirá está sobre No convencional."),
-  ).toBeAttached();
+  // dnd-kit escucha las flechas recién en el ciclo siguiente a tomar la fila.
+  await expect(async () => {
+    if ((await page.getByText("Tomaste No recibirá.").count()) > 0) {
+      await page.keyboard.press("ArrowDown");
+    }
+    await expect(
+      page.getByText("No recibirá está sobre No convencional."),
+    ).toBeAttached({ timeout: 1000 });
+  }).toPass();
   await page.keyboard.press("Space");
   await expect(
     page.getByText("No recibirá quedó en el lugar de No convencional."),

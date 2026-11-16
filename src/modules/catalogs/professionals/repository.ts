@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ne, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -144,4 +144,12 @@ export async function saveProfessionalActive(
     .update(healthcareProfessionals)
     .set({ isActive, updatedByUserId: actorUserId, updatedAt: sql`now()` })
     .where(eq(healthcareProfessionals.id, professionalId));
+}
+
+export async function countActiveProfessionals(): Promise<number> {
+  const [result] = await getDatabase()
+    .select({ activeCount: count() })
+    .from(healthcareProfessionals)
+    .where(eq(healthcareProfessionals.isActive, true));
+  return result?.activeCount ?? 0;
 }
