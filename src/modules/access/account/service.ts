@@ -17,7 +17,8 @@ import type { ColumnPreference } from "./schemas";
 
 export const ACCOUNT_REJECTION_MESSAGES = {
   userNotFound: "Tu cuenta ya no existe. Volvé a iniciar sesión.",
-  emailNotVerified: "Verificá tu correo para hacer esta acción.",
+  emailNotVerified:
+    "Primero verificá tu correo, en la parte de Correo de esta pantalla.",
 } as const;
 
 export async function renderTotpQrCode(totpUri: string): Promise<string> {

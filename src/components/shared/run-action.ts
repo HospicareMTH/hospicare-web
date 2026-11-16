@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import type { ActionResult } from "@/platform/operation-result";
 
 const UNEXPECTED_ERROR_MESSAGE =
-  "No pudimos guardar el cambio. Probá de nuevo en unos minutos.";
+  "No pudimos confirmar si se guardó el cambio. Actualizá la pantalla para ver cómo quedó.";
 
 type SuccessResult<Result extends ActionResult> = Extract<
   Result,

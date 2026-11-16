@@ -154,7 +154,8 @@ const guardAccountSecurityMiddleware = createAuthMiddleware(async (context) => {
   if (requiresVerifiedEmail && !session.user.emailVerified) {
     throw new APIError("FORBIDDEN", {
       code: EMAIL_NOT_VERIFIED_ERROR_CODE,
-      message: "Verificá tu correo para hacer esta acción.",
+      message:
+        "Primero verificá tu correo, en la parte de Correo de esta pantalla.",
     });
   }
   if (

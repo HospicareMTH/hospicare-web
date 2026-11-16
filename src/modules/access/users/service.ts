@@ -139,8 +139,10 @@ export const ACCESS_REJECTION_MESSAGES = {
   ownAccount: "No podés cambiar el acceso de tu propia cuenta.",
   superUserOnly:
     "Solo un Super user puede cambiar el acceso de otro Super user.",
-  alreadyRevoked: "Ese acceso ya está revocado.",
-  notRevoked: "Ese acceso no está revocado.",
+  alreadyRevoked:
+    "El acceso de esta persona ya está revocado. Actualizá la pantalla.",
+  notRevoked:
+    "El acceso de esta persona ya está activo. Actualizá la pantalla.",
 } as const;
 
 type AccessChange = (
@@ -218,7 +220,7 @@ export async function restoreUserAccess(
 export const USER_REJECTION_MESSAGES = {
   roleNotFound: "El rol elegido ya no existe. Actualizá la pantalla.",
   superUserRoleOnly: "Solo un Super user puede asignar el rol Super user.",
-  roleNotAllowed: "Solo podés asignar un rol cuyos permisos tengas.",
+  roleNotAllowed: "Solo podés asignar un rol si vos tenés todos sus permisos.",
   emailRegistered: "Ese correo ya tiene una cuenta.",
   invitationPending: "Ese correo ya tiene una invitación pendiente.",
   userNotFound: "La persona ya no existe. Actualizá la pantalla.",

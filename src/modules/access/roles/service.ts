@@ -72,14 +72,15 @@ export async function searchRoles(
 export const ROLE_REJECTION_MESSAGES = {
   roleNotFound: "El rol ya no existe. Actualizá la pantalla.",
   nameTaken: "Ya existe un rol con ese nombre.",
-  systemRoleLocked: "Los roles de sistema no se pueden modificar ni eliminar.",
+  systemRoleLocked: "Los roles de sistema no se pueden renombrar ni eliminar.",
   superUserPermissionsLocked:
     "El Super user siempre tiene todos los permisos: no se pueden cambiar.",
   ownRolePermissionsLocked: "No podés cambiar los permisos de tu propio rol.",
   permissionNotHeld: "Solo podés otorgar permisos que vos tenés.",
-  roleInUse: "No se puede eliminar: hay usuarios con este rol.",
+  roleInUse:
+    "No se puede eliminar porque hay personas con este rol. Primero cambiales el rol desde Usuarios.",
   roleHasInvitations:
-    "No se puede eliminar: el rol figura en invitaciones, aunque estén vencidas o revocadas.",
+    "No se puede eliminar porque el rol figura en invitaciones, aunque estén vencidas o revocadas.",
 } as const;
 
 export async function createRole(

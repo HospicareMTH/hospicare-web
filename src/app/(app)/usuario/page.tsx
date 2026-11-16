@@ -4,7 +4,8 @@ import { AccountScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Mi cuenta",
-  description: "Verificación del correo y segundo factor de tu cuenta.",
+  description:
+    "Tu nombre, tu correo, tu contraseña y la seguridad de tu cuenta.",
 };
 
 export default function AccountPage() {
