@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ManualScreen } from "@/modules/help/components";
+import { ManualScreen } from "@/modules/help";
 
 export const metadata: Metadata = {
   title: "Documentación",

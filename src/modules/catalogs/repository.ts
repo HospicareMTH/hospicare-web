@@ -1,4 +1,4 @@
-import { and, asc, count, eq, sql } from "drizzle-orm";
+import { and, asc, count, eq, inArray, or, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -47,7 +47,8 @@ export async function findCatalogOfOption(
   return option?.catalog ?? null;
 }
 
-export type OptionInsertOutcome = "created" | "reactivated" | "duplicate";
+export type OptionInsertOutcome =
+  { kind: "created" | "reactivated"; optionId: string } | { kind: "duplicate" };
 
 export async function insertOrReactivateOption(
   transaction: DatabaseTransaction,
@@ -75,11 +76,63 @@ export async function insertOrReactivateOption(
       setWhere: eq(catalogOptions.isActive, false),
     })
     // xmax = 0 solo en filas recién insertadas: distingue alta de reactivación.
-    .returning({ wasInserted: sql<boolean>`(xmax = 0)` });
+    .returning({
+      optionId: catalogOptions.id,
+      wasInserted: sql<boolean>`(xmax = 0)`,
+    });
   if (!row) {
-    return "duplicate";
+    return { kind: "duplicate" };
   }
-  return row.wasInserted ? "created" : "reactivated";
+  return {
+    kind: row.wasInserted ? "created" : "reactivated",
+    optionId: row.optionId,
+  };
+}
+
+export type SelectableOptionRecord = {
+  id: string;
+  label: string;
+  isActive: boolean;
+};
+
+const SELECTABLE_OPTION_COLUMNS = {
+  id: catalogOptions.id,
+  label: catalogOptions.label,
+  isActive: catalogOptions.isActive,
+};
+
+export function listSelectableOptionRecords(
+  catalog: CatalogKey,
+  savedOptionIds: readonly string[],
+): Promise<SelectableOptionRecord[]> {
+  const isSelectable =
+    savedOptionIds.length === 0
+      ? eq(catalogOptions.isActive, true)
+      : or(
+          eq(catalogOptions.isActive, true),
+          inArray(catalogOptions.id, [...savedOptionIds]),
+        );
+  return getDatabase()
+    .select(SELECTABLE_OPTION_COLUMNS)
+    .from(catalogOptions)
+    .where(and(eq(catalogOptions.catalog, catalog), isSelectable))
+    .orderBy(asc(catalogOptions.sortOrder), asc(catalogOptions.label));
+}
+
+export function findCatalogOptionsByIds(
+  transaction: DatabaseTransaction,
+  catalog: CatalogKey,
+  optionIds: readonly string[],
+): Promise<SelectableOptionRecord[]> {
+  return transaction
+    .select(SELECTABLE_OPTION_COLUMNS)
+    .from(catalogOptions)
+    .where(
+      and(
+        eq(catalogOptions.catalog, catalog),
+        inArray(catalogOptions.id, [...optionIds]),
+      ),
+    );
 }
 
 export async function updateOptionDetails(

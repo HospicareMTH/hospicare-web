@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { SignInScreen } from "@/modules/access/components";
+import { SignInScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Iniciar sesión",

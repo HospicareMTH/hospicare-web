@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, ne, or, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -61,12 +61,19 @@ export async function insertProfessional(
   transaction: DatabaseTransaction,
   details: HealthcareProfessionalDetails,
   actorUserId: string,
-): Promise<void> {
-  await transaction.insert(healthcareProfessionals).values({
-    ...details,
-    createdByUserId: actorUserId,
-    updatedByUserId: actorUserId,
-  });
+): Promise<string> {
+  const [professional] = await transaction
+    .insert(healthcareProfessionals)
+    .values({
+      ...details,
+      createdByUserId: actorUserId,
+      updatedByUserId: actorUserId,
+    })
+    .returning({ id: healthcareProfessionals.id });
+  if (!professional) {
+    throw new Error("La base no devolvió el profesional creado.");
+  }
+  return professional.id;
 }
 
 export async function reactivateProfessionalWithDetails(
@@ -152,4 +159,43 @@ export async function countActiveProfessionals(): Promise<number> {
     .from(healthcareProfessionals)
     .where(eq(healthcareProfessionals.isActive, true));
   return result?.activeCount ?? 0;
+}
+
+export type SelectableProfessionalRecord = {
+  id: string;
+  label: string;
+  isActive: boolean;
+};
+
+const SELECTABLE_PROFESSIONAL_COLUMNS = {
+  id: healthcareProfessionals.id,
+  label: healthcareProfessionals.fullName,
+  isActive: healthcareProfessionals.isActive,
+};
+
+export function listSelectableProfessionalRecords(
+  savedProfessionalIds: readonly string[],
+): Promise<SelectableProfessionalRecord[]> {
+  const isSelectable =
+    savedProfessionalIds.length === 0
+      ? eq(healthcareProfessionals.isActive, true)
+      : or(
+          eq(healthcareProfessionals.isActive, true),
+          inArray(healthcareProfessionals.id, [...savedProfessionalIds]),
+        );
+  return getDatabase()
+    .select(SELECTABLE_PROFESSIONAL_COLUMNS)
+    .from(healthcareProfessionals)
+    .where(isSelectable)
+    .orderBy(asc(healthcareProfessionals.fullName));
+}
+
+export function findProfessionalsByIds(
+  transaction: DatabaseTransaction,
+  professionalIds: readonly string[],
+): Promise<SelectableProfessionalRecord[]> {
+  return transaction
+    .select(SELECTABLE_PROFESSIONAL_COLUMNS)
+    .from(healthcareProfessionals)
+    .where(inArray(healthcareProfessionals.id, [...professionalIds]));
 }

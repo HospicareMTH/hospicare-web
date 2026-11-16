@@ -1,4 +1,7 @@
-import { runInTransactionAs } from "@/platform/database/client";
+import {
+  type DatabaseTransaction,
+  runInTransactionAs,
+} from "@/platform/database/client";
 import { isUniqueViolation } from "@/platform/database/errors";
 import {
   type Comparator,
@@ -16,11 +19,18 @@ import {
 
 import type { CatalogOptionState } from "../schemas";
 import {
+  checkCatalogSelection,
+  isCatalogEntryId,
+  type SelectableCatalogEntry,
+} from "../selection";
+import {
   countActiveProfessionals,
+  findProfessionalsByIds,
   type HealthcareProfessionalRecord,
   hasOtherActiveProfessionalWithEmail,
   insertProfessional,
   listHealthcareProfessionals,
+  listSelectableProfessionalRecords,
   lockLatestProfessionalByEmail,
   lockProfessional,
   reactivateProfessionalWithDetails,
@@ -92,7 +102,8 @@ function rejectDuplicateEmail(email: string | null): FailedActionResult {
 }
 
 export type CreateHealthcareProfessionalResult =
-  FailedActionResult | { status: "success"; wasReactivated: boolean };
+  | FailedActionResult
+  | { status: "success"; wasReactivated: boolean; professionalId: string };
 
 export async function createHealthcareProfessional(
   actorUserId: string,
@@ -113,10 +124,21 @@ export async function createHealthcareProfessional(
           details,
           actorUserId,
         );
-        return { status: "success", wasReactivated: true };
+        return {
+          status: "success",
+          wasReactivated: true,
+          professionalId: existing.id,
+        };
       }
-      await insertProfessional(transaction, details, actorUserId);
-      return { status: "success", wasReactivated: false };
+      return {
+        status: "success",
+        wasReactivated: false,
+        professionalId: await insertProfessional(
+          transaction,
+          details,
+          actorUserId,
+        ),
+      };
     });
   } catch (error) {
     if (isUniqueViolation(error)) {
@@ -191,4 +213,34 @@ export function setHealthcareProfessionalActive(
 
 export function countActiveHealthcareProfessionals(): Promise<number> {
   return countActiveProfessionals();
+}
+
+export function listSelectableHealthcareProfessionals(
+  savedProfessionalIds: readonly string[] = [],
+): Promise<SelectableCatalogEntry[]> {
+  return listSelectableProfessionalRecords(
+    savedProfessionalIds.filter(isCatalogEntryId),
+  );
+}
+
+export async function validateHealthcareProfessionalSelection(
+  transaction: DatabaseTransaction,
+  selectedProfessionalIds: readonly string[],
+  savedProfessionalIds: readonly string[],
+): Promise<OperationResult> {
+  if (!selectedProfessionalIds.every(isCatalogEntryId)) {
+    return reject(
+      HEALTHCARE_PROFESSIONAL_REJECTION_MESSAGES.professionalMissing,
+    );
+  }
+  const foundProfessionals =
+    selectedProfessionalIds.length === 0
+      ? []
+      : await findProfessionalsByIds(transaction, selectedProfessionalIds);
+  return checkCatalogSelection(
+    selectedProfessionalIds,
+    savedProfessionalIds,
+    foundProfessionals,
+    HEALTHCARE_PROFESSIONAL_REJECTION_MESSAGES.professionalMissing,
+  );
 }

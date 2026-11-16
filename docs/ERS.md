@@ -415,7 +415,7 @@ Los formularios clínicos se alimentan de 28 listas configurables, y el inicio m
 | RF-CAT-02 | Desactivar debe preservar los registros existentes. | Eliminar equivale a desactivar. La opción deja de ofrecerse, pero se sigue mostrando donde ya se usó. |
 | RF-CAT-03 | Administración debe poder reordenar opciones. | El orden se respeta en los selectores. Requiere permiso de modificar. Se reordena con Subir y Bajar o arrastrando la fila, también con teclado, solo en la vista de opciones activas en su orden propio y sin búsqueda. Las opciones inactivas conservan su lugar. |
 | RF-CAT-04 | Debe poder crearse una opción sin salir del formulario. | Solo con permiso de creación. En selección única queda elegida; en múltiple, marcada. |
-| RF-CAT-05 | La obra social debe validarse según el permiso de quien carga. | Sin permiso de crear obras sociales, solo admite una activa del catálogo. |
+| RF-CAT-05 | La obra social debe validarse según el permiso de quien carga. | Sin permiso de crear obras sociales, solo admite una activa del catálogo. Se resuelve con el selector de RF-CAT-04 y la validación de RF-CAT-07; no hay texto libre. |
 | RF-CAT-06 | Crear una opción existente no debe duplicarla. | En cada catálogo compara sin distinguir mayúsculas ni acentos. Si estaba inactiva, la reactiva; con permiso de crear alcanza. En Profesionales compara el correo: crear con el de uno inactivo lo reactiva con los datos nuevos, y no se puede reactivar uno cuyo correo usa otro activo. |
 | RF-CAT-07 | Los formularios deben rechazar opciones inactivas nuevas. | Validación en el servidor. |
 

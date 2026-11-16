@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { CatalogsScreen } from "@/modules/catalogs/components";
+import { CatalogsScreen } from "@/modules/catalogs";
 
 export const metadata: Metadata = {
   title: "Catálogos",

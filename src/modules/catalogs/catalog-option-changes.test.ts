@@ -78,7 +78,7 @@ describe("catálogos: cambios de opciones", () => {
         label: "  Budista ",
         description: "",
       }),
-    ).resolves.toEqual({ status: "success", wasReactivated: false });
+    ).resolves.toMatchObject({ status: "success", wasReactivated: false });
 
     const option = await findOption("religion", "Budista");
     expect(option).toMatchObject({
@@ -143,7 +143,7 @@ describe("catálogos: cambios de opciones", () => {
         label: "judio",
         description: "",
       }),
-    ).resolves.toEqual({ status: "success", wasReactivated: true });
+    ).resolves.toMatchObject({ status: "success", wasReactivated: true });
 
     const reactivated = await findOption("religion", "Judío");
     expect(reactivated.isActive).toBe(true);
@@ -218,7 +218,7 @@ describe("catálogos: cambios de opciones", () => {
         label: "Mormon",
         description: "",
       }),
-    ).resolves.toEqual({ status: "success", wasReactivated: true });
+    ).resolves.toMatchObject({ status: "success", wasReactivated: true });
   });
 
   it("RF-CAT-03, RN-20: subir y bajar intercambia con la opción activa vecina y audita el orden", async () => {

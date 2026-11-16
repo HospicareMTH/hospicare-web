@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AcceptInvitationScreen } from "@/modules/access/components";
+import { AcceptInvitationScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Aceptar invitación",

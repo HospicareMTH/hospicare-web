@@ -209,3 +209,7 @@ export function findCatalogByKey(key: CatalogKey): CatalogDefinition {
   }
   return definition;
 }
+
+export const HEALTHCARE_PROFESSIONALS_PICKER = "healthcareProfessionals";
+
+export type PickerCatalog = CatalogKey | typeof HEALTHCARE_PROFESSIONALS_PICKER;

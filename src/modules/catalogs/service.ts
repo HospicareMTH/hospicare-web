@@ -1,5 +1,8 @@
 import { hasPermission, type UserAccess } from "@/modules/access";
-import { runInTransactionAs } from "@/platform/database/client";
+import {
+  type DatabaseTransaction,
+  runInTransactionAs,
+} from "@/platform/database/client";
 import { isUniqueViolation } from "@/platform/database/errors";
 import {
   type Comparator,
@@ -22,19 +25,29 @@ import {
   catalogPermission,
   type CatalogKey,
   findCatalogByKey,
+  HEALTHCARE_PROFESSIONALS_CATALOG,
+  HEALTHCARE_PROFESSIONALS_PICKER,
+  type PickerCatalog,
 } from "./definitions";
 import { countActiveHealthcareProfessionals } from "./professionals/service";
 import {
   type CatalogOptionRecord,
   type CatalogOrderEntry,
   countActiveOptionsByCatalog,
+  findCatalogOptionsByIds,
   insertOrReactivateOption,
   listCatalogOptions,
+  listSelectableOptionRecords,
   lockCatalogOrder,
   saveCatalogOrder,
   setOptionActive,
   updateOptionDetails,
 } from "./repository";
+import {
+  checkCatalogSelection,
+  isCatalogEntryId,
+  type SelectableCatalogEntry,
+} from "./selection";
 import type {
   CatalogOptionDetails,
   CatalogOptionListQuery,
@@ -119,7 +132,8 @@ function rejectDuplicateLabel(label: string): FailedActionResult {
 }
 
 export type CreateCatalogOptionResult =
-  FailedActionResult | { status: "success"; wasReactivated: boolean };
+  | FailedActionResult
+  | { status: "success"; wasReactivated: boolean; optionId: string };
 
 export async function createCatalogOption(
   actorUserId: string,
@@ -129,10 +143,56 @@ export async function createCatalogOption(
   const outcome = await runInTransactionAs(actorUserId, (transaction) =>
     insertOrReactivateOption(transaction, catalog, details, actorUserId),
   );
-  if (outcome === "duplicate") {
+  if (outcome.kind === "duplicate") {
     return rejectDuplicateLabel(details.label);
   }
-  return { status: "success", wasReactivated: outcome === "reactivated" };
+  return {
+    status: "success",
+    wasReactivated: outcome.kind === "reactivated",
+    optionId: outcome.optionId,
+  };
+}
+
+export function listSelectableCatalogOptions(
+  catalog: CatalogKey,
+  savedOptionIds: readonly string[] = [],
+): Promise<SelectableCatalogEntry[]> {
+  return listSelectableOptionRecords(
+    catalog,
+    savedOptionIds.filter(isCatalogEntryId),
+  );
+}
+
+export async function validateCatalogSelection(
+  transaction: DatabaseTransaction,
+  catalog: CatalogKey,
+  selectedOptionIds: readonly string[],
+  savedOptionIds: readonly string[],
+): Promise<OperationResult> {
+  if (!selectedOptionIds.every(isCatalogEntryId)) {
+    return reject(CATALOG_REJECTION_MESSAGES.optionMissing);
+  }
+  const foundOptions =
+    selectedOptionIds.length === 0
+      ? []
+      : await findCatalogOptionsByIds(transaction, catalog, selectedOptionIds);
+  return checkCatalogSelection(
+    selectedOptionIds,
+    savedOptionIds,
+    foundOptions,
+    CATALOG_REJECTION_MESSAGES.optionMissing,
+  );
+}
+
+export function canCreateCatalogEntries(
+  access: UserAccess,
+  catalog: PickerCatalog,
+): boolean {
+  const scope =
+    catalog === HEALTHCARE_PROFESSIONALS_PICKER
+      ? HEALTHCARE_PROFESSIONALS_CATALOG
+      : findCatalogByKey(catalog);
+  return hasPermission(access, catalogPermission(scope, "create"));
 }
 
 export async function updateCatalogOption(

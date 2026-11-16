@@ -180,7 +180,7 @@ describe("profesionales de salud: cambios", () => {
   it("RF-CAT-01, RN-20: crea un profesional con su responsable y correo en minúsculas", async () => {
     await expect(
       createHealthcareProfessionalAction(CLINICAL_DOCTOR),
-    ).resolves.toEqual({ status: "success", wasReactivated: false });
+    ).resolves.toMatchObject({ status: "success", wasReactivated: false });
 
     expect(await findProfessional("Dra. Ficticia Médica")).toMatchObject({
       specialty: "Clínica médica",
@@ -275,7 +275,7 @@ describe("profesionales de salud: cambios", () => {
         fullName: "Dra. Ficticia Médica Paliativista",
         specialty: "Cuidados paliativos",
       }),
-    ).resolves.toEqual({ status: "success", wasReactivated: true });
+    ).resolves.toMatchObject({ status: "success", wasReactivated: true });
 
     expect(
       await findProfessional("Dra. Ficticia Médica Paliativista"),
