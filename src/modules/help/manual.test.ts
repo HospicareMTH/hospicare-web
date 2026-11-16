@@ -6,7 +6,7 @@ import {
   type UserAccess,
 } from "@/modules/access";
 
-import { listVisibleManualSections } from "./service";
+import { findVisibleManualSection, listVisibleManualSections } from "./service";
 
 function createAccess(permissions: readonly Permission[]): UserAccess {
   return {
@@ -75,5 +75,29 @@ describe("manual funcional", () => {
       expect(section.topics.length).toBeGreaterThan(0);
       expect(section.rules.length).toBeGreaterThan(0);
     }
+  });
+
+  it("RF-MAN-01: abre una sección visible por su dirección", () => {
+    const lookup = findVisibleManualSection(
+      createAccess(["documentation.app.view"]),
+      "ingreso",
+    );
+
+    expect(lookup.status).toBe("visible");
+  });
+
+  it("RF-MAN-01, RF-ROL-08: rechaza una sección sin permiso", () => {
+    expect(
+      findVisibleManualSection(
+        createAccess(["documentation.app.view"]),
+        "usuarios",
+      ),
+    ).toEqual({ status: "forbidden" });
+  });
+
+  it("RF-MAN-01: no encuentra una sección que no existe", () => {
+    expect(
+      findVisibleManualSection(createAccess(ALL_PERMISSIONS), "no-existe"),
+    ).toEqual({ status: "missing" });
   });
 });

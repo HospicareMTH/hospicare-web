@@ -110,7 +110,8 @@ El sistema tiene 29 pantallas y 2 documentos PDF, organizados en 7 destinos de n
 | `/invitaciones/aceptar` | Aceptar invitación | Enlace enviado por correo |
 | `/` | Inicio operativo | Sesión; cada reporte exige `dashboard.*.view` |
 | `/usuario` | Mi cuenta | Sesión |
-| `/documentacion` | Manual funcional | `documentation.app.view` |
+| `/documentacion` | Manual funcional: abre la primera sección visible | `documentation.app.view` |
+| `/documentacion/[sección]` | Una sección del manual | `documentation.app.view` y el permiso de lo que documenta |
 | `/admisiones` | Listado de entrevistas | `admissions.interviews.view` |
 | `/admisiones/nueva` | Nueva entrevista | `admissions.interviews.create` |
 | `/admisiones/[id]` | Detalle de entrevista | `admissions.interviews.view` |

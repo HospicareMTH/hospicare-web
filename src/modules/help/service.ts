@@ -47,8 +47,36 @@ const MANUAL_ENTRIES: readonly ManualEntry[] = [
   },
 ];
 
+export type ManualSectionLookup =
+  | { status: "visible"; section: ManualSection }
+  | { status: "forbidden" }
+  | { status: "missing" };
+
 export function listVisibleManualSections(access: UserAccess): ManualSection[] {
   return MANUAL_ENTRIES.filter((entry) => entry.isVisibleTo(access)).map(
     (entry) => entry.section,
   );
+}
+
+export function findManualSectionTitle(sectionId: string): string | null {
+  return (
+    MANUAL_ENTRIES.find((entry) => entry.section.id === sectionId)?.section
+      .title ?? null
+  );
+}
+
+export function findVisibleManualSection(
+  access: UserAccess,
+  sectionId: string,
+): ManualSectionLookup {
+  const entry = MANUAL_ENTRIES.find(
+    (candidate) => candidate.section.id === sectionId,
+  );
+  if (!entry) {
+    return { status: "missing" };
+  }
+  if (!entry.isVisibleTo(access)) {
+    return { status: "forbidden" };
+  }
+  return { status: "visible", section: entry.section };
 }
