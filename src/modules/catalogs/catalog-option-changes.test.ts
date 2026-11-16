@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createFirstSuperUser, getAuth } from "@/modules/access";
@@ -10,6 +10,7 @@ import { resetTestDatabase } from "@/platform/database/test-database";
 import {
   createCatalogOptionAction,
   deactivateCatalogOptionAction,
+  moveCatalogOptionAction,
   reactivateCatalogOptionAction,
   updateCatalogOptionAction,
 } from "./actions";
@@ -82,6 +83,20 @@ async function findOption(catalog: CatalogKey, label: string) {
     throw new Error(`No existe la opción de prueba ${label}.`);
   }
   return option;
+}
+
+async function listActiveLabels(catalog: CatalogKey): Promise<string[]> {
+  const options = await getDatabase()
+    .select({ label: catalogOptions.label })
+    .from(catalogOptions)
+    .where(
+      and(
+        eq(catalogOptions.catalog, catalog),
+        eq(catalogOptions.isActive, true),
+      ),
+    )
+    .orderBy(asc(catalogOptions.sortOrder));
+  return options.map((option) => option.label);
 }
 
 async function countOptions(catalog: CatalogKey): Promise<number> {
@@ -249,5 +264,138 @@ describe("catálogos: cambios de opciones", () => {
         description: "",
       }),
     ).resolves.toEqual({ status: "success", wasReactivated: true });
+  });
+
+  it("RF-CAT-03, RN-20: subir y bajar intercambia con la opción activa vecina y audita el orden", async () => {
+    const judio = await findOption("religion", "Judío");
+
+    await expect(
+      moveCatalogOptionAction(judio.id, { direction: "up" }),
+    ).resolves.toEqual({ status: "success" });
+    expect(await listActiveLabels("religion")).toEqual([
+      "Ninguna",
+      "Judío",
+      "Católico",
+      "Evangelista",
+      "Mormón",
+      "Testigo de Jehová",
+      "Otra",
+    ]);
+
+    await expect(
+      moveCatalogOptionAction(judio.id, { direction: "down" }),
+    ).resolves.toEqual({ status: "success" });
+    expect((await listActiveLabels("religion")).slice(0, 3)).toEqual([
+      "Ninguna",
+      "Católico",
+      "Judío",
+    ]);
+
+    const audit = await getDatabase().execute<{ actor_user_id: string }>(
+      sql`select actor_user_id from audit_log where action = 'catalog_option.reordered' and resource_id = ${judio.id}`,
+    );
+    expect(audit.rows).toEqual([
+      { actor_user_id: superUserId },
+      { actor_user_id: superUserId },
+    ]);
+  });
+
+  it("RF-CAT-03: arrastrar ubica la opción en el lugar de la opción de destino", async () => {
+    const otra = await findOption("religion", "Otra");
+    const catolico = await findOption("religion", "Católico");
+
+    await expect(
+      moveCatalogOptionAction(otra.id, { targetOptionId: catolico.id }),
+    ).resolves.toEqual({ status: "success" });
+    expect(await listActiveLabels("religion")).toEqual([
+      "Ninguna",
+      "Otra",
+      "Católico",
+      "Judío",
+      "Evangelista",
+      "Mormón",
+      "Testigo de Jehová",
+    ]);
+
+    await expect(
+      moveCatalogOptionAction(otra.id, { targetOptionId: otra.id }),
+    ).resolves.toEqual({ status: "success" });
+    expect((await listActiveLabels("religion"))[1]).toBe("Otra");
+  });
+
+  it("RF-CAT-03: saltea las opciones inactivas y las conserva en el catálogo", async () => {
+    await deactivateCatalogOptionAction(
+      (await findOption("religion", "Católico")).id,
+    );
+    const judio = await findOption("religion", "Judío");
+
+    await expect(
+      moveCatalogOptionAction(judio.id, { direction: "up" }),
+    ).resolves.toEqual({ status: "success" });
+    expect((await listActiveLabels("religion")).slice(0, 2)).toEqual([
+      "Judío",
+      "Ninguna",
+    ]);
+    expect(await countOptions("religion")).toBe(7);
+  });
+
+  it("RF-CAT-03: rechaza mover fuera de los extremos, opciones inactivas u opciones de otro catálogo", async () => {
+    const ninguna = await findOption("religion", "Ninguna");
+    const otra = await findOption("religion", "Otra");
+    const osde = await findOption("health_insurance", "OSDE");
+
+    await expect(
+      moveCatalogOptionAction(ninguna.id, { direction: "up" }),
+    ).resolves.toEqual({
+      status: "rejected",
+      message: "La opción ya está en el primer lugar.",
+    });
+    await expect(
+      moveCatalogOptionAction(otra.id, { direction: "down" }),
+    ).resolves.toEqual({
+      status: "rejected",
+      message: "La opción ya está en el último lugar.",
+    });
+    await expect(
+      moveCatalogOptionAction(otra.id, { targetOptionId: osde.id }),
+    ).resolves.toEqual({
+      status: "rejected",
+      message: "Solo se puede mover entre opciones activas del mismo catálogo.",
+    });
+    await deactivateCatalogOptionAction(otra.id);
+    await expect(
+      moveCatalogOptionAction(otra.id, { targetOptionId: ninguna.id }),
+    ).resolves.toEqual({
+      status: "rejected",
+      message: "Solo se puede mover entre opciones activas del mismo catálogo.",
+    });
+    expect((await listActiveLabels("religion"))[0]).toBe("Ninguna");
+  });
+
+  it("RF-CAT-03: Vínculos conserva su orden fijo", async () => {
+    const otro = await findOption("relationship", "Otro");
+
+    await expect(
+      moveCatalogOptionAction(otro.id, { direction: "up" }),
+    ).resolves.toEqual({
+      status: "rejected",
+      message:
+        "Vínculos tiene un orden fijo: las opciones nuevas van al final.",
+    });
+    expect((await listActiveLabels("relationship")).at(-1)).toBe("Otro");
+  });
+
+  it("RF-CAT-03, CA-03: reordenar exige permiso de modificar el catálogo", async () => {
+    await restrictSignedInUserTo([
+      "admin.religion_options.view",
+      "admin.religion_options.create",
+      "admin.religion_options.delete",
+    ]);
+    const judio = await findOption("religion", "Judío");
+
+    await expect(
+      moveCatalogOptionAction(judio.id, { direction: "up" }),
+    ).rejects.toMatchObject({ digest: FORBIDDEN_DIGEST });
+    expect((await listActiveLabels("religion"))[2]).toBe("Judío");
   });
 });

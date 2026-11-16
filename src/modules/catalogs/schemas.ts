@@ -101,6 +101,18 @@ export const catalogOptionDetailsSchema = z.object({
     .transform((description) => description || null),
 });
 
+export const catalogOptionMoveSchema = z.union(
+  [
+    z.object({ direction: z.enum(["up", "down"]) }),
+    z.object({ targetOptionId: catalogOptionIdSchema }),
+  ],
+  { error: "El movimiento no es válido. Actualizá la pantalla." },
+);
+
+export type CatalogOptionMoveInput = z.input<typeof catalogOptionMoveSchema>;
+
+export type CatalogOptionMove = z.output<typeof catalogOptionMoveSchema>;
+
 export type CatalogOptionDetailsInput = z.input<
   typeof catalogOptionDetailsSchema
 >;

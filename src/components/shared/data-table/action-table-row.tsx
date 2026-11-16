@@ -2,7 +2,7 @@
 
 import { MoreVerticalIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode, Ref } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,27 +28,42 @@ export type RowAction = {
 
 const MENU_ITEM_CLASS_NAME = "h-10 text-base whitespace-nowrap";
 
+export type ActionTableRowProps = {
+  actions: RowAction[];
+  actionsLabel: string;
+  isSelected: boolean;
+  onSelect: () => void;
+  children: ReactNode;
+};
+
 export function ActionTableRow({
   actions,
   actionsLabel,
   isSelected,
   onSelect,
   children,
-}: {
-  actions: RowAction[];
-  actionsLabel: string;
-  isSelected: boolean;
-  onSelect: () => void;
-  children: ReactNode;
+  rowRef,
+  rowStyle,
+  isDragging = false,
+  leadingCell,
+}: ActionTableRowProps & {
+  rowRef?: Ref<HTMLTableRowElement>;
+  rowStyle?: CSSProperties;
+  isDragging?: boolean;
+  leadingCell?: ReactNode;
 }) {
   const row = (
     <TableRow
+      ref={rowRef}
+      style={rowStyle}
       aria-selected={isSelected}
       data-state={isSelected ? "selected" : undefined}
+      data-dragging={isDragging || undefined}
       onClick={onSelect}
       onContextMenu={onSelect}
-      className="h-14 data-[state=selected]:bg-primary/10"
+      className="h-14 data-[state=selected]:bg-primary/10 data-dragging:relative data-dragging:z-10 data-dragging:bg-background data-dragging:shadow-[0_8px_24px_-8px_rgb(20_33_45/0.35)]"
     >
+      {leadingCell}
       {children}
       <TableCell className="text-right">
         {actions.length > 0 && (

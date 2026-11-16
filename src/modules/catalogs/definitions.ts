@@ -21,6 +21,7 @@ export type CatalogDefinition = {
   label: string;
   group: CatalogGroup;
   permissionGroup: CatalogPermissionGroup;
+  isReorderable: boolean;
 };
 
 export function catalogPermission(
@@ -41,6 +42,7 @@ function guestCatalog(
     label,
     group: "guests",
     permissionGroup: "guest_clinical_catalog_options",
+    isReorderable: true,
   };
 }
 
@@ -51,6 +53,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Vínculos",
     group: "admissions",
     permissionGroup: "relationship_types",
+    isReorderable: false,
   },
   {
     key: "health_insurance",
@@ -58,6 +61,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Obras sociales",
     group: "admissions",
     permissionGroup: "health_insurance_providers",
+    isReorderable: true,
   },
   {
     key: "information_awareness",
@@ -65,6 +69,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Información general",
     group: "admissions",
     permissionGroup: "information_awareness_options",
+    isReorderable: true,
   },
   {
     key: "religion",
@@ -72,6 +77,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Religión",
     group: "admissions",
     permissionGroup: "religion_options",
+    isReorderable: true,
   },
   {
     key: "ecog_score",
@@ -79,6 +85,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "ECOG",
     group: "admissions",
     permissionGroup: "ecog_score_options",
+    isReorderable: true,
   },
   {
     key: "oncological_treatment",
@@ -86,6 +93,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Tratamiento oncológico",
     group: "admissions",
     permissionGroup: "oncological_treatment_options",
+    isReorderable: true,
   },
   {
     key: "metastasis_location",
@@ -93,6 +101,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Lugar de metástasis",
     group: "admissions",
     permissionGroup: "metastasis_location_options",
+    isReorderable: true,
   },
   {
     key: "surgery",
@@ -100,6 +109,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     label: "Cirugía",
     group: "admissions",
     permissionGroup: "surgery_options",
+    isReorderable: true,
   },
   guestCatalog(
     "hospitalization_reason",

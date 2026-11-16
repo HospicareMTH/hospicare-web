@@ -22,11 +22,14 @@ import {
   catalogOptionDetailsSchema,
   type CatalogOptionDetailsInput,
   catalogOptionIdSchema,
+  catalogOptionMoveSchema,
+  type CatalogOptionMoveInput,
 } from "./schemas";
 import {
   CATALOG_REJECTION_MESSAGES,
   createCatalogOption,
   type CreateCatalogOptionResult,
+  moveCatalogOption,
   setCatalogOptionActive,
   updateCatalogOption,
 } from "./service";
@@ -51,7 +54,7 @@ async function requireCatalogPermission(
 async function requireOptionPermission(
   optionId: string,
   action: CatalogAction,
-): Promise<{ actorUserId: string } | ActionResult> {
+): Promise<{ actorUserId: string; catalogKey: CatalogKey } | ActionResult> {
   const parsedOptionId = catalogOptionIdSchema.safeParse(optionId);
   if (!parsedOptionId.success) {
     return toRejectedResult(parsedOptionId.error);
@@ -60,7 +63,10 @@ async function requireOptionPermission(
   if (!catalogKey) {
     return reject(CATALOG_REJECTION_MESSAGES.optionMissing);
   }
-  return { actorUserId: await requireCatalogPermission(catalogKey, action) };
+  return {
+    actorUserId: await requireCatalogPermission(catalogKey, action),
+    catalogKey,
+  };
 }
 
 export async function createCatalogOptionAction(
@@ -134,5 +140,27 @@ export async function reactivateCatalogOptionAction(
   }
   return refreshOnSuccess(
     await setCatalogOptionActive(permission.actorUserId, optionId, true),
+  );
+}
+
+export async function moveCatalogOptionAction(
+  optionId: string,
+  input: CatalogOptionMoveInput,
+): Promise<ActionResult> {
+  const permission = await requireOptionPermission(optionId, "update");
+  if (!("actorUserId" in permission)) {
+    return permission;
+  }
+  const move = catalogOptionMoveSchema.safeParse(input);
+  if (!move.success) {
+    return toRejectedResult(move.error);
+  }
+  return refreshOnSuccess(
+    await moveCatalogOption(
+      permission.actorUserId,
+      permission.catalogKey,
+      optionId,
+      move.data,
+    ),
   );
 }

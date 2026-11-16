@@ -20,17 +20,22 @@ import {
   type CatalogDefinition,
   catalogPermission,
   type CatalogKey,
+  findCatalogByKey,
 } from "./definitions";
 import {
   type CatalogOptionRecord,
+  type CatalogOrderEntry,
   insertOrReactivateOption,
   listCatalogOptions,
+  lockCatalogOrder,
+  saveCatalogOrder,
   setOptionActive,
   updateOptionDetails,
 } from "./repository";
 import type {
   CatalogOptionDetails,
   CatalogOptionListQuery,
+  CatalogOptionMove,
   CatalogOptionSortKey,
   CatalogOptionState,
 } from "./schemas";
@@ -97,6 +102,10 @@ export async function searchCatalogOptions(
 
 export const CATALOG_REJECTION_MESSAGES = {
   optionMissing: "La opción ya no existe. Actualizá la pantalla.",
+  alreadyFirst: "La opción ya está en el primer lugar.",
+  alreadyLast: "La opción ya está en el último lugar.",
+  invalidMoveTarget:
+    "Solo se puede mover entre opciones activas del mismo catálogo.",
 } as const;
 
 function rejectDuplicateLabel(label: string): FailedActionResult {
@@ -154,4 +163,81 @@ export async function setCatalogOptionActive(
   return optionExists
     ? SUCCESS
     : reject(CATALOG_REJECTION_MESSAGES.optionMissing);
+}
+
+function resolveMoveTarget(
+  activeIds: string[],
+  optionId: string,
+  move: CatalogOptionMove,
+): string | OperationResult {
+  if ("targetOptionId" in move) {
+    return activeIds.includes(move.targetOptionId)
+      ? move.targetOptionId
+      : reject(CATALOG_REJECTION_MESSAGES.invalidMoveTarget);
+  }
+  const optionIndex = activeIds.indexOf(optionId);
+  if (move.direction === "up") {
+    return (
+      activeIds[optionIndex - 1] ??
+      reject(CATALOG_REJECTION_MESSAGES.alreadyFirst)
+    );
+  }
+  return (
+    activeIds[optionIndex + 1] ?? reject(CATALOG_REJECTION_MESSAGES.alreadyLast)
+  );
+}
+
+function placeOptionAtTarget(
+  entries: CatalogOrderEntry[],
+  optionId: string,
+  targetId: string,
+): CatalogOrderEntry[] {
+  const optionIndex = entries.findIndex((entry) => entry.id === optionId);
+  const targetIndex = entries.findIndex((entry) => entry.id === targetId);
+  const option = entries[optionIndex];
+  if (!option || optionIndex === targetIndex) {
+    return entries;
+  }
+  const remaining = entries.filter((entry) => entry.id !== optionId);
+  const targetIndexInRemaining = remaining.findIndex(
+    (entry) => entry.id === targetId,
+  );
+  const isMovingDown = optionIndex < targetIndex;
+  const insertionIndex = isMovingDown
+    ? targetIndexInRemaining + 1
+    : targetIndexInRemaining;
+  return remaining.toSpliced(insertionIndex, 0, option);
+}
+
+export async function moveCatalogOption(
+  actorUserId: string,
+  catalog: CatalogKey,
+  optionId: string,
+  move: CatalogOptionMove,
+): Promise<OperationResult> {
+  const definition = findCatalogByKey(catalog);
+  if (!definition.isReorderable) {
+    return reject(
+      `${definition.label} tiene un orden fijo: las opciones nuevas van al final.`,
+    );
+  }
+  return runInTransactionAs(actorUserId, async (transaction) => {
+    const entries = await lockCatalogOrder(transaction, catalog);
+    const activeIds = entries
+      .filter((entry) => entry.isActive)
+      .map((entry) => entry.id);
+    if (!activeIds.includes(optionId)) {
+      return reject(CATALOG_REJECTION_MESSAGES.invalidMoveTarget);
+    }
+    const target = resolveMoveTarget(activeIds, optionId, move);
+    if (typeof target !== "string") {
+      return target;
+    }
+    await saveCatalogOrder(
+      transaction,
+      placeOptionAtTarget(entries, optionId, target),
+      actorUserId,
+    );
+    return SUCCESS;
+  });
 }

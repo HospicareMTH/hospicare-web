@@ -61,6 +61,7 @@ async function CatalogsContent({
         key={catalog.key}
         catalogKey={catalog.key}
         catalogLabel={catalog.label}
+        isReorderable={catalog.isReorderable}
         optionPage={optionPage}
         query={query}
         hiddenColumns={hiddenColumns}

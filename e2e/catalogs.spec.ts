@@ -101,3 +101,47 @@ test("RF-CAT-01, RF-CAT-02: crea, edita, desactiva y reactiva una opción", asyn
   await expect(page.getByText("Opción reactivada.")).toBeVisible();
   await expect(optionRow).toHaveCount(0);
 });
+
+test("RF-CAT-03: reordena con los botones y arrastrando, y Vínculos conserva su orden", async ({
+  page,
+}) => {
+  await page.goto(`${CATALOGS_PATH}?catalogo=tratamiento-oncologico`);
+  await signIn(page);
+  const optionRows = page
+    .getByRole("row")
+    .filter({ hasNot: page.getByRole("columnheader") });
+
+  await expect(
+    page.getByRole("button", { name: "Subir No recibirá" }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Subir No convencional" }).click();
+  await expect(page.getByText("Orden guardado.")).toBeVisible();
+  await expect(optionRows.nth(1)).toContainText("No convencional");
+
+  await expect(
+    page.getByRole("button", { name: "Subir No convencional" }),
+  ).toBeEnabled();
+  await page.getByRole("button", { name: "Mover No recibirá" }).focus();
+  await page.keyboard.press("Space");
+  await expect(page.getByText("Tomaste No recibirá.")).toBeAttached();
+  await page.keyboard.press("ArrowDown");
+  await expect(
+    page.getByText("No recibirá está sobre No convencional."),
+  ).toBeAttached();
+  await page.keyboard.press("Space");
+  await expect(
+    page.getByText("No recibirá quedó en el lugar de No convencional."),
+  ).toBeAttached();
+  await expect(optionRows.nth(0)).toContainText("No convencional");
+  await expect(optionRows.nth(1)).toContainText("No recibirá");
+
+  await page.reload();
+  await expect(optionRows.nth(0)).toContainText("No convencional");
+  await expect(optionRows.nth(2)).toContainText("Suspensión definitiva");
+
+  await page.goto(`${CATALOGS_PATH}?catalogo=vinculos`);
+  await expect(page.getByRole("row", { name: /Hija\/o/ })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /^(Subir|Mover) / }),
+  ).toHaveCount(0);
+});

@@ -101,6 +101,45 @@ export async function updateOptionDetails(
   return updatedRows.length > 0;
 }
 
+export type CatalogOrderEntry = {
+  id: string;
+  isActive: boolean;
+  sortOrder: number;
+};
+
+export function lockCatalogOrder(
+  transaction: DatabaseTransaction,
+  catalog: CatalogKey,
+): Promise<CatalogOrderEntry[]> {
+  return transaction
+    .select({
+      id: catalogOptions.id,
+      isActive: catalogOptions.isActive,
+      sortOrder: catalogOptions.sortOrder,
+    })
+    .from(catalogOptions)
+    .where(eq(catalogOptions.catalog, catalog))
+    .orderBy(asc(catalogOptions.sortOrder), asc(catalogOptions.label))
+    .for("update");
+}
+
+export async function saveCatalogOrder(
+  transaction: DatabaseTransaction,
+  orderedEntries: CatalogOrderEntry[],
+  actorUserId: string,
+): Promise<void> {
+  for (const [index, entry] of orderedEntries.entries()) {
+    const sortOrder = (index + 1) * SORT_ORDER_STEP;
+    if (entry.sortOrder === sortOrder) {
+      continue;
+    }
+    await transaction
+      .update(catalogOptions)
+      .set({ sortOrder, updatedByUserId: actorUserId, updatedAt: sql`now()` })
+      .where(eq(catalogOptions.id, entry.id));
+  }
+}
+
 export async function setOptionActive(
   transaction: DatabaseTransaction,
   optionId: string,
