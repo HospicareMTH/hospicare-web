@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 import { isAfterBusinessToday } from "./dates";
+import { removeDniSeparators } from "./dni";
 
 const DNI_MINIMUM = 1_000_000;
 const DNI_MAXIMUM = 99_999_999;
-const DNI_SEPARATORS = /[.\-\s]/g;
 const DIGITS_ONLY = /^\d+$/;
 
 const DNI_ERROR =
@@ -17,7 +17,7 @@ function isDniInRange(digits: string): boolean {
 
 export const dniSchema = z
   .string()
-  .transform((candidate) => candidate.replace(DNI_SEPARATORS, ""))
+  .transform(removeDniSeparators)
   .refine((digits) => DIGITS_ONLY.test(digits) && isDniInRange(digits), {
     error: DNI_ERROR,
   })

@@ -48,16 +48,30 @@ export function paginateList<Item, SortKey extends string>(
       sort.isDescending ? compare(second, first) : compare(first, second),
     );
 
-  const pageCount = Math.max(1, Math.ceil(matchingItems.length / pageSize));
-  const currentPage = Math.min(page, pageCount);
-  const pageStart = (currentPage - 1) * pageSize;
+  const window = resolvePageWindow(matchingItems.length, page, pageSize);
   return {
-    items: matchingItems.slice(pageStart, pageStart + pageSize),
+    items: matchingItems.slice(window.offset, window.offset + pageSize),
     totalCount: matchingItems.length,
-    page: currentPage,
-    pageCount,
+    page: window.page,
+    pageCount: window.pageCount,
     pageSize,
   };
+}
+
+export type PageWindow = {
+  page: number;
+  pageCount: number;
+  offset: number;
+};
+
+export function resolvePageWindow(
+  totalCount: number,
+  requestedPage: number,
+  pageSize: number,
+): PageWindow {
+  const pageCount = Math.max(1, Math.ceil(totalCount / pageSize));
+  const page = Math.min(requestedPage, pageCount);
+  return { page, pageCount, offset: (page - 1) * pageSize };
 }
 
 export type ListSort<SortKey extends string> = {

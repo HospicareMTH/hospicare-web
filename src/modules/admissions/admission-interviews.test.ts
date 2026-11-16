@@ -3,21 +3,20 @@
 import { eq, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { createFirstSuperUser, PERMISSION_GROUPS } from "@/modules/access";
-import type { CatalogKey } from "@/modules/catalogs";
+import { PERMISSION_GROUPS } from "@/modules/access";
 import { getDatabase, runInTransactionAs } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
 
 import { admissionInterviews, admissionInterviewSurgeries } from "./tables";
+import {
+  buildFictitiousInterview,
+  createActorUserId,
+  insertCatalogOption,
+  insertInterview,
+} from "./test-fixtures";
 
 const CHECK_VIOLATION = { cause: { code: "23514" } };
 const PERMISSION_DENIED = { cause: { code: "42501" } };
-const FICTITIOUS_ACTOR = {
-  name: "Ana Prueba",
-  email: "ana.prueba@hospicare.test",
-  password: "clave-de-prueba-larga",
-};
-
 type AuditEntry = {
   action: string;
   operation: string;
@@ -26,84 +25,6 @@ type AuditEntry = {
   previous_value: Record<string, unknown> | null;
   new_value: Record<string, unknown> | null;
 };
-
-async function createActorUserId(): Promise<string> {
-  await createFirstSuperUser(FICTITIOUS_ACTOR);
-  const result = await getDatabase().execute<{ id: string }>(
-    sql`select id from users where email = ${FICTITIOUS_ACTOR.email}`,
-  );
-  const [actor] = result.rows;
-  if (!actor) {
-    throw new Error("No se creó el usuario de prueba.");
-  }
-  return actor.id;
-}
-
-async function findSeededOptionId(
-  catalog: CatalogKey,
-  label: string,
-): Promise<string> {
-  const result = await getDatabase().execute<{ id: string }>(
-    sql`select id from catalog_options where catalog = ${catalog} and label = ${label}`,
-  );
-  const [option] = result.rows;
-  if (!option) {
-    throw new Error(`No existe la opción sembrada ${label}.`);
-  }
-  return option.id;
-}
-
-async function insertCatalogOption(
-  catalog: CatalogKey,
-  label: string,
-): Promise<string> {
-  const result = await getDatabase().execute<{ id: string }>(
-    sql`insert into catalog_options (catalog, label, sort_order)
-        values (${catalog}, ${label}, 1000)
-        returning id`,
-  );
-  const [option] = result.rows;
-  if (!option) {
-    throw new Error(`No se creó la opción de prueba ${label}.`);
-  }
-  return option.id;
-}
-
-async function buildFictitiousInterview(): Promise<
-  typeof admissionInterviews.$inferInsert
-> {
-  return {
-    interviewDate: "2026-11-10",
-    guestFirstName: "Persona",
-    guestLastName: "Ficticia",
-    guestBirthDate: "1950-01-01",
-    guestDni: "11222333",
-    guestAddress: "Calle Ficticia 123",
-    informationAwarenessOptionId: await findSeededOptionId(
-      "information_awareness",
-      "Total, conoce el diagnóstico y el pronóstico",
-    ),
-    religionOptionId: await findSeededOptionId("religion", "Ninguna"),
-    ecogScoreOptionId: await findSeededOptionId(
-      "ecog_score",
-      "Asintomático, actividad normal",
-    ),
-    intervieweeFullName: "Familiar Ficticio",
-    oncologicalTreatmentOptionId: await findSeededOptionId(
-      "oncological_treatment",
-      "No recibirá",
-    ),
-  };
-}
-
-async function insertInterview(
-  overrides: Partial<typeof admissionInterviews.$inferInsert> = {},
-) {
-  return getDatabase()
-    .insert(admissionInterviews)
-    .values({ ...(await buildFictitiousInterview()), ...overrides })
-    .returning({ id: admissionInterviews.id });
-}
 
 async function listInterviewAuditEntries(
   interviewId: string,

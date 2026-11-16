@@ -11,6 +11,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+import { normalizeTextSql } from "@/platform/database/text-normalization";
+
 export const catalog = pgEnum("catalog", [
   "relationship",
   "health_insurance",
@@ -41,10 +43,6 @@ export const catalog = pgEnum("catalog", [
   "epicrisis_sedation_reason",
 ]);
 
-// Ñ queda distinta de N a propósito: en castellano es otra letra ("Año" no es "Ano").
-const ACCENTED_LETTERS = "ÁÉÍÓÚÜÀÈÌÒÙÂÊÎÔÛÄËÏÖáéíóúüàèìòùâêîôûäëïö";
-const UNACCENTED_LETTERS = "aeiouuaeiouaeiouaeioaeiouuaeiouaeiouaeio";
-
 export const catalogOptions = pgTable(
   "catalog_options",
   {
@@ -52,7 +50,7 @@ export const catalogOptions = pgTable(
     catalog: catalog().notNull(),
     label: text().notNull(),
     normalizedLabel: text().generatedAlwaysAs(
-      sql`lower(translate(btrim("label"), ${sql.raw(`'${ACCENTED_LETTERS}'`)}, ${sql.raw(`'${UNACCENTED_LETTERS}'`)}))`,
+      normalizeTextSql(sql.raw('"label"')),
     ),
     description: text(),
     isActive: boolean().notNull().default(true),

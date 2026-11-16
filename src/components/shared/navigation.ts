@@ -1,5 +1,6 @@
 import {
   BookOpen01Icon,
+  ClipboardPenLineIcon,
   Home01Icon,
   UserCircleIcon,
   UserShield01Icon,
@@ -24,6 +25,15 @@ export const HOME_DESTINATION: NavigationDestination = {
   color: "blue",
   isInMobileBar: true,
   requiredPermissions: [],
+};
+
+export const ADMISSIONS_DESTINATION: NavigationDestination = {
+  label: "Admisiones",
+  href: "/admisiones",
+  icon: ClipboardPenLineIcon,
+  color: "green",
+  isInMobileBar: true,
+  requiredPermissions: ["admissions.interviews.view"],
 };
 
 export const ADMINISTRATION_DESTINATION: NavigationDestination = {
@@ -69,6 +79,7 @@ export const ACCOUNT_DESTINATION: NavigationDestination = {
 
 export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
   HOME_DESTINATION,
+  ADMISSIONS_DESTINATION,
   ADMINISTRATION_DESTINATION,
   DOCUMENTATION_DESTINATION,
   ACCOUNT_DESTINATION,

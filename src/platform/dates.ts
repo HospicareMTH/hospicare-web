@@ -18,6 +18,11 @@ export function formatDate(date: Date): string {
   return dateFormatter.format(date);
 }
 
+export function formatIsoDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 export function formatDateTime(date: Date): string {
   return `${formatDate(date)} ${timeFormatter.format(date)}`;
 }
