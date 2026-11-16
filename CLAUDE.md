@@ -158,6 +158,10 @@ Prohibido sin aprobación explícita:
 
 Toda tarea que diseñe, cree, modifique o revise interfaz se hace con la skill `/impeccable`, invocada antes de escribir código de interfaz (`RNF-27`). Impeccable guía el criterio de diseño y experiencia; shadcn/ui sigue siendo la base de componentes. Si una indicación de Impeccable choca con shadcn/ui o con la ERS, no elijas: preguntá.
 
+### Textos con humane-ux-writing
+
+Todo texto visible para el usuario se escribe con la skill `/humane-ux-writing`, sin importar qué tan corto sea: títulos, etiquetas, botones, ayudas, avisos, estados vacíos, mensajes de error, correos, metadatos y el manual. Solo quedan afuera los nombres propios, como el nombre de una columna de la base de datos.
+
 ### Reglas generales
 
 - Tipografía IBM Plex Sans e íconos de HugeIcons.
