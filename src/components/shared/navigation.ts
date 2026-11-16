@@ -1,4 +1,5 @@
 import {
+  BookOpen01Icon,
   Home01Icon,
   UserCircleIcon,
   UserShield01Icon,
@@ -48,6 +49,15 @@ export const ADMINISTRATION_DESTINATION: NavigationDestination = {
   ],
 };
 
+export const DOCUMENTATION_DESTINATION: NavigationDestination = {
+  label: "Documentación",
+  href: "/documentacion",
+  icon: BookOpen01Icon,
+  color: null,
+  isInMobileBar: false,
+  requiredPermissions: ["documentation.app.view"],
+};
+
 export const ACCOUNT_DESTINATION: NavigationDestination = {
   label: "Mi cuenta",
   href: "/usuario",
@@ -60,6 +70,7 @@ export const ACCOUNT_DESTINATION: NavigationDestination = {
 export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
   HOME_DESTINATION,
   ADMINISTRATION_DESTINATION,
+  DOCUMENTATION_DESTINATION,
   ACCOUNT_DESTINATION,
 ];
 
