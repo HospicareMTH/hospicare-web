@@ -16,8 +16,8 @@ import {
 } from "@/platform/operation-result";
 
 import {
-  CATALOG_DEFINITIONS,
-  type CatalogDefinition,
+  CATALOG_ENTRIES,
+  type CatalogEntry,
   catalogPermission,
   type CatalogKey,
   findCatalogByKey,
@@ -52,8 +52,8 @@ const CATALOG_OPTION_COMPARATORS: Record<
   label: (first, second) => compareText(first.label, second.label),
 };
 
-export function listVisibleCatalogs(access: UserAccess): CatalogDefinition[] {
-  return CATALOG_DEFINITIONS.filter((definition) =>
+export function listVisibleCatalogs(access: UserAccess): CatalogEntry[] {
+  return CATALOG_ENTRIES.filter((definition) =>
     hasPermission(access, catalogPermission(definition, "view")),
   );
 }
@@ -61,12 +61,12 @@ export function listVisibleCatalogs(access: UserAccess): CatalogDefinition[] {
 export function resolveVisibleCatalog(
   access: UserAccess,
   requestedSlug: string | undefined,
-): CatalogDefinition | null {
+): CatalogEntry | null {
   const visibleCatalogs = listVisibleCatalogs(access);
   if (requestedSlug === undefined) {
     return visibleCatalogs[0] ?? null;
   }
-  const requestedCatalog = CATALOG_DEFINITIONS.find(
+  const requestedCatalog = CATALOG_ENTRIES.find(
     (definition) => definition.slug === requestedSlug,
   );
   if (!requestedCatalog) {

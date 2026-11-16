@@ -68,3 +68,27 @@ export const catalogOptions = pgTable(
     index().on(table.catalog, table.sortOrder),
   ],
 );
+
+export const healthcareProfessionals = pgTable(
+  "healthcare_professionals",
+  {
+    id: uuid().primaryKey().defaultRandom(),
+    fullName: text().notNull(),
+    specialty: text(),
+    licenseNumber: text(),
+    phone: text(),
+    email: text(),
+    isActive: boolean().notNull().default(true),
+    createdByUserId: text(),
+    updatedByUserId: text(),
+    createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    // RF-EVO-03 firma con el profesional activo de ese correo: no puede haber dos.
+    uniqueIndex()
+      .on(table.email)
+      .where(sql`${table.isActive} and ${table.email} is not null`),
+    index().on(table.fullName),
+  ],
+);

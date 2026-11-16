@@ -7,7 +7,7 @@ import type { Permission, UserAccess } from "@/modules/access";
 import { getDatabase } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
 
-import { CATALOG_DEFINITIONS } from "./definitions";
+import { CATALOG_DEFINITIONS, CATALOG_ENTRIES } from "./definitions";
 import { parseCatalogOptionListQuery } from "./schemas";
 import {
   listVisibleCatalogs,
@@ -27,22 +27,29 @@ function createAccess(permissions: Permission[]): UserAccess {
 
 const RELIGION_ONLY = createAccess(["admin.religion_options.view"]);
 const GUESTS_ONLY = createAccess(["admin.guest_clinical_catalog_options.view"]);
+const PROFESSIONALS_ONLY = createAccess([
+  "admin.healthcare_professionals.view",
+]);
 
 describe("catálogos: definiciones", () => {
   it("define cada catálogo una sola vez, con su dirección propia", () => {
     const keys = CATALOG_DEFINITIONS.map((definition) => definition.key);
-    const slugs = CATALOG_DEFINITIONS.map((definition) => definition.slug);
+    const slugs = CATALOG_ENTRIES.map((definition) => definition.slug);
 
     expect([...keys].sort()).toEqual([...catalog.enumValues].sort());
     expect(new Set(slugs).size).toBe(slugs.length);
+    expect(slugs.slice(0, 2)).toEqual(["vinculos", "profesionales-de-salud"]);
   });
 });
 
 describe("catálogos: visibilidad", () => {
   it("RF-CAT-01: muestra solo los catálogos que el rol puede ver", () => {
-    expect(listVisibleCatalogs(RELIGION_ONLY).map((item) => item.key)).toEqual([
-      "religion",
-    ]);
+    expect(listVisibleCatalogs(RELIGION_ONLY).map((item) => item.slug)).toEqual(
+      ["religion"],
+    );
+    expect(
+      listVisibleCatalogs(PROFESSIONALS_ONLY).map((item) => item.slug),
+    ).toEqual(["profesionales-de-salud"]);
     expect(
       listVisibleCatalogs(GUESTS_ONLY).every(
         (definition) => definition.group === "guests",
@@ -52,16 +59,19 @@ describe("catálogos: visibilidad", () => {
   });
 
   it("abre el primer catálogo permitido si la dirección no indica uno válido", () => {
-    expect(resolveVisibleCatalog(GUESTS_ONLY, undefined)?.key).toBe(
-      "hospitalization_reason",
+    expect(resolveVisibleCatalog(GUESTS_ONLY, undefined)?.slug).toBe(
+      "motivo-de-internacion",
     );
-    expect(resolveVisibleCatalog(RELIGION_ONLY, "no-existe")?.key).toBe(
+    expect(resolveVisibleCatalog(RELIGION_ONLY, "no-existe")?.slug).toBe(
       "religion",
     );
   });
 
   it("RF-ROL-08, RF-ROL-09: rechaza un catálogo sin permiso aunque se pida por dirección", () => {
     expect(resolveVisibleCatalog(RELIGION_ONLY, "vinculos")).toBeNull();
+    expect(
+      resolveVisibleCatalog(RELIGION_ONLY, "profesionales-de-salud"),
+    ).toBeNull();
     expect(resolveVisibleCatalog(createAccess([]), undefined)).toBeNull();
   });
 });

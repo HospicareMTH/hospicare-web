@@ -13,19 +13,33 @@ export const CATALOG_GROUP_LABELS: Record<CatalogGroup, string> = {
   guests: "Huéspedes",
 };
 
-type CatalogPermissionAction = "view" | "create" | "update" | "delete";
+export type CatalogPermissionAction = "view" | "create" | "update" | "delete";
 
-export type CatalogDefinition = {
-  key: CatalogKey;
+export type CatalogPermissionScope = {
+  permissionGroup: CatalogPermissionGroup;
+};
+
+type CatalogIdentity = CatalogPermissionScope & {
   slug: string;
   label: string;
   group: CatalogGroup;
-  permissionGroup: CatalogPermissionGroup;
+};
+
+export type CatalogDefinition = CatalogIdentity & {
+  kind: "options";
+  key: CatalogKey;
   isReorderable: boolean;
 };
 
+export type HealthcareProfessionalsCatalogDefinition = CatalogIdentity & {
+  kind: "healthcareProfessionals";
+};
+
+export type CatalogEntry =
+  CatalogDefinition | HealthcareProfessionalsCatalogDefinition;
+
 export function catalogPermission(
-  definition: CatalogDefinition,
+  definition: CatalogPermissionScope,
   action: CatalogPermissionAction,
 ): Permission {
   return `admin.${definition.permissionGroup}.${action}`;
@@ -37,6 +51,7 @@ function guestCatalog(
   label: string,
 ): CatalogDefinition {
   return {
+    kind: "options",
     key,
     slug,
     label,
@@ -48,6 +63,7 @@ function guestCatalog(
 
 export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
   {
+    kind: "options",
     key: "relationship",
     slug: "vinculos",
     label: "Vínculos",
@@ -56,6 +72,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: false,
   },
   {
+    kind: "options",
     key: "health_insurance",
     slug: "obras-sociales",
     label: "Obras sociales",
@@ -64,6 +81,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: true,
   },
   {
+    kind: "options",
     key: "information_awareness",
     slug: "informacion-general",
     label: "Información general",
@@ -72,6 +90,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: true,
   },
   {
+    kind: "options",
     key: "religion",
     slug: "religion",
     label: "Religión",
@@ -80,6 +99,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: true,
   },
   {
+    kind: "options",
     key: "ecog_score",
     slug: "ecog",
     label: "ECOG",
@@ -88,6 +108,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: true,
   },
   {
+    kind: "options",
     key: "oncological_treatment",
     slug: "tratamiento-oncologico",
     label: "Tratamiento oncológico",
@@ -96,6 +117,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: true,
   },
   {
+    kind: "options",
     key: "metastasis_location",
     slug: "lugar-de-metastasis",
     label: "Lugar de metástasis",
@@ -104,6 +126,7 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     isReorderable: true,
   },
   {
+    kind: "options",
     key: "surgery",
     slug: "cirugia",
     label: "Cirugía",
@@ -159,6 +182,23 @@ export const CATALOG_DEFINITIONS: readonly CatalogDefinition[] = [
     "Motivos de sedación en epicrisis",
   ),
 ];
+
+export const HEALTHCARE_PROFESSIONALS_CATALOG: HealthcareProfessionalsCatalogDefinition =
+  {
+    kind: "healthcareProfessionals",
+    slug: "profesionales-de-salud",
+    label: "Profesionales de salud",
+    group: "admissions",
+    permissionGroup: "healthcare_professionals",
+  };
+
+// Profesionales va después de Vínculos, el mismo orden que en los permisos.
+export const CATALOG_ENTRIES: readonly CatalogEntry[] =
+  CATALOG_DEFINITIONS.flatMap((definition) =>
+    definition.key === "relationship"
+      ? [definition, HEALTHCARE_PROFESSIONALS_CATALOG]
+      : [definition],
+  );
 
 export function findCatalogByKey(key: CatalogKey): CatalogDefinition {
   const definition = CATALOG_DEFINITIONS.find(

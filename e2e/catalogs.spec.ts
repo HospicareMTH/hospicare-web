@@ -145,3 +145,58 @@ test("RF-CAT-03: reordena con los botones y arrastrando, y Vínculos conserva su
     page.getByRole("button", { name: /^(Subir|Mover) / }),
   ).toHaveCount(0);
 });
+
+test("RF-CAT-01, RF-CAT-02: gestiona Profesionales de salud en orden alfabético", async ({
+  page,
+}) => {
+  await page.goto(`${CATALOGS_PATH}?catalogo=profesionales-de-salud`);
+  await signIn(page);
+  await expect(page.getByRole("combobox", { name: "Catálogo" })).toHaveText(
+    "Profesionales de salud",
+  );
+  await expect(
+    page.getByText("Todavía no hay profesionales cargados."),
+  ).toBeVisible();
+  const professionalDialog = page.getByRole("dialog");
+
+  for (const fullName of ["Zulema Ficticia", "Ana Ficticia"]) {
+    await page.getByRole("button", { name: "Nuevo profesional" }).click();
+    await professionalDialog.getByLabel("Nombre").fill(fullName);
+    await professionalDialog
+      .getByLabel("Correo")
+      .fill(`${fullName.split(" ")[0]}@hospicare.test`);
+    await professionalDialog
+      .getByRole("button", { name: "Crear profesional" })
+      .click();
+    await expect(page.getByText("Profesional creado.")).toBeVisible();
+  }
+  const professionalRows = page
+    .getByRole("row")
+    .filter({ hasNot: page.getByRole("columnheader") });
+  await expect(professionalRows.nth(0)).toContainText("Ana Ficticia");
+  await expect(professionalRows.nth(1)).toContainText("Zulema Ficticia");
+
+  await page.getByRole("button", { name: "Nuevo profesional" }).click();
+  await professionalDialog.getByLabel("Nombre").fill("Otra Ana Ficticia");
+  await professionalDialog.getByLabel("Correo").fill("ANA@hospicare.test");
+  await professionalDialog
+    .getByRole("button", { name: "Crear profesional" })
+    .click();
+  await expect(
+    page.getByText(
+      "Ya hay un profesional activo con el correo ana@hospicare.test.",
+    ),
+  ).toBeVisible();
+  await professionalDialog.getByRole("button", { name: "Cancelar" }).click();
+
+  const zulemaRow = page.getByRole("row", { name: /Zulema Ficticia/ });
+  await zulemaRow.click({ button: "right" });
+  await page.getByRole("menuitem", { name: "Desactivar" }).click();
+  await page.getByRole("button", { name: "Desactivar", exact: true }).click();
+  await expect(page.getByText("Profesional desactivado.")).toBeVisible();
+  await expect(zulemaRow).toHaveCount(0);
+
+  await page.getByRole("combobox", { name: "Filtrar por estado" }).click();
+  await page.getByRole("option", { name: "Inactivos" }).click();
+  await expect(zulemaRow).toContainText("Inactivo");
+});
