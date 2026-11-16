@@ -1,6 +1,7 @@
 import { Mail01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ACCOUNT_PATH } from "../../routes";
 import { requireSession } from "../../auth/session";
 
-export async function EmailVerificationNotice() {
+async function EmailVerificationNoticeContent() {
   const { user } = await requireSession();
   if (user.emailVerified) {
     return null;
@@ -30,5 +31,13 @@ export async function EmailVerificationNotice() {
         </Button>
       </AlertDescription>
     </Alert>
+  );
+}
+
+export function EmailVerificationNotice() {
+  return (
+    <Suspense fallback={null}>
+      <EmailVerificationNoticeContent />
+    </Suspense>
   );
 }

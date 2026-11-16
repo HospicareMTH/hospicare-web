@@ -1,3 +1,6 @@
+import { Suspense } from "react";
+
+import { LoadingStatus } from "@/components/shared/loading-status";
 import { ACCOUNT_DESTINATION } from "@/components/shared/navigation";
 import { SectionSheet } from "@/components/shared/section-sheet";
 import { Separator } from "@/components/ui/separator";
@@ -28,48 +31,53 @@ function AccountSection({
   );
 }
 
-export async function AccountScreen() {
+async function AccountContent() {
   const { user } = await requireSession();
   const isTwoFactorEnabled = user.twoFactorEnabled === true;
 
   return (
+    <div className="flex flex-col gap-8">
+      <AccountSection title="Perfil" titleId="account-profile-title">
+        <AccountNamePanel
+          name={user.name}
+          isEmailVerified={user.emailVerified}
+        />
+      </AccountSection>
+      <Separator />
+      <AccountSection title="Correo" titleId="account-email-title">
+        <EmailVerificationPanel
+          email={user.email}
+          isEmailVerified={user.emailVerified}
+        />
+      </AccountSection>
+      <Separator />
+      <AccountSection title="Contraseña" titleId="account-password-title">
+        <AccountPasswordPanel isEmailVerified={user.emailVerified} />
+      </AccountSection>
+      <Separator />
+      <AccountSection title="Segundo factor" titleId="account-two-factor-title">
+        <TwoFactorPanel
+          isEmailVerified={user.emailVerified}
+          isTwoFactorEnabled={isTwoFactorEnabled}
+        />
+      </AccountSection>
+      <Separator />
+      <AccountSection title="Sesión" titleId="account-session-title">
+        <p className="text-base text-muted-foreground">
+          Cierra la sesión solo en este dispositivo.
+        </p>
+        <SignOutButton />
+      </AccountSection>
+    </div>
+  );
+}
+
+export function AccountScreen() {
+  return (
     <SectionSheet destination={ACCOUNT_DESTINATION}>
-      <div className="flex flex-col gap-8">
-        <AccountSection title="Perfil" titleId="account-profile-title">
-          <AccountNamePanel
-            name={user.name}
-            isEmailVerified={user.emailVerified}
-          />
-        </AccountSection>
-        <Separator />
-        <AccountSection title="Correo" titleId="account-email-title">
-          <EmailVerificationPanel
-            email={user.email}
-            isEmailVerified={user.emailVerified}
-          />
-        </AccountSection>
-        <Separator />
-        <AccountSection title="Contraseña" titleId="account-password-title">
-          <AccountPasswordPanel isEmailVerified={user.emailVerified} />
-        </AccountSection>
-        <Separator />
-        <AccountSection
-          title="Segundo factor"
-          titleId="account-two-factor-title"
-        >
-          <TwoFactorPanel
-            isEmailVerified={user.emailVerified}
-            isTwoFactorEnabled={isTwoFactorEnabled}
-          />
-        </AccountSection>
-        <Separator />
-        <AccountSection title="Sesión" titleId="account-session-title">
-          <p className="text-base text-muted-foreground">
-            Cierra la sesión solo en este dispositivo.
-          </p>
-          <SignOutButton />
-        </AccountSection>
-      </div>
+      <Suspense fallback={<LoadingStatus label="Cargando tu cuenta…" />}>
+        <AccountContent />
+      </Suspense>
     </SectionSheet>
   );
 }
