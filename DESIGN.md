@@ -320,7 +320,7 @@ Este campo de línea es del acceso. Las pantallas de trabajo todavía no tienen 
 `Sidebar` de shadcn/ui, variante inset, contraíble a íconos con tooltips y riel para alternar.
 
 - **Marca:** logo horizontal de 160 px expandida; contraída, isotipo blanco de 28 px sobre cuadro `sidebar-primary` de 40 px.
-- **Destino:** 40 px de alto, rótulo Nav, ícono de 20 px en el color de su sección o en `sidebar-foreground` si es neutro.
+- **Destino:** 40 px de alto, separado 4 px del siguiente, rótulo Nav, ícono de 20 px en el color de su sección o en `sidebar-foreground` si es neutro.
 - **Hover:** `sidebar-accent`.
 - **Activo:** tinte de `primary` al 10% con texto `primary` en 600. Contraída: tinte al 20% y anillo de 1 px de `primary` al 40%, en un cuadro de 40 px.
 - **Cuenta:** al pie, avatar de iniciales de 32 px en `sidebar-primary`, nombre y flechas; abre un menú con "Cerrar sesión" (44 px de alto, ícono de 20 px) hacia la derecha, o hacia abajo en móvil. Abierto, el renglón queda en `sidebar-accent`. Un error se informa con Sonner.

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { PasswordRecoveryScreen } from "@/modules/access/components";
+import { PasswordRecoveryScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Recuperar contraseña",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { TwoFactorScreen } from "@/modules/access/components";
+import { TwoFactorScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Verificación",

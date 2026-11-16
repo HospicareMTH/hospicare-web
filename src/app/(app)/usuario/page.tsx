@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AccountScreen } from "@/modules/access/components";
+import { AccountScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Mi cuenta",

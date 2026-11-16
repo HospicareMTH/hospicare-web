@@ -1,9 +1,6 @@
 import { Suspense } from "react";
 
-import {
-  AuthenticatedShell,
-  SessionLoadingScreen,
-} from "@/modules/access/components";
+import { AuthenticatedShell, SessionLoadingScreen } from "@/modules/access";
 
 export default function AuthenticatedLayout({ children }: LayoutProps<"/">) {
   return (

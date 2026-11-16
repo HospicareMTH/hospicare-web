@@ -1,4 +1,4 @@
-import { AdminLayout } from "@/modules/access/components";
+import { AdminLayout } from "@/modules/access";
 
 export default function AdministrationLayout({
   children,

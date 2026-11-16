@@ -4,6 +4,48 @@ type PermissionGroupDefinition = {
   permissions: readonly { key: string; label: string }[];
 };
 
+function catalogPermissionGroup<Key extends string>(key: Key, label: string) {
+  return {
+    key,
+    label,
+    permissions: [
+      { key: `admin.${key}.view`, label: "Ver" },
+      { key: `admin.${key}.create`, label: "Crear" },
+      { key: `admin.${key}.update`, label: "Modificar" },
+      { key: `admin.${key}.delete`, label: "Desactivar" },
+    ],
+  } as const;
+}
+
+const CATALOG_PERMISSION_GROUPS = [
+  catalogPermissionGroup("relationship_types", "Vínculos"),
+  catalogPermissionGroup("healthcare_professionals", "Profesionales"),
+  catalogPermissionGroup("health_insurance_providers", "Obras sociales"),
+  catalogPermissionGroup(
+    "information_awareness_options",
+    "Información general",
+  ),
+  catalogPermissionGroup("religion_options", "Religión"),
+  catalogPermissionGroup("ecog_score_options", "ECOG"),
+  catalogPermissionGroup(
+    "oncological_treatment_options",
+    "Tratamiento oncológico",
+  ),
+  catalogPermissionGroup("metastasis_location_options", "Lugar de metástasis"),
+  catalogPermissionGroup("surgery_options", "Cirugía"),
+  catalogPermissionGroup(
+    "guest_clinical_catalog_options",
+    "Opciones clínicas de huéspedes",
+  ),
+] as const;
+
+export type CatalogPermissionGroup =
+  (typeof CATALOG_PERMISSION_GROUPS)[number]["key"];
+
+export const CATALOG_VIEW_PERMISSIONS = CATALOG_PERMISSION_GROUPS.map(
+  (group) => group.permissions[0].key,
+);
+
 export const PERMISSION_GROUPS = [
   {
     key: "roles",
@@ -33,6 +75,14 @@ export const PERMISSION_GROUPS = [
       { key: "admin.invitations.view", label: "Ver" },
       { key: "admin.invitations.create", label: "Invitar" },
       { key: "admin.invitations.delete", label: "Revocar" },
+    ],
+  },
+  ...CATALOG_PERMISSION_GROUPS,
+  {
+    key: "dashboard",
+    label: "Reportes del inicio",
+    permissions: [
+      { key: "dashboard.data_quality.view", label: "Calidad de datos" },
     ],
   },
   {

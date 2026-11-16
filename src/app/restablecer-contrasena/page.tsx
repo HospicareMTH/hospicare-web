@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { PasswordResetScreen } from "@/modules/access/components";
+import { PasswordResetScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Nueva contraseña",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { AdminHome } from "@/modules/access/components";
+import { AdminHome } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Administración",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { RolesScreen } from "@/modules/access/components";
+import { RolesScreen } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Roles",

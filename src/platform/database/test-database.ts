@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
@@ -19,6 +21,24 @@ const SEED_ROLE_PERMISSIONS_SQL = `
   INSERT INTO "role_permissions" ("role_id", "permission")
   SELECT "id", 'documentation.app.view' FROM "roles" WHERE "system_key" = 'user'
 `;
+
+const CATALOG_SEED_MIGRATION = `${MIGRATIONS_FOLDER}/0013_catalog_options_audit_and_seed.sql`;
+const MIGRATION_STATEMENT_SEPARATOR = "--> statement-breakpoint";
+const CATALOG_SEED_STATEMENT_START = 'INSERT INTO "catalog_options"';
+
+async function readCatalogSeedSql(): Promise<string> {
+  const migration = await readFile(CATALOG_SEED_MIGRATION, "utf8");
+  const seedStatement = migration
+    .split(MIGRATION_STATEMENT_SEPARATOR)
+    .map((statement) => statement.trim())
+    .find((statement) => statement.startsWith(CATALOG_SEED_STATEMENT_START));
+  if (!seedStatement) {
+    throw new Error(
+      `No se encontró la siembra de catálogos en ${CATALOG_SEED_MIGRATION}.`,
+    );
+  }
+  return seedStatement;
+}
 
 export function assertTestDatabase(databaseUrl: string | undefined): void {
   if (!databaseUrl) {
@@ -69,6 +89,9 @@ export function resetTestDatabase(): Promise<void> {
     );
     await pool.query(`DELETE FROM "roles" WHERE "system_key" IS NULL`);
     await pool.query(SEED_ROLE_PERMISSIONS_SQL);
+    // CASCADE también vacía catalog_options, que referencia a users.
     await pool.query(`TRUNCATE ${tableList} RESTART IDENTITY CASCADE`);
+    await pool.query(await readCatalogSeedSql());
+    await pool.query(`TRUNCATE "audit_log" RESTART IDENTITY`);
   });
 }

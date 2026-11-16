@@ -37,6 +37,8 @@ import { ActionTableRow, type RowAction } from "./action-table-row";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { SortableHead } from "./list-controls";
+import { type RowReorder, SortableRowsContext } from "./sortable-rows-context";
+import { SortableTableRow } from "./sortable-table-row";
 
 const features = tableFeatures({ columnVisibilityFeature });
 
@@ -76,6 +78,7 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
   getActionsLabel,
   hiddenColumns,
   onHiddenColumnsChange,
+  reorder,
 }: {
   columns: DataTableColumn<Row, SortKey>[];
   page: ListPage<Row>;
@@ -91,6 +94,7 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
   getActionsLabel: (row: Row) => string;
   hiddenColumns: string[];
   onHiddenColumnsChange: (hiddenColumns: string[]) => void;
+  reorder?: RowReorder<Row>;
 }) {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [columnVisibility, setColumnVisibility] = useState(() =>
@@ -160,8 +164,92 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
     </DropdownMenu>
   );
 
-  const visibleColumnCount = table.getVisibleLeafColumns().length;
+  const reorderColumnCount = reorder ? 1 : 0;
+  const visibleColumnCount =
+    table.getVisibleLeafColumns().length + reorderColumnCount;
   const rows = table.getRowModel().rows;
+
+  const tableFrame = (
+    <div className="@container overflow-hidden rounded-xl border">
+      <Table className="text-base">
+        <TableHeader className="bg-muted/60">
+          <TableRow className="hover:bg-transparent">
+            {reorder && (
+              <TableHead className="w-12">
+                <span className="sr-only">Mover</span>
+              </TableHead>
+            )}
+            {table.getVisibleLeafColumns().map((tableColumn) => {
+              const column = columnsById.get(tableColumn.id);
+              if (!column) {
+                return null;
+              }
+              return column.sortKey ? (
+                <SortableHead
+                  key={column.id}
+                  label={column.label}
+                  sortKey={column.sortKey}
+                  className={column.className}
+                  {...sortProps}
+                />
+              ) : (
+                <TableHead
+                  key={column.id}
+                  className={`${HEAD_CLASS_NAME} ${column.className ?? ""}`}
+                >
+                  {column.label}
+                </TableHead>
+              );
+            })}
+            <TableHead className="w-14">
+              <span className="sr-only">Acciones</span>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.length === 0 && (
+            <TableRow className="hover:bg-transparent">
+              <TableCell
+                colSpan={visibleColumnCount + 1}
+                className="h-24 text-center whitespace-normal text-muted-foreground"
+              >
+                {emptyMessage}
+              </TableCell>
+            </TableRow>
+          )}
+          {rows.map((row) => {
+            const rowProps = {
+              actions: getRowActions(row.original),
+              actionsLabel: getActionsLabel(row.original),
+              isSelected: row.id === selectedRowId,
+              onSelect: () => setSelectedRowId(row.id),
+              children: row.getVisibleCells().map((cell) => {
+                const column = columnsById.get(cell.column.id);
+                return (
+                  <TableCell
+                    key={cell.id}
+                    className={`${column?.className ?? ""} ${column?.cellClassName ?? ""}`}
+                  >
+                    <table.FlexRender cell={cell} />
+                  </TableCell>
+                );
+              }),
+            };
+            return reorder ? (
+              <SortableTableRow
+                key={row.id}
+                id={row.id}
+                rowLabel={reorder.getRowLabel(row.original)}
+                {...rowProps}
+              />
+            ) : (
+              <ActionTableRow key={row.id} {...rowProps} />
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -173,72 +261,13 @@ export function DataTable<Row extends { id: string }, SortKey extends string>({
         action={action}
       />
 
-      <div className="@container overflow-hidden rounded-xl border">
-        <Table className="text-base">
-          <TableHeader className="bg-muted/60">
-            <TableRow className="hover:bg-transparent">
-              {table.getVisibleLeafColumns().map((tableColumn) => {
-                const column = columnsById.get(tableColumn.id);
-                if (!column) {
-                  return null;
-                }
-                return column.sortKey ? (
-                  <SortableHead
-                    key={column.id}
-                    label={column.label}
-                    sortKey={column.sortKey}
-                    className={column.className}
-                    {...sortProps}
-                  />
-                ) : (
-                  <TableHead
-                    key={column.id}
-                    className={`${HEAD_CLASS_NAME} ${column.className ?? ""}`}
-                  >
-                    {column.label}
-                  </TableHead>
-                );
-              })}
-              <TableHead className="w-14">
-                <span className="sr-only">Acciones</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={visibleColumnCount + 1}
-                  className="h-24 text-center whitespace-normal text-muted-foreground"
-                >
-                  {emptyMessage}
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((row) => (
-              <ActionTableRow
-                key={row.id}
-                actions={getRowActions(row.original)}
-                actionsLabel={getActionsLabel(row.original)}
-                isSelected={row.id === selectedRowId}
-                onSelect={() => setSelectedRowId(row.id)}
-              >
-                {row.getVisibleCells().map((cell) => {
-                  const column = columnsById.get(cell.column.id);
-                  return (
-                    <TableCell
-                      key={cell.id}
-                      className={`${column?.className ?? ""} ${column?.cellClassName ?? ""}`}
-                    >
-                      <table.FlexRender cell={cell} />
-                    </TableCell>
-                  );
-                })}
-              </ActionTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {reorder ? (
+        <SortableRowsContext rows={page.items} reorder={reorder}>
+          {tableFrame}
+        </SortableRowsContext>
+      ) : (
+        tableFrame
+      )}
 
       <DataTablePagination
         totalLabel={totalLabel}

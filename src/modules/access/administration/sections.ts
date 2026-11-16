@@ -1,28 +1,39 @@
-import type { Permission } from "../permissions";
+import { CATALOG_VIEW_PERMISSIONS, type Permission } from "../permissions";
 import { hasPermission, type UserAccess } from "../authorization/service";
 
 export type AdminSection = {
   label: string;
   href: string;
-  permission: Permission;
+  anyOfPermissions: readonly Permission[];
 };
 
 export const ADMIN_SECTIONS: readonly AdminSection[] = [
-  { label: "Roles", href: "/admin/roles", permission: "admin.roles.view" },
+  {
+    label: "Roles",
+    href: "/admin/roles",
+    anyOfPermissions: ["admin.roles.view"],
+  },
   {
     label: "Usuarios",
     href: "/admin/usuarios",
-    permission: "admin.users.view",
+    anyOfPermissions: ["admin.users.view"],
   },
   {
     label: "Invitaciones",
     href: "/admin/invitaciones",
-    permission: "admin.invitations.view",
+    anyOfPermissions: ["admin.invitations.view"],
+  },
+  {
+    label: "Catálogos",
+    href: "/admin/catalogos",
+    anyOfPermissions: CATALOG_VIEW_PERMISSIONS,
   },
 ];
 
 export function getAllowedAdminSections(access: UserAccess): AdminSection[] {
   return ADMIN_SECTIONS.filter((section) =>
-    hasPermission(access, section.permission),
+    section.anyOfPermissions.some((permission) =>
+      hasPermission(access, permission),
+    ),
   );
 }

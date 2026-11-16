@@ -15,14 +15,16 @@ export type ActionResult =
   | OperationResult
   | { status: "invalid"; fieldErrors: Record<string, string[] | undefined> };
 
-export function toInvalidResult(error: z.ZodError): ActionResult {
+export type FailedActionResult = Exclude<ActionResult, { status: "success" }>;
+
+export function toInvalidResult(error: z.ZodError): FailedActionResult {
   return { status: "invalid", fieldErrors: z.flattenError(error).fieldErrors };
 }
 
 const INVALID_REQUEST_MESSAGE =
   "El pedido no es válido. Actualizá la pantalla.";
 
-export function toRejectedResult(error: z.ZodError): ActionResult {
+export function toRejectedResult(error: z.ZodError): FailedActionResult {
   return {
     status: "rejected",
     message: error.issues[0]?.message ?? INVALID_REQUEST_MESSAGE,
