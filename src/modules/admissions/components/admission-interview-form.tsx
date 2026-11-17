@@ -98,19 +98,36 @@ async function saveInterview(
     : result;
 }
 
-export function AdmissionInterviewForm({
-  mode,
-  initialInterview,
-  catalogFields,
-  religionOtherOptionId,
-  today,
-}: {
+type AdmissionInterviewFormProps = {
   mode: FormMode;
   initialInterview: AdmissionInterviewDetailsInput;
   catalogFields: InterviewCatalogFields;
   religionOtherOptionId: string | null;
   today: string;
-}) {
+};
+
+const NEW_INTERVIEW_KEY = "new";
+
+// Next conserva el estado de la pantalla al salir (Activity): entrar con un clic o editar otra versión arranca de cero.
+export function AdmissionInterviewForm(props: AdmissionInterviewFormProps) {
+  const { bfcacheId } = useRouter();
+  const contentKey =
+    props.mode.kind === "edit" ? props.mode.version : NEW_INTERVIEW_KEY;
+  return (
+    <AdmissionInterviewFormContent
+      key={`${bfcacheId}-${contentKey}`}
+      {...props}
+    />
+  );
+}
+
+function AdmissionInterviewFormContent({
+  mode,
+  initialInterview,
+  catalogFields,
+  religionOtherOptionId,
+  today,
+}: AdmissionInterviewFormProps) {
   const router = useRouter();
   const [interview, setInterview] = useState(initialInterview);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
