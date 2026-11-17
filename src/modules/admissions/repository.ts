@@ -321,3 +321,27 @@ export async function listUsedFilterIds(): Promise<UsedFilterIds> {
     primaryDoctorIds: primaryDoctorRows.flatMap(({ id }) => (id ? [id] : [])),
   };
 }
+
+export type AdmissionInterviewCounts = {
+  createdSinceCount: number;
+  pendingDecisionCount: number;
+};
+
+export async function countAdmissionInterviewsForReport(
+  windowStart: Date,
+): Promise<AdmissionInterviewCounts> {
+  const [counts] = await getDatabase()
+    .select({
+      createdSinceCount:
+        sql<number>`count(*) filter (where ${admissionInterviews.createdAt} >= ${windowStart})`.mapWith(
+          Number,
+        ),
+      pendingDecisionCount: count(),
+    })
+    .from(admissionInterviews)
+    .where(isNull(admissionInterviews.annulledAt));
+  return {
+    createdSinceCount: counts?.createdSinceCount ?? 0,
+    pendingDecisionCount: counts?.pendingDecisionCount ?? 0,
+  };
+}

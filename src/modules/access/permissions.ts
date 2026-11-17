@@ -82,6 +82,7 @@ export const PERMISSION_GROUPS = [
     key: "dashboard",
     label: "Reportes del inicio",
     permissions: [
+      { key: "dashboard.admissions.view", label: "Admisiones" },
       { key: "dashboard.data_quality.view", label: "Calidad de datos" },
     ],
   },

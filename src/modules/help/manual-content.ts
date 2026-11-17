@@ -29,7 +29,7 @@ export const GENERAL_USE_SECTION: ManualSection = {
     {
       title: "Moverte entre pantallas",
       paragraphs: [
-        "El menú muestra solo las pantallas que tu rol te permite usar. En el teléfono, la barra de abajo tiene Inicio y Menú. Las demás pantallas se abren desde Menú.",
+        "El menú muestra solo las pantallas que tu rol te permite usar. En el teléfono, la barra de abajo tiene Inicio, Admisiones si tu rol puede verla, y Menú. Las demás pantallas se abren desde Menú.",
         "El botón de arriba a la derecha cambia entre modo claro y modo oscuro. En modo claro muestra una luna y en modo oscuro, un sol. Al principio el sistema usa el modo de tu dispositivo.",
       ],
       steps: [],
@@ -53,7 +53,8 @@ export const GENERAL_USE_SECTION: ManualSection = {
       title: "Acciones de una fila",
       paragraphs: [
         "Al hacer clic en una fila, queda resaltada. Para ver qué podés hacer con ella, tocá los tres puntos al final de la fila o hacé clic derecho sobre la fila. En una pantalla táctil, mantené presionada la fila.",
-        "Solo ves las acciones que tu rol permite. Las que desactivan, revocan o eliminan están en rojo y te piden confirmar antes de hacer el cambio.",
+        "Si la fila tiene una pantalla de detalle, hacé doble clic para abrirla. Con el teclado, llegá a la fila con Tab y presioná Enter.",
+        "Solo ves las acciones que tu rol permite. Las que anulan, desactivan, revocan o eliminan están en rojo y te piden confirmar antes de hacer el cambio.",
       ],
       steps: [],
     },
@@ -195,9 +196,16 @@ export const HOME_SECTION: ManualSection = {
   id: "inicio",
   title: "Inicio",
   summary: "Muestra los reportes del hospice que tu rol te permite ver.",
-  audience:
-    "Quienes tengan permiso para ver cada reporte. Por ahora hay un solo reporte: Calidad de datos.",
+  audience: "Quienes tengan permiso para ver cada reporte.",
   topics: [
+    {
+      title: "Admisiones",
+      paragraphs: [
+        "Muestra cuántas entrevistas se cargaron en los últimos 7 días y cuántas esperan una decisión sobre el ingreso. Las anuladas no se cuentan.",
+        "Si tu rol puede ver entrevistas, «Ver entrevistas» abre el listado.",
+      ],
+      steps: [],
+    },
     {
       title: "Calidad de datos",
       paragraphs: [
@@ -430,5 +438,83 @@ export const CATALOGS_SECTION: ManualSection = {
   ],
   decisions: [
     "Las opciones se desactivan en lugar de borrarse para no perder lo que ya se registró. Así, una entrevista sigue mostrando la opción que se eligió en su momento.",
+  ],
+};
+
+export const ADMISSIONS_SECTION: ManualSection = {
+  id: "admisiones",
+  title: "Admisiones",
+  summary:
+    "Cómo cargar, buscar, consultar, editar y anular las entrevistas de admisión.",
+  audience:
+    "Quienes tengan permiso para ver entrevistas. Cargar, editar y anular piden permisos propios.",
+  topics: [
+    {
+      title: "Buscar una entrevista",
+      paragraphs: [
+        "El listado muestra las entrevistas vigentes, de la más reciente a la más antigua. Podés buscar por el nombre del huésped, su DNI o el nombre de quien respondió la entrevista. El DNI se encuentra con puntos o sin ellos.",
+        "Con los filtros ves solo las entrevistas de un vínculo o de un médico de cabecera. Para abrir una entrevista, hacé doble clic en su fila o elegí «Ver entrevista» en el menú de la fila.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Cargar una entrevista",
+      paragraphs: [],
+      steps: [
+        "Tocá «Nueva entrevista».",
+        "Completá las tres secciones: Huésped, Entrevistado y red de cuidado, y Condición clínica. Los campos con asterisco son obligatorios.",
+        "Tocá «Guardar entrevista». Si falta algo, las secciones con datos para corregir quedan marcadas y se abre la primera.",
+      ],
+    },
+    {
+      title: "Al completar el formulario",
+      paragraphs: [
+        "Las fechas se escriben como DD/MM/AAAA o se eligen en el calendario. No pueden ser posteriores a hoy. La fecha de entrevista ya viene con la fecha de hoy.",
+        "El DNI se puede escribir con puntos. Si ya hay otra entrevista vigente con ese DNI, aparece un aviso para que revises que no sea la misma persona. El aviso no impide guardar.",
+        "Algunos campos aparecen solo cuando hacen falta: «Otra religión» si elegís Otra, «Lugar de la metástasis» si hay metástasis y «Opioide» si hay tratamiento con opioides.",
+        "Si tu rol puede crear opciones de un catálogo, podés agregar una opción nueva desde el mismo campo, sin salir del formulario.",
+        "Si no se puede guardar, lo que cargaste queda en el formulario para que lo corrijas. Cada vez que tocás «Nueva entrevista», el formulario empieza vacío.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Ver y editar una entrevista",
+      paragraphs: [
+        "El detalle muestra los datos en las mismas tres secciones. Donde no se cargó nada, dice «Sin cargar». Debajo del nombre figura quién cargó la entrevista y quién la modificó por última vez.",
+        "«Editar» abre el formulario con los datos guardados. Si una opción que estaba elegida se desactivó después en su catálogo, se conserva y aparece como inactiva.",
+        "Si otra persona guardó cambios mientras editabas, tus cambios no se guardan y aparece un aviso. Actualizá la pantalla para ver la versión actual.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Anular una entrevista",
+      paragraphs: [
+        "«Anular», en el detalle o en el menú de la fila, pide un motivo de 10 a 500 caracteres.",
+        "La entrevista anulada sale del listado y ya no se puede modificar. No se borra: su detalle muestra quién la anuló, cuándo y por qué. La anulación no se puede deshacer.",
+      ],
+      steps: [],
+    },
+  ],
+  states: [
+    {
+      name: "Pendiente",
+      description:
+        "Entrevista vigente que espera una decisión sobre el ingreso. Se puede editar y anular.",
+    },
+    {
+      name: "Anulada",
+      description:
+        "Salió del listado. Se puede consultar, pero ya no se puede modificar.",
+    },
+  ],
+  rules: [
+    "Las entrevistas no se borran: se anulan con un motivo.",
+    "Cargar, editar y anular piden permisos distintos. Si tu rol no los tiene, no ves esos botones y el sistema rechaza la acción.",
+    "En una entrevista nueva no se pueden elegir opciones desactivadas.",
+    "Cada alta, cambio y anulación queda en el registro de actividad, con el dato anterior y el nuevo.",
+  ],
+  decisions: [
+    "El aviso de DNI repetido no bloquea el guardado porque una misma persona puede tener más de una entrevista, por ejemplo si vuelve a ingresar.",
+    "Las entrevistas se anulan en lugar de borrarse para no perder lo que se registró.",
   ],
 };

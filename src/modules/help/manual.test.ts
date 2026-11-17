@@ -42,6 +42,7 @@ describe("manual funcional", () => {
       "ingreso",
       "mi-cuenta",
       "inicio",
+      "admisiones",
       "usuarios",
       "roles",
       "invitaciones",
@@ -62,6 +63,15 @@ describe("manual funcional", () => {
     expect(
       listSectionIds(["documentation.app.view", "admin.invitations.view"]),
     ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "invitaciones"]);
+  });
+
+  it("RF-MAN-02: Admisiones se ve con permiso de ver entrevistas, e Inicio con cualquiera de sus reportes", () => {
+    expect(
+      listSectionIds(["documentation.app.view", "admissions.interviews.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "admisiones"]);
+    expect(
+      listSectionIds(["documentation.app.view", "dashboard.admissions.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "inicio"]);
   });
 
   it("RF-MAN-02: cada sección dice qué hace, quién la usa, cómo se usa y sus reglas", () => {

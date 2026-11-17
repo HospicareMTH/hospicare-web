@@ -1,5 +1,9 @@
 import { hasPermission, type UserAccess } from "@/modules/access";
 import {
+  type AdmissionsReport,
+  getAdmissionsReport,
+} from "@/modules/admissions";
+import {
   buildCatalogHref,
   type CatalogGroup,
   countActiveCatalogEntries,
@@ -33,5 +37,21 @@ export async function getDataQualityReport(
       ...entry,
       href: visibleSlugs.has(entry.slug) ? buildCatalogHref(entry.slug) : null,
     })),
+  };
+}
+
+export type AdmissionsReportView = AdmissionsReport & {
+  canViewInterviews: boolean;
+};
+
+export async function getAdmissionsReportFor(
+  access: UserAccess,
+): Promise<AdmissionsReportView | null> {
+  if (!hasPermission(access, "dashboard.admissions.view")) {
+    return null;
+  }
+  return {
+    ...(await getAdmissionsReport()),
+    canViewInterviews: hasPermission(access, "admissions.interviews.view"),
   };
 }

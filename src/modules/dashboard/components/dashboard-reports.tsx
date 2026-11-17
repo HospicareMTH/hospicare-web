@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/empty";
 import { getCurrentUser } from "@/modules/access";
 
-import { getDataQualityReport } from "../service";
+import { getAdmissionsReportFor, getDataQualityReport } from "../service";
+import { AdmissionsReportSection } from "./admissions-report";
 import { DataQualityReportSection } from "./data-quality-report";
 
 function NoReportsEmptyState() {
@@ -38,11 +39,23 @@ function NoReportsEmptyState() {
 
 async function DashboardReportsContent() {
   const { access } = await getCurrentUser();
-  const dataQualityReport = await getDataQualityReport(access);
-  if (!dataQualityReport) {
+  const [admissionsReport, dataQualityReport] = await Promise.all([
+    getAdmissionsReportFor(access),
+    getDataQualityReport(access),
+  ]);
+  if (!admissionsReport && !dataQualityReport) {
     return <NoReportsEmptyState />;
   }
-  return <DataQualityReportSection report={dataQualityReport} />;
+  return (
+    <div className="flex flex-col gap-10">
+      {admissionsReport && (
+        <AdmissionsReportSection report={admissionsReport} />
+      )}
+      {dataQualityReport && (
+        <DataQualityReportSection report={dataQualityReport} />
+      )}
+    </div>
+  );
 }
 
 export function DashboardReports() {
