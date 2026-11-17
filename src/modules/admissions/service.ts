@@ -17,10 +17,16 @@ import {
 } from "@/platform/database/client";
 import { removeDniSeparators } from "@/platform/dni";
 import { type ListPage, resolvePageWindow } from "@/platform/list-query";
-import { type FailedActionResult, reject } from "@/platform/operation-result";
+import {
+  type FailedActionResult,
+  type OperationResult,
+  reject,
+  SUCCESS,
+} from "@/platform/operation-result";
 
 import {
   type AdmissionInterviewRecord,
+  annulAdmissionInterviewRecord,
   countAdmissionInterviewRecords,
   findAdmissionInterviewRecord,
   hasActiveInterviewWithDni,
@@ -48,6 +54,7 @@ export const ADMISSION_INTERVIEW_REJECTION_MESSAGES = {
   notFound:
     "No encontramos esta entrevista. Volvé a Admisiones y buscala de nuevo.",
   annulled: "Esta entrevista está anulada y ya no se puede modificar.",
+  alreadyAnnulled: "Esta entrevista ya estaba anulada.",
   changedMeanwhile:
     "Otra persona cambió esta entrevista mientras la editabas, así que tus cambios no se guardaron. Actualizá la pantalla para ver la versión actual.",
 } as const;
@@ -253,6 +260,29 @@ export async function updateAdmissionInterview(
   });
 }
 
+export async function annulAdmissionInterview(
+  actorUserId: string,
+  interviewId: string,
+  reason: string,
+): Promise<OperationResult> {
+  return runInTransactionAs(actorUserId, async (transaction) => {
+    const saved = await lockAdmissionInterviewRecord(transaction, interviewId);
+    if (!saved) {
+      return reject(ADMISSION_INTERVIEW_REJECTION_MESSAGES.notFound);
+    }
+    if (saved.annulledAt) {
+      return reject(ADMISSION_INTERVIEW_REJECTION_MESSAGES.alreadyAnnulled);
+    }
+    await annulAdmissionInterviewRecord(
+      transaction,
+      interviewId,
+      reason,
+      actorUserId,
+    );
+    return SUCCESS;
+  });
+}
+
 export function isDniInActiveInterview(
   dni: string,
   excludedInterviewId: string | null,
@@ -269,6 +299,13 @@ export type AdmissionInterviewView = {
   createdByName: string | null;
   updatedAt: Date;
   updatedByName: string | null;
+  annulment: AdmissionInterviewAnnulment | null;
+};
+
+export type AdmissionInterviewAnnulment = {
+  annulledAt: Date;
+  annulledByName: string | null;
+  reason: string;
 };
 
 function toDetailsInput(
@@ -334,9 +371,11 @@ export async function findAdmissionInterview(
     return null;
   }
   const userNames = await findUserNames(
-    [record.createdByUserId, record.updatedByUserId].flatMap((userId) =>
-      userId ? [userId] : [],
-    ),
+    [
+      record.createdByUserId,
+      record.updatedByUserId,
+      record.annulledByUserId,
+    ].flatMap((userId) => (userId ? [userId] : [])),
   );
   return {
     id: record.id,
@@ -347,6 +386,14 @@ export async function findAdmissionInterview(
     createdByName: nameOf(userNames, record.createdByUserId),
     updatedAt: record.updatedAt,
     updatedByName: nameOf(userNames, record.updatedByUserId),
+    annulment:
+      record.annulledAt && record.annulmentReason
+        ? {
+            annulledAt: record.annulledAt,
+            annulledByName: nameOf(userNames, record.annulledByUserId),
+            reason: record.annulmentReason,
+          }
+        : null,
   };
 }
 

@@ -123,6 +123,22 @@ export async function lockAdmissionInterviewRecord(
   };
 }
 
+export async function annulAdmissionInterviewRecord(
+  transaction: DatabaseTransaction,
+  interviewId: string,
+  reason: string,
+  actorUserId: string,
+): Promise<void> {
+  await transaction
+    .update(admissionInterviews)
+    .set({
+      annulledAt: sql`now()`,
+      annulledByUserId: actorUserId,
+      annulmentReason: reason,
+    })
+    .where(eq(admissionInterviews.id, interviewId));
+}
+
 export async function updateAdmissionInterviewRecord(
   transaction: DatabaseTransaction,
   interviewId: string,

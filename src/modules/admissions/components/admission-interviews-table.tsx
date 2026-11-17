@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Cancel01Icon,
   ClipboardPlusIcon,
   PencilEdit02Icon,
   ViewIcon,
@@ -8,6 +9,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import type { RowAction } from "@/components/shared/data-table/action-table-row";
 import {
@@ -39,6 +41,7 @@ import type {
   AdmissionInterviewList,
   AdmissionInterviewListItem,
 } from "../service";
+import { AnnulInterviewDialog } from "./annul-interview-dialog";
 
 const SECONDARY_LINE_CLASS_NAME = "text-sm text-muted-foreground";
 const SEARCH_LABEL = "Buscar entrevistas";
@@ -131,6 +134,7 @@ export function AdmissionInterviewsTable({
   saveHiddenColumnsAction,
   canCreate,
   canUpdate,
+  canAnnul,
 }: {
   interviewList: AdmissionInterviewList;
   query: AdmissionInterviewListQuery;
@@ -138,8 +142,11 @@ export function AdmissionInterviewsTable({
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
   canCreate: boolean;
   canUpdate: boolean;
+  canAnnul: boolean;
 }) {
   const router = useRouter();
+  const [interviewToAnnul, setInterviewToAnnul] =
+    useState<AdmissionInterviewListItem | null>(null);
   const { page, relationshipOptions, primaryDoctorOptions } = interviewList;
 
   function openInterview(interview: AdmissionInterviewListItem) {
@@ -165,64 +172,81 @@ export function AdmissionInterviewsTable({
         open: () => router.push(buildEditAdmissionInterviewPath(interview.id)),
       });
     }
+    if (canAnnul) {
+      actions.push({
+        label: "Anular",
+        icon: Cancel01Icon,
+        isDestructive: true,
+        open: () => setInterviewToAnnul(interview),
+      });
+    }
     return actions;
   }
 
   return (
-    <DataTable
-      columns={COLUMNS}
-      page={page}
-      query={query}
-      defaultSort={DEFAULT_ADMISSION_INTERVIEW_SORT}
-      searchLabel={SEARCH_LABEL}
-      filters={
-        <>
-          <FilterSelect
-            label="Filtrar por vínculo"
-            allLabel="Todos los vínculos"
-            parameter={RELATIONSHIP_FILTER_PARAMETER}
-            value={query.relationshipOptionId}
-            options={relationshipOptions}
-          />
-          <FilterSelect
-            label="Filtrar por médico de cabecera"
-            allLabel="Todos los médicos"
-            parameter={PRIMARY_DOCTOR_FILTER_PARAMETER}
-            value={query.primaryDoctorId}
-            options={primaryDoctorOptions}
-          />
-        </>
-      }
-      action={
-        canCreate && (
-          <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
-            <Link href={NEW_ADMISSION_INTERVIEW_PATH}>
-              <HugeiconsIcon
-                icon={ClipboardPlusIcon}
-                data-icon="inline-start"
-                aria-hidden="true"
-              />
-              Nueva entrevista
-            </Link>
-          </Button>
-        )
-      }
-      emptyMessage={describeEmptyList(query)}
-      totalLabel={describeInterviewCount(page.totalCount)}
-      paginationLabel="Páginas de entrevistas"
-      getRowActions={getInterviewActions}
-      onOpenRow={openInterview}
-      getActionsLabel={(interview) =>
-        `Acciones de la entrevista de ${interview.guestFullName}`
-      }
-      hiddenColumns={hiddenColumns}
-      onHiddenColumnsChange={(columns) =>
-        saveHiddenColumnsWith(
-          saveHiddenColumnsAction,
-          ADMISSION_INTERVIEWS_TABLE_KEY,
-          columns,
-        )
-      }
-    />
+    <>
+      <DataTable
+        columns={COLUMNS}
+        page={page}
+        query={query}
+        defaultSort={DEFAULT_ADMISSION_INTERVIEW_SORT}
+        searchLabel={SEARCH_LABEL}
+        filters={
+          <>
+            <FilterSelect
+              label="Filtrar por vínculo"
+              allLabel="Todos los vínculos"
+              parameter={RELATIONSHIP_FILTER_PARAMETER}
+              value={query.relationshipOptionId}
+              options={relationshipOptions}
+            />
+            <FilterSelect
+              label="Filtrar por médico de cabecera"
+              allLabel="Todos los médicos"
+              parameter={PRIMARY_DOCTOR_FILTER_PARAMETER}
+              value={query.primaryDoctorId}
+              options={primaryDoctorOptions}
+            />
+          </>
+        }
+        action={
+          canCreate && (
+            <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
+              <Link href={NEW_ADMISSION_INTERVIEW_PATH}>
+                <HugeiconsIcon
+                  icon={ClipboardPlusIcon}
+                  data-icon="inline-start"
+                  aria-hidden="true"
+                />
+                Nueva entrevista
+              </Link>
+            </Button>
+          )
+        }
+        emptyMessage={describeEmptyList(query)}
+        totalLabel={describeInterviewCount(page.totalCount)}
+        paginationLabel="Páginas de entrevistas"
+        getRowActions={getInterviewActions}
+        onOpenRow={openInterview}
+        getActionsLabel={(interview) =>
+          `Acciones de la entrevista de ${interview.guestFullName}`
+        }
+        hiddenColumns={hiddenColumns}
+        onHiddenColumnsChange={(columns) =>
+          saveHiddenColumnsWith(
+            saveHiddenColumnsAction,
+            ADMISSION_INTERVIEWS_TABLE_KEY,
+            columns,
+          )
+        }
+      />
+      {interviewToAnnul && (
+        <AnnulInterviewDialog
+          interviewId={interviewToAnnul.id}
+          guestFullName={interviewToAnnul.guestFullName}
+          onClose={() => setInterviewToAnnul(null)}
+        />
+      )}
+    </>
   );
 }

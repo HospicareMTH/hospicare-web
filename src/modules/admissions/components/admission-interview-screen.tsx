@@ -20,6 +20,7 @@ import {
   loadInterviewFormOptions,
 } from "../service";
 import { AdmissionInterviewDetail } from "./admission-interview-detail";
+import { AnnulInterviewButton } from "./annul-interview-button";
 
 const INTERVIEW_TITLE = "Entrevista de admisión";
 const FORMER_USER_LABEL = "una persona que ya no tiene cuenta";
@@ -57,13 +58,14 @@ async function AdmissionInterviewContent({
   const canEdit =
     !interview.isAnnulled &&
     hasPermission(access, "admissions.interviews.update");
+  const canAnnul =
+    !interview.isAnnulled &&
+    hasPermission(access, "admissions.interviews.annul");
   const { guestFirstName, guestLastName } = interview.details;
+  const guestFullName = `${guestFirstName} ${guestLastName}`;
 
   return (
-    <SectionSheet
-      destination={ADMISSIONS_DESTINATION}
-      title={`${guestFirstName} ${guestLastName}`}
-    >
+    <SectionSheet destination={ADMISSIONS_DESTINATION} title={guestFullName}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <RecordHistory interview={interview} />
         <div className="flex flex-col-reverse gap-2 sm:flex-row">
@@ -74,6 +76,12 @@ async function AdmissionInterviewContent({
           >
             <Link href={ADMISSIONS_PATH}>Volver a Admisiones</Link>
           </Button>
+          {canAnnul && (
+            <AnnulInterviewButton
+              interviewId={interview.id}
+              guestFullName={guestFullName}
+            />
+          )}
           {canEdit && (
             <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
               <Link href={buildEditAdmissionInterviewPath(interview.id)}>
@@ -88,12 +96,18 @@ async function AdmissionInterviewContent({
           )}
         </div>
       </div>
-      {interview.isAnnulled && (
+      {interview.annulment && (
         <Alert>
           <HugeiconsIcon icon={AlertCircleIcon} aria-hidden="true" />
-          <AlertDescription className="text-base">
-            Esta entrevista está anulada. Se puede consultar, pero ya no se
-            puede modificar.
+          <AlertDescription className="flex flex-col gap-1 text-base">
+            <span>
+              Anulada el {formatDateTime(interview.annulment.annulledAt)} por{" "}
+              {describeAuthor(interview.annulment.annulledByName)}. Se puede
+              consultar, pero ya no se puede modificar.
+            </span>
+            <span className="whitespace-pre-line">
+              Motivo: {interview.annulment.reason}
+            </span>
           </AlertDescription>
         </Alert>
       )}

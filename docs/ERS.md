@@ -236,7 +236,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | RF-ENT-02 | El personal debe poder crear una entrevista. | Campos de la tabla siguiente, organizados en pestañas. |
 | RF-ENT-03 | El personal debe poder ver el detalle y sus adjuntos. | Muestra etiquetas de catálogo, no códigos. |
 | RF-ENT-04 | El personal debe poder editar una entrevista. | Bloqueado si su huésped tiene epicrisis activa. Una opción de catálogo ya desactivada se conserva si ya estaba elegida. |
-| RF-ENT-05 | El personal debe poder anular una entrevista. | Exige motivo de al menos 4 caracteres. Bloqueado con epicrisis activa. No borra el registro. |
+| RF-ENT-05 | El personal debe poder anular una entrevista. | Exige motivo de 10 a 500 caracteres. Bloqueado con epicrisis activa. No borra el registro. |
 | RF-ENT-06 | El personal debe poder aceptar una entrevista para crear el huésped. | Permiso de crear huéspedes. Ver RF-HUE-02. |
 
 | Campo de entrevista | Obligatorio | Regla |

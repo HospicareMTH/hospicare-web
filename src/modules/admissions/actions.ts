@@ -8,14 +8,22 @@ import {
   requirePermission,
 } from "@/modules/access";
 import { dniSchema } from "@/platform/field-validation";
-import { toInvalidResult, toRejectedResult } from "@/platform/operation-result";
+import {
+  type ActionResult,
+  refreshOnSuccess,
+  toInvalidResult,
+  toRejectedResult,
+} from "@/platform/operation-result";
 
 import {
   admissionInterviewDetailsSchema,
   type AdmissionInterviewDetailsInput,
   admissionInterviewIdSchema,
+  annulmentSchema,
+  type AnnulmentInput,
 } from "./schemas";
 import {
+  annulAdmissionInterview,
   createAdmissionInterview,
   type CreateAdmissionInterviewResult,
   isDniInActiveInterview,
@@ -62,6 +70,28 @@ export async function updateAdmissionInterviewAction(
     parsedId.data,
     parsedVersion.data,
     parsedDetails.data,
+  );
+}
+
+export async function annulAdmissionInterviewAction(
+  interviewId: string,
+  input: AnnulmentInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("admissions.interviews.annul");
+  const parsedId = admissionInterviewIdSchema.safeParse(interviewId);
+  if (!parsedId.success) {
+    return toRejectedResult(parsedId.error);
+  }
+  const parsedAnnulment = annulmentSchema.safeParse(input);
+  if (!parsedAnnulment.success) {
+    return toInvalidResult(parsedAnnulment.error);
+  }
+  return refreshOnSuccess(
+    await annulAdmissionInterview(
+      access.userId,
+      parsedId.data,
+      parsedAnnulment.data.reason,
+    ),
   );
 }
 
