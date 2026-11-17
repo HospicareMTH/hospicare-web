@@ -35,6 +35,7 @@ import {
   type CatalogOrderEntry,
   countActiveOptionsByCatalog,
   findCatalogOptionsByIds,
+  findOptionIdBySystemKey,
   insertOrReactivateOption,
   listCatalogOptions,
   listSelectableOptionRecords,
@@ -161,6 +162,13 @@ export function listSelectableCatalogOptions(
     catalog,
     savedOptionIds.filter(isCatalogEntryId),
   );
+}
+
+// La siembra de drizzle/0017 marca así la opción "Otra" de Religión, que exige detalle.
+const RELIGION_OTHER_SYSTEM_KEY = "religion_other";
+
+export function findReligionOtherOptionId(): Promise<string | null> {
+  return findOptionIdBySystemKey("religion", RELIGION_OTHER_SYSTEM_KEY);
 }
 
 export async function validateCatalogSelection(

@@ -41,6 +41,7 @@ function renderTable({
   pageCount = 1,
   hiddenColumns = [] as string[],
   onHiddenColumnsChange = vi.fn(),
+  onOpenRow = undefined as ((person: Person) => void) | undefined,
 } = {}) {
   render(
     <DataTable
@@ -65,6 +66,7 @@ function renderTable({
       paginationLabel="Páginas de personas"
       getRowActions={() => []}
       getActionsLabel={(person) => `Acciones de ${person.name}`}
+      onOpenRow={onOpenRow}
       hiddenColumns={hiddenColumns}
       onHiddenColumnsChange={onHiddenColumnsChange}
     />,
@@ -133,5 +135,34 @@ describe("DataTable", () => {
     expect(
       within(pagination).getByRole("link", { name: "Página 2" }),
     ).toHaveAttribute("aria-current", "page");
+  });
+
+  it("RF-TAB-04: doble clic abre el registro de la fila", () => {
+    const onOpenRow = vi.fn();
+    renderTable({ onOpenRow });
+
+    fireEvent.doubleClick(screen.getByRole("row", { name: /Beto Ficticio/ }));
+
+    expect(onOpenRow).toHaveBeenCalledWith(PEOPLE[1]);
+  });
+
+  it("RF-TAB-04: con el teclado, Enter sobre la fila la abre", () => {
+    const onOpenRow = vi.fn();
+    renderTable({ onOpenRow });
+    const row = screen.getByRole("row", { name: /Ana Ficticia/ });
+
+    fireEvent.focus(row);
+    fireEvent.keyDown(row, { key: "Enter" });
+
+    expect(row).toHaveAttribute("aria-selected", "true");
+    expect(onOpenRow).toHaveBeenCalledWith(PEOPLE[0]);
+  });
+
+  it("RF-TAB-04: sin detalle, la fila no se abre ni recibe foco", () => {
+    renderTable();
+
+    expect(
+      screen.getByRole("row", { name: /Ana Ficticia/ }),
+    ).not.toHaveAttribute("tabindex");
   });
 });

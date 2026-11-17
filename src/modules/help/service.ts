@@ -3,6 +3,7 @@ import { listVisibleCatalogs } from "@/modules/catalogs";
 
 import {
   ACCOUNT_SECTION,
+  ADMISSIONS_SECTION,
   CATALOGS_SECTION,
   GENERAL_USE_SECTION,
   HOME_SECTION,
@@ -27,7 +28,13 @@ const MANUAL_ENTRIES: readonly ManualEntry[] = [
   {
     section: HOME_SECTION,
     isVisibleTo: (access) =>
+      hasPermission(access, "dashboard.admissions.view") ||
       hasPermission(access, "dashboard.data_quality.view"),
+  },
+  {
+    section: ADMISSIONS_SECTION,
+    isVisibleTo: (access) =>
+      hasPermission(access, "admissions.interviews.view"),
   },
   {
     section: USERS_SECTION,

@@ -236,34 +236,34 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | RF-ENT-02 | El personal debe poder crear una entrevista. | Campos de la tabla siguiente, organizados en pestañas. |
 | RF-ENT-03 | El personal debe poder ver el detalle y sus adjuntos. | Muestra etiquetas de catálogo, no códigos. |
 | RF-ENT-04 | El personal debe poder editar una entrevista. | Bloqueado si su huésped tiene epicrisis activa. Una opción de catálogo ya desactivada se conserva si ya estaba elegida. |
-| RF-ENT-05 | El personal debe poder anular una entrevista. | Exige motivo de al menos 4 caracteres. Bloqueado con epicrisis activa. No borra el registro. |
+| RF-ENT-05 | El personal debe poder anular una entrevista. | Exige motivo de 10 a 500 caracteres. Bloqueado con epicrisis activa. No borra el registro. |
 | RF-ENT-06 | El personal debe poder aceptar una entrevista para crear el huésped. | Permiso de crear huéspedes. Ver RF-HUE-02. |
 
 | Campo de entrevista | Obligatorio | Regla |
 | --- | --- | --- |
 | Fecha de entrevista | Sí | No futura |
-| Nombre y apellido | Sí | Separados, mínimo 2 caracteres cada uno |
+| Nombre y apellido | Sí | Separados, de 2 a 80 caracteres cada uno |
 | Fecha de nacimiento | Sí | No futura |
-| DNI | Sí | Argentino, 7 u 8 dígitos, entre 1.000.000 y 99.999.999. Admite puntos y guiones al cargar. |
-| Dirección | Sí | Mínimo 3 caracteres |
-| Obra social y número de afiliado | No | Catálogo; ver RF-CAT-05 |
+| DNI | Sí | Argentino, 7 u 8 dígitos, entre 1.000.000 y 99.999.999. Admite puntos y guiones al cargar. Si ya hay otra entrevista vigente con el mismo DNI, se avisa sin impedir el guardado. |
+| Dirección | Sí | De 3 a 200 caracteres |
+| Obra social y número de afiliado | No | Catálogo; ver RF-CAT-05. Número de afiliado de hasta 40 caracteres. |
 | Información general | Sí | Catálogo |
-| Religión | Sí | Catálogo. Con "Otra", exige detalle. |
+| Religión | Sí | Catálogo. Con la opción de sistema "Otra", exige un detalle de hasta 120 caracteres, aunque se cambie su etiqueta. |
 | ECOG | Sí | Catálogo |
-| Antecedentes personales | No | Texto |
-| Nombre del entrevistado | Sí | Mínimo 2 caracteres |
-| Teléfono y vínculo del entrevistado | No | Vínculo por catálogo |
-| Composición familiar, derivado por | No | Texto |
+| Antecedentes personales | No | Texto de hasta 2000 caracteres |
+| Nombre del entrevistado | Sí | De 2 a 120 caracteres |
+| Teléfono y vínculo del entrevistado | No | Teléfono de hasta 40 caracteres. Vínculo por catálogo. |
+| Composición familiar, derivado por | No | Texto de hasta 2000 caracteres |
 | Médico de cabecera | No | Catálogo de profesionales |
-| Dificultades de cuidado en el hogar, servicio fúnebre, cuidado domiciliario, emergencias | No | Sí o no |
-| Enfermedad oncológica (tumor) | No | Texto |
-| Metástasis y lugar | No | Si hay metástasis, el lugar es obligatorio. Catálogo. |
+| Dificultades de cuidado en el hogar, servicio fúnebre, cuidado domiciliario, emergencias | No | Sí o no; "No" por defecto |
+| Enfermedad oncológica (tumor) | No | Texto de hasta 2000 caracteres |
+| Metástasis y lugar | No | Sí o no; "No" por defecto. Si hay metástasis, el lugar es obligatorio. Catálogo, selección única. |
 | Tratamiento oncológico específico | Sí | Catálogo |
-| Enfermedad no oncológica | No | Texto |
+| Enfermedad no oncológica | No | Texto de hasta 2000 caracteres |
 | Cirugías | No | Selección múltiple por catálogo |
-| Radioterapia, quimioterapia, hemoterapia | No | Texto |
-| Tratamiento con opioides y opioide | No | Si hay tratamiento, el opioide es obligatorio. |
-| Otros medicamentos, estudios complementarios | No | Texto |
+| Radioterapia, quimioterapia, hemoterapia | No | Texto de hasta 2000 caracteres |
+| Tratamiento con opioides y opioide | No | Sí o no; "No" por defecto. Si hay tratamiento, el opioide es obligatorio: texto de hasta 2000 caracteres. |
+| Otros medicamentos, estudios complementarios | No | Texto de hasta 2000 caracteres |
 
 ### 6.2 Huéspedes
 

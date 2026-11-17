@@ -5,6 +5,7 @@ import {
   DEFAULT_PAGE_SIZE,
   paginateList,
   parseListQuery,
+  resolvePageWindow,
 } from "./list-query";
 
 const SORT_KEYS = ["name"] as const;
@@ -49,5 +50,28 @@ describe("listados", () => {
     });
     expect(page.items).toHaveLength(20);
     expect(page.items[0]).toBe("Persona 101");
+  });
+});
+
+describe("resolvePageWindow", () => {
+  it("RF-TAB-01: calcula desde qué fila empieza la página pedida", () => {
+    expect(resolvePageWindow(120, 2, 50)).toEqual({
+      page: 2,
+      pageCount: 3,
+      offset: 50,
+    });
+  });
+
+  it("RF-TAB-01: una página inexistente muestra la última, y sin filas hay una sola", () => {
+    expect(resolvePageWindow(120, 9, 50)).toEqual({
+      page: 3,
+      pageCount: 3,
+      offset: 100,
+    });
+    expect(resolvePageWindow(0, 4, 50)).toEqual({
+      page: 1,
+      pageCount: 1,
+      offset: 0,
+    });
   });
 });

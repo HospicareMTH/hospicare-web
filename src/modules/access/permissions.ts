@@ -82,6 +82,7 @@ export const PERMISSION_GROUPS = [
     key: "dashboard",
     label: "Reportes del inicio",
     permissions: [
+      { key: "dashboard.admissions.view", label: "Admisiones" },
       { key: "dashboard.data_quality.view", label: "Calidad de datos" },
     ],
   },
@@ -89,6 +90,16 @@ export const PERMISSION_GROUPS = [
     key: "documentation",
     label: "Documentación",
     permissions: [{ key: "documentation.app.view", label: "Ver" }],
+  },
+  {
+    key: "admissions",
+    label: "Admisiones",
+    permissions: [
+      { key: "admissions.interviews.view", label: "Ver entrevistas" },
+      { key: "admissions.interviews.create", label: "Crear entrevistas" },
+      { key: "admissions.interviews.update", label: "Modificar entrevistas" },
+      { key: "admissions.interviews.annul", label: "Anular entrevistas" },
+    ],
   },
 ] as const satisfies readonly PermissionGroupDefinition[];
 
