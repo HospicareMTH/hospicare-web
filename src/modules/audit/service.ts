@@ -1,4 +1,21 @@
-import { insertAuditEntry } from "./repository";
+import {
+  type AuditEntryRecord,
+  type AuditEntrySearch,
+  countAuditEntryRecords,
+  insertAuditEntry,
+  listAuditEntryRecords,
+} from "./repository";
+
+export function countAuditEntries(search: AuditEntrySearch): Promise<number> {
+  return countAuditEntryRecords(search);
+}
+
+export function listAuditEntries(
+  search: AuditEntrySearch,
+  window: { offset: number; limit: number },
+): Promise<AuditEntryRecord[]> {
+  return listAuditEntryRecords(search, window);
+}
 
 export const FAILED_SIGN_IN_ACTION = "session.sign_in_failed";
 

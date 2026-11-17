@@ -101,6 +101,11 @@ export const PERMISSION_GROUPS = [
       { key: "admissions.interviews.annul", label: "Anular entrevistas" },
     ],
   },
+  {
+    key: "activity_log",
+    label: "Registro de actividad",
+    permissions: [{ key: "admin.logs.view", label: "Ver" }],
+  },
 ] as const satisfies readonly PermissionGroupDefinition[];
 
 export type Permission =

@@ -30,6 +30,7 @@ import { SUPER_USER_SYSTEM_KEY } from "../authorization/repository";
 import type { UserAccess } from "../authorization/service";
 import {
   deleteUserSessions,
+  findUserIdsWithNameContaining,
   findUserNamesByIds,
   hasPendingInvitation,
   insertUserWithPassword,
@@ -316,4 +317,8 @@ export async function findUserNames(
   }
   const records = await findUserNamesByIds(uniqueUserIds);
   return new Map(records.map(({ id, name }) => [id, name]));
+}
+
+export function findUserIdsByName(searchTerm: string): Promise<string[]> {
+  return findUserIdsWithNameContaining(searchTerm);
 }

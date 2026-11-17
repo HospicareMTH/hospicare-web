@@ -133,7 +133,7 @@ El sistema tiene 29 pantallas y 2 documentos PDF, organizados en 7 destinos de n
 | `/admin/invitaciones` | Invitaciones | `admin.invitations.view` |
 | `/admin/catalogos` | Catálogos clínicos | `admin.*_options.view` por catálogo |
 | `/admin/configuracion` | Configuración general | `admin.system_settings.view` |
-| `/admin/logs` | Registro de actividad | `admin.logs.view` |
+| `/admin/actividad` | Registro de actividad | `admin.logs.view` |
 
 **Navegación principal:** Inicio, Admisiones, Huéspedes, Epicrisis, Administración, Documentación y Mi cuenta. Cada destino aparece solo si el rol tiene acceso.
 
@@ -221,8 +221,8 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | RF-CFG-01 | Administración debe poder configurar la ventana de edición de epicrisis. | Bloqueo inmediato o duración de 1 minuto a 30 días, en minutos, horas o días. Valor inicial: 24 horas. |
 | RF-CFG-02 | Administración debe poder configurar la ventana de edición de evoluciones diarias. | Mismas opciones y valor inicial. |
 | RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Epicrisis: vale solo para las nuevas, porque el límite se fija al emitir. Evoluciones: vale también para las ya registradas. |
-| RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado. |
-| RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. 50, 100 o 150 filas por página, como todo listado. |
+| RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado; usuario afectado, IP y navegador como columnas opcionales. Sin responsable figura Sistema. |
+| RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. Orden por fecha, de la más reciente a la más antigua por defecto. 50, 100 o 150 filas por página, como todo listado. |
 
 ## 6. Requisitos funcionales: operación clínica
 
@@ -451,7 +451,7 @@ Todas las ventanas temporales son de 7 días y se calculan en hora de Buenos Air
 | ID | Requisito | Reglas |
 | --- | --- | --- |
 | RF-TAB-01 | Los listados deben tener búsqueda, orden y paginación. | El estado queda en la dirección de la página. 50, 100 o 150 filas por página; 50 por defecto. |
-| RF-TAB-02 | Los listados deben poder exportarse a Excel. | Exporta las filas de la página visible. |
+| RF-TAB-02 | Los listados deben poder exportarse a Excel. | Exporta todas las filas que cumplen la búsqueda y los filtros, generadas en el servidor y anotadas en el registro de actividad. |
 | RF-TAB-03 | Un clic debe marcar la fila. | Solo una fila marcada por tabla. |
 | RF-TAB-04 | Doble clic debe abrir el registro. | Solo donde existe detalle. |
 | RF-TAB-05 | Clic derecho debe mostrar las acciones de la fila. | En táctil, mantener presionado. Respeta permisos; acciones destructivas en rojo. |
@@ -617,7 +617,7 @@ Estas reglas aplican a todos los módulos y deben resolverse en un único lugar 
 | --- | --- |
 | RN-20 | Todo cambio de datos debe generar una entrada en el registro de actividad. |
 | RN-21 | Cada entrada registra acción, operación, recurso, id afectado, responsable, usuario destino, estado, datos adicionales y fecha. |
-| RN-22 | Operaciones válidas: alta, actualización, eliminación, acceso, sesión y seguridad. |
+| RN-22 | Operaciones válidas: alta, actualización, baja, acceso, sesión y seguridad. La baja abarca eliminar, anular y desactivar; la acción indica cuál fue. |
 | RN-23 | Los eventos de autenticación guardan además IP y navegador. |
 | RN-24 | El registro de actividad es de solo lectura desde la aplicación. |
 | RN-25 | Si el usuario responsable se elimina, la entrada se conserva sin responsable. |
@@ -928,7 +928,8 @@ Un dominio grande se divide en subdominios dentro de su carpeta. Cada subdominio
 | `catalogs` | Listas configurables | RF-CAT |
 | `dashboard` | Reportes del inicio | RF-DAS |
 | `settings` | Parámetros operativos | RF-CFG |
-| `audit` | Escritura y consulta del registro de actividad | RF-LOG, RN-20 a RN-25 |
+| `audit` | Escritura del registro de actividad y lectura de su tabla | RN-20 a RN-25 |
+| `activity-log` | Consulta del registro de actividad | RF-LOG |
 | `help` | Manual y búsqueda global | RF-MAN, RF-BUS |
 
 | Regla | Definición |
