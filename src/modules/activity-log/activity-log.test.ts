@@ -312,17 +312,30 @@ describe("registro de actividad: consulta", () => {
     ]);
   });
 
-  it("RF-LOG-02, RF-TAB-01: ignora filtros desconocidos en la dirección", () => {
+  it("RF-LOG-02, RF-TAB-01: lee los filtros en español de la dirección", () => {
     expect(
       parseActivityLogListQuery({
-        operacion: "delete",
-        recurso: "otra_tabla",
+        operacion: "baja",
+        recurso: "entrevista-de-admision",
         orden: "occurredAt",
       }),
     ).toMatchObject({
       operation: "delete",
-      resource: null,
+      resource: "admission_interview",
       sort: { key: "occurredAt", isDescending: false },
+    });
+  });
+
+  it("RF-LOG-02, RF-TAB-01: ignora filtros desconocidos en la dirección", () => {
+    expect(
+      parseActivityLogListQuery({
+        operacion: "delete",
+        recurso: "admission_interview",
+      }),
+    ).toMatchObject({
+      operation: null,
+      resource: null,
+      sort: DEFAULT_ACTIVITY_LOG_SORT,
     });
   });
 });

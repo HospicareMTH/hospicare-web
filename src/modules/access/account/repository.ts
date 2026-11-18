@@ -33,7 +33,7 @@ export async function updateUserName(
 export async function findHiddenColumns(
   userId: string,
   tableKey: string,
-): Promise<string[]> {
+): Promise<string[] | null> {
   const [preference] = await getDatabase()
     .select({ hiddenColumns: tableColumnPreferences.hiddenColumns })
     .from(tableColumnPreferences)
@@ -43,7 +43,7 @@ export async function findHiddenColumns(
         eq(tableColumnPreferences.tableKey, tableKey),
       ),
     );
-  return preference?.hiddenColumns ?? [];
+  return preference?.hiddenColumns ?? null;
 }
 
 export async function upsertHiddenColumns(

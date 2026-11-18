@@ -26,6 +26,13 @@ describe("secciones de Administración", () => {
     ).toEqual(["Catálogos"]);
   });
 
+  it("RF-LOG-01, RF-ROL-09: muestra el Registro de actividad solo con su permiso", () => {
+    expect(listSectionLabels(["admin.logs.view"])).toEqual([
+      "Registro de actividad",
+    ]);
+    expect(listSectionLabels(["admin.roles.view"])).toEqual(["Roles"]);
+  });
+
   it("RF-ROL-09: oculta Catálogos sin permiso de ver catálogos", () => {
     expect(
       listSectionLabels(["admin.roles.view", "admin.surgery_options.create"]),

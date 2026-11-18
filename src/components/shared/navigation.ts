@@ -56,6 +56,7 @@ export const ADMINISTRATION_DESTINATION: NavigationDestination = {
     "admin.metastasis_location_options.view",
     "admin.surgery_options.view",
     "admin.guest_clinical_catalog_options.view",
+    "admin.logs.view",
   ],
 };
 

@@ -9,8 +9,4 @@ export type {
   AuditEntrySearch,
   AuditEntryTextMatch,
 } from "./repository";
-export {
-  AUDIT_OPERATIONS,
-  type AuditOperation,
-  type AuditStatus,
-} from "./tables";
+export type { AuditOperation, AuditStatus } from "./tables";

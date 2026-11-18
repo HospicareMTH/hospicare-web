@@ -4,7 +4,8 @@ import { AdminHome } from "@/modules/access";
 
 export const metadata: Metadata = {
   title: "Administración",
-  description: "Usuarios, roles, invitaciones y catálogos del sistema.",
+  description:
+    "Usuarios, roles, invitaciones, catálogos y registro de actividad del sistema.",
 };
 
 export default function AdministrationPage() {

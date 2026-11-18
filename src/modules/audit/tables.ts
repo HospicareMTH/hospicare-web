@@ -17,9 +17,7 @@ export const auditOperation = pgEnum("audit_operation", [
   "security",
 ]);
 
-export const AUDIT_OPERATIONS = auditOperation.enumValues;
-
-export type AuditOperation = (typeof AUDIT_OPERATIONS)[number];
+export type AuditOperation = (typeof auditOperation.enumValues)[number];
 
 export const auditStatus = pgEnum("audit_status", ["success", "failure"]);
 
