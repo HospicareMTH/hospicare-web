@@ -4,6 +4,7 @@ import {
   count,
   desc,
   eq,
+  gte,
   inArray,
   isNull,
   or,
@@ -97,6 +98,16 @@ export async function countAuditEntryRecords(
     .select({ total: count() })
     .from(auditLog)
     .where(buildListFilter(search));
+  return result?.total ?? 0;
+}
+
+export async function countAuditEntryRecordsSince(
+  windowStart: Date,
+): Promise<number> {
+  const [result] = await getDatabase()
+    .select({ total: count() })
+    .from(auditLog)
+    .where(gte(auditLog.occurredAt, windowStart));
   return result?.total ?? 0;
 }
 

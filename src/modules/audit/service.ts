@@ -2,12 +2,17 @@ import {
   type AuditEntryRecord,
   type AuditEntrySearch,
   countAuditEntryRecords,
+  countAuditEntryRecordsSince,
   insertAuditEntry,
   listAuditEntryRecords,
 } from "./repository";
 
 export function countAuditEntries(search: AuditEntrySearch): Promise<number> {
   return countAuditEntryRecords(search);
+}
+
+export function countAuditEntriesSince(windowStart: Date): Promise<number> {
+  return countAuditEntryRecordsSince(windowStart);
 }
 
 export function listAuditEntries(

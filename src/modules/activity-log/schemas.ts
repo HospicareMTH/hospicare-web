@@ -9,6 +9,8 @@ import {
 
 import { AUDIT_RESOURCES, type AuditResource } from "./labels";
 
+export const ACTIVITY_LOG_PATH = "/admin/actividad";
+
 export const ACTIVITY_LOG_TABLE_KEY = "activity-log";
 
 export const DEFAULT_HIDDEN_ACTIVITY_LOG_COLUMNS = [

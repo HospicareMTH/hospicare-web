@@ -68,3 +68,11 @@ export function parseDisplayDate(text: string): string | null {
   const isoDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
   return isCalendarDate(isoDate) ? isoDate : null;
 }
+
+export const REPORT_WINDOW_DAYS = 7;
+
+const MILLISECONDS_PER_DAY = 86_400_000;
+
+export function getReportWindowStart(now: Date): Date {
+  return new Date(now.getTime() - REPORT_WINDOW_DAYS * MILLISECONDS_PER_DAY);
+}

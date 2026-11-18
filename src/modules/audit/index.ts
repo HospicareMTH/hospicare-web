@@ -1,5 +1,6 @@
 export {
   countAuditEntries,
+  countAuditEntriesSince,
   FAILED_SIGN_IN_ACTION,
   listAuditEntries,
   recordFailedSignIn,

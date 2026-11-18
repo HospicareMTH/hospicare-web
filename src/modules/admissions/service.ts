@@ -15,6 +15,7 @@ import {
   type DatabaseTransaction,
   runInTransactionAs,
 } from "@/platform/database/client";
+import { getReportWindowStart, REPORT_WINDOW_DAYS } from "@/platform/dates";
 import { removeDniSeparators } from "@/platform/dni";
 import { type ListPage, resolvePageWindow } from "@/platform/list-query";
 import {
@@ -610,9 +611,6 @@ export async function loadInterviewFormOptions(
   };
 }
 
-const REPORT_WINDOW_DAYS = 7;
-const MILLISECONDS_PER_DAY = 86_400_000;
-
 export type AdmissionsReport = {
   windowDays: number;
   createdInWindowCount: number;
@@ -622,10 +620,9 @@ export type AdmissionsReport = {
 export async function getAdmissionsReport(
   now: Date = new Date(),
 ): Promise<AdmissionsReport> {
-  const windowStart = new Date(
-    now.getTime() - REPORT_WINDOW_DAYS * MILLISECONDS_PER_DAY,
+  const counts = await countAdmissionInterviewsForReport(
+    getReportWindowStart(now),
   );
-  const counts = await countAdmissionInterviewsForReport(windowStart);
   return {
     windowDays: REPORT_WINDOW_DAYS,
     createdInWindowCount: counts.createdSinceCount,
