@@ -166,7 +166,22 @@ describe("administración de usuarios", () => {
     expect(result).toEqual({ status: "success" });
     const access = await getUserAccess(staff.userId);
     expect(access.permissions.has("admin.roles.view")).toBe(true);
-    expect(await countAuditEntries("user_role.updated")).toBe(1);
+    const roleChanges = await getDatabase().execute<{
+      resource: string;
+      target_user_id: string | null;
+      actor_user_id: string | null;
+    }>(sql`
+      select resource, target_user_id, actor_user_id from audit_log
+      where action = 'user.role_updated'
+    `);
+    expect(roleChanges.rows).toEqual([
+      {
+        resource: "user",
+        target_user_id: staff.userId,
+        actor_user_id: superUser.userId,
+      },
+    ]);
+    expect(await countAuditEntries("user_role.updated")).toBe(0);
   });
 
   it("RF-USR-03: nadie cambia su propio rol, ni el Super user se lo quita", async () => {

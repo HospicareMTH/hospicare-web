@@ -235,8 +235,16 @@ describe("roles y permisos", () => {
     expect(refreshedAccess.permissions.has("admin.roles.view")).toBe(true);
   });
 
-  it("RN-20: cada cambio de rol queda en el registro de actividad con su responsable", async () => {
+  it("RN-20, RN-21: cada cambio de rol queda en el registro de actividad con su responsable", async () => {
     const roleId = await createRoleWithPermissions(superUser, "Medicina", [
+      "documentation.app.view",
+    ]);
+    await assignRolePermissions(superUser, roleId, [
+      "documentation.app.view",
+      "admin.roles.view",
+    ]);
+    await assignRolePermissions(superUser, roleId, [
+      "admin.roles.view",
       "documentation.app.view",
     ]);
     await deleteRole(superUser, roleId);
@@ -244,21 +252,42 @@ describe("roles y permisos", () => {
     const result = await getDatabase().execute<{
       action: string;
       actor_user_id: string | null;
-      resource_id: string | null;
+      previous_permissions: unknown;
+      new_permissions: unknown;
     }>(sql`
-      select action, actor_user_id, resource_id from audit_log
+      select action, actor_user_id,
+        previous_value -> 'permissions' as previous_permissions,
+        new_value -> 'permissions' as new_permissions
+      from audit_log
       where resource in ('role', 'role_permission') and resource_id = ${roleId}
       order by id
     `);
-    expect(result.rows.map((row) => row.action)).toEqual([
-      "role.created",
-      "role_permission.created",
-      "role.deleted",
-      "role_permission.deleted",
+    expect(result.rows).toEqual([
+      {
+        action: "role.created",
+        actor_user_id: superUser.userId,
+        previous_permissions: null,
+        new_permissions: null,
+      },
+      {
+        action: "role.permissions_updated",
+        actor_user_id: superUser.userId,
+        previous_permissions: [],
+        new_permissions: ["documentation.app.view"],
+      },
+      {
+        action: "role.permissions_updated",
+        actor_user_id: superUser.userId,
+        previous_permissions: ["documentation.app.view"],
+        new_permissions: ["admin.roles.view", "documentation.app.view"],
+      },
+      {
+        action: "role.deleted",
+        actor_user_id: superUser.userId,
+        previous_permissions: ["admin.roles.view", "documentation.app.view"],
+        new_permissions: null,
+      },
     ]);
-    expect(
-      result.rows.every((row) => row.actor_user_id === superUser.userId),
-    ).toBe(true);
   });
 });
 

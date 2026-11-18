@@ -346,11 +346,37 @@ describe("invitaciones", () => {
     `);
     expect(result.rows.map((row) => row.action)).toEqual([
       "invitation.created",
-      "invitation.updated",
+      "invitation.accepted",
     ]);
     expect(result.rows[0]?.actor_user_id).toBe(superUser.userId);
     expect(result.rows.some((row) => row.values.includes("token_hash"))).toBe(
       false,
     );
+  });
+
+  it("RN-21, RN-22: revocar una invitación queda como baja, con su responsable", async () => {
+    await inviteWithUserRole(superUser);
+    await revokeInvitation(superUser, await findOnlyInvitationId());
+
+    const result = await getDatabase().execute<{
+      action: string;
+      operation: string;
+      actor_user_id: string | null;
+    }>(sql`
+      select action, operation, actor_user_id from audit_log
+      where resource = 'invitation' order by id
+    `);
+    expect(result.rows).toEqual([
+      {
+        action: "invitation.created",
+        operation: "create",
+        actor_user_id: superUser.userId,
+      },
+      {
+        action: "invitation.revoked",
+        operation: "delete",
+        actor_user_id: superUser.userId,
+      },
+    ]);
   });
 });

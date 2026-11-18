@@ -224,6 +224,32 @@ describe("Mi cuenta", () => {
     expect(await countAuditEntries("table_column_preference.updated")).toBe(1);
   });
 
+  it("RF-TAB-06: usa las columnas ocultas por defecto solo mientras la persona no guardó su elección", async () => {
+    const staff = await createUserWithRole(STAFF_EMAIL, userRoleId);
+    const defaultHiddenColumns = ["ipAddress", "userAgent"];
+
+    expect(
+      await getHiddenColumns(
+        staff.userId,
+        "activity-log",
+        defaultHiddenColumns,
+      ),
+    ).toEqual(defaultHiddenColumns);
+
+    await saveHiddenColumns(staff.userId, {
+      tableKey: "activity-log",
+      hiddenColumns: [],
+    });
+
+    expect(
+      await getHiddenColumns(
+        staff.userId,
+        "activity-log",
+        defaultHiddenColumns,
+      ),
+    ).toEqual([]);
+  });
+
   it("RF-TAB-06: rechaza claves de tabla o columnas inválidas", () => {
     expect(
       columnPreferenceSchema.safeParse({

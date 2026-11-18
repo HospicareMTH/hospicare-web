@@ -16,7 +16,10 @@ import {
   type DatabaseTransaction,
   getDatabase,
 } from "@/platform/database/client";
-import { normalizeTextSql } from "@/platform/database/text-normalization";
+import {
+  containsNormalizedTextSql,
+  normalizeTextSql,
+} from "@/platform/database/text-normalization";
 
 import type {
   AdmissionInterviewDetails,
@@ -206,9 +209,6 @@ const LIST_COLUMNS = {
   createdAt: admissionInterviews.createdAt,
 };
 
-const LIKE_SPECIAL_CHARACTERS = /[\\%_]/g;
-const LIKE_ESCAPED_MATCH = "\\$&";
-
 const SEARCHABLE_TEXT = normalizeTextSql(
   sql`concat_ws(' ', ${admissionInterviews.guestFirstName}, ${admissionInterviews.guestLastName}, ${admissionInterviews.guestDni}, ${admissionInterviews.intervieweeFullName})`,
 );
@@ -235,14 +235,10 @@ function buildListFilter({
   relationshipOptionId,
   primaryDoctorId,
 }: AdmissionInterviewSearch): SQL | undefined {
-  const escapedTerm = searchTerm.replace(
-    LIKE_SPECIAL_CHARACTERS,
-    LIKE_ESCAPED_MATCH,
-  );
   return and(
     isNull(admissionInterviews.annulledAt),
     searchTerm
-      ? sql`${SEARCHABLE_TEXT} like ${normalizeTextSql(sql`${`%${escapedTerm}%`}`)}`
+      ? containsNormalizedTextSql(SEARCHABLE_TEXT, searchTerm)
       : undefined,
     relationshipOptionId
       ? eq(

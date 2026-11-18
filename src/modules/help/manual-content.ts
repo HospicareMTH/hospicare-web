@@ -214,6 +214,14 @@ export const HOME_SECTION: ManualSection = {
       ],
       steps: [],
     },
+    {
+      title: "Accesos",
+      paragraphs: [
+        "Muestra cuántas entradas sumó el registro de actividad en los últimos 7 días: cambios de datos, ingresos y cierres de sesión, e intentos de ingreso fallidos.",
+        "Si tu rol puede ver el registro, «Ver registro de actividad» lo abre.",
+      ],
+      steps: [],
+    },
   ],
   states: [],
   rules: [
@@ -439,6 +447,50 @@ export const CATALOGS_SECTION: ManualSection = {
   decisions: [
     "Las opciones se desactivan en lugar de borrarse para no perder lo que ya se registró. Así, una entrevista sigue mostrando la opción que se eligió en su momento.",
   ],
+};
+
+export const ACTIVITY_LOG_SECTION: ManualSection = {
+  id: "registro-de-actividad",
+  title: "Registro de actividad",
+  summary: "Muestra quién hizo cada cambio e ingreso en el sistema, y cuándo.",
+  audience: "Administración, con el permiso para ver el Registro de actividad.",
+  topics: [
+    {
+      title: "Qué se registra",
+      paragraphs: [
+        "Cada alta, cambio o baja de datos, cada ingreso y cierre de sesión, los intentos de ingreso fallidos y los cambios de seguridad de una cuenta, como la contraseña o el segundo factor.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Buscar y filtrar",
+      paragraphs: [
+        "Buscá por el nombre de la acción, como «Entrevista anulada», o por el nombre de quien la hizo. Podés filtrar por operación y por recurso. El listado empieza por lo más reciente.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Columnas",
+      paragraphs: [
+        "Usuario afectado, IP y Navegador empiezan ocultas. Podés mostrarlas desde «Columnas», y el sistema recuerda tu elección.",
+      ],
+      steps: [],
+    },
+  ],
+  states: [
+    { name: "Completada", description: "La acción se hizo." },
+    {
+      name: "Fallida",
+      description:
+        "La acción no se pudo hacer. Por ahora, solo los intentos de ingreso fallidos quedan así.",
+    },
+  ],
+  rules: [
+    "Nadie puede modificar ni borrar una entrada desde el sistema.",
+    "Si la acción no tiene una persona responsable, como un intento de ingreso fallido, figura «Sistema».",
+    "La operación «Baja» agrupa eliminar, anular y desactivar. La acción dice cuál fue.",
+  ],
+  decisions: ["Por ahora el registro no se puede exportar a Excel."],
 };
 
 export const ADMISSIONS_SECTION: ManualSection = {

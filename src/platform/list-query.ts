@@ -20,7 +20,7 @@ export type ListPage<Item> = {
 
 export type Comparator<Item> = (first: Item, second: Item) => number;
 
-function normalizeForSearch(text: string): string {
+export function normalizeForSearch(text: string): string {
   return text
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")

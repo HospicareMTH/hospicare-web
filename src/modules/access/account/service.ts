@@ -46,11 +46,13 @@ export async function updateOwnName(
   });
 }
 
-export function getHiddenColumns(
+export async function getHiddenColumns(
   userId: string,
   tableKey: string,
+  defaultHiddenColumns: readonly string[] = [],
 ): Promise<string[]> {
-  return findHiddenColumns(userId, tableKey);
+  const savedHiddenColumns = await findHiddenColumns(userId, tableKey);
+  return savedHiddenColumns ?? [...defaultHiddenColumns];
 }
 
 export async function saveHiddenColumns(

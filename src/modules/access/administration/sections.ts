@@ -28,6 +28,11 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     href: "/admin/catalogos",
     anyOfPermissions: CATALOG_VIEW_PERMISSIONS,
   },
+  {
+    label: "Registro de actividad",
+    href: "/admin/actividad",
+    anyOfPermissions: ["admin.logs.view"],
+  },
 ];
 
 export function getAllowedAdminSections(access: UserAccess): AdminSection[] {

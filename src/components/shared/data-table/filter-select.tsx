@@ -49,7 +49,7 @@ export function FilterSelect({
     >
       <SelectTrigger
         aria-label={label}
-        className={`w-full sm:w-48 ${SELECT_TRIGGER_CLASS_NAME}`}
+        className={`w-full sm:w-auto sm:min-w-48 ${SELECT_TRIGGER_CLASS_NAME}`}
       >
         <SelectValue />
       </SelectTrigger>

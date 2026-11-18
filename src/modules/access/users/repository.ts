@@ -1,11 +1,15 @@
 import { randomUUID } from "node:crypto";
 
-import { and, eq, gt, inArray } from "drizzle-orm";
+import { and, eq, gt, inArray, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
   getDatabase,
 } from "@/platform/database/client";
+import {
+  containsNormalizedTextSql,
+  normalizeTextSql,
+} from "@/platform/database/text-normalization";
 
 import type { AccessRevocationRecord } from "../auth/repository";
 import {
@@ -26,6 +30,21 @@ export function findUserNamesByIds(
     .select({ id: users.id, name: users.name })
     .from(users)
     .where(inArray(users.id, [...userIds]));
+}
+
+export async function findUserIdsWithNameContaining(
+  searchTerm: string,
+): Promise<string[]> {
+  const records = await getDatabase()
+    .select({ id: users.id })
+    .from(users)
+    .where(
+      containsNormalizedTextSql(
+        normalizeTextSql(sql`${users.name}`),
+        searchTerm,
+      ),
+    );
+  return records.map(({ id }) => id);
 }
 
 export async function isEmailRegistered(

@@ -3,12 +3,14 @@ import {
   type AdmissionsReport,
   getAdmissionsReport,
 } from "@/modules/admissions";
+import { countAuditEntriesSince } from "@/modules/audit";
 import {
   buildCatalogHref,
   type CatalogGroup,
   countActiveCatalogEntries,
   listVisibleCatalogs,
 } from "@/modules/catalogs";
+import { getReportWindowStart, REPORT_WINDOW_DAYS } from "@/platform/dates";
 
 export type ActiveCatalogEntryRow = {
   slug: string;
@@ -37,6 +39,28 @@ export async function getDataQualityReport(
       ...entry,
       href: visibleSlugs.has(entry.slug) ? buildCatalogHref(entry.slug) : null,
     })),
+  };
+}
+
+export type AccessesReport = {
+  windowDays: number;
+  activityInWindowCount: number;
+  canViewActivityLog: boolean;
+};
+
+export async function getAccessesReportFor(
+  access: UserAccess,
+  now: Date = new Date(),
+): Promise<AccessesReport | null> {
+  if (!hasPermission(access, "dashboard.accesses.view")) {
+    return null;
+  }
+  return {
+    windowDays: REPORT_WINDOW_DAYS,
+    activityInWindowCount: await countAuditEntriesSince(
+      getReportWindowStart(now),
+    ),
+    canViewActivityLog: hasPermission(access, "admin.logs.view"),
   };
 }
 

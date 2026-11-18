@@ -47,6 +47,7 @@ describe("manual funcional", () => {
       "roles",
       "invitaciones",
       "catalogos",
+      "registro-de-actividad",
     ]);
   });
 
@@ -71,6 +72,15 @@ describe("manual funcional", () => {
     ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "admisiones"]);
     expect(
       listSectionIds(["documentation.app.view", "dashboard.admissions.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "inicio"]);
+  });
+
+  it("RF-MAN-02, RF-LOG-01: el Registro de actividad se ve con su permiso, e Inicio con el reporte Accesos", () => {
+    expect(
+      listSectionIds(["documentation.app.view", "admin.logs.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "registro-de-actividad"]);
+    expect(
+      listSectionIds(["documentation.app.view", "dashboard.accesses.view"]),
     ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "inicio"]);
   });
 
