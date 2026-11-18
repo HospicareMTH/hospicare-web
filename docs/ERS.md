@@ -624,17 +624,18 @@ Estas reglas aplican a todos los módulos y deben resolverse en un único lugar 
 
 | Familia de eventos | Acciones registradas |
 | --- | --- |
-| Sesión | Sesión iniciada, sesión revocada |
-| Usuarios | Creado, actualizado, correo verificado, contraseña restablecida o cambiada, rol actualizado, acceso revocado, acceso restaurado, segundo factor activado, segundo factor desactivado, códigos de respaldo regenerados |
-| Invitaciones | Creada, aceptada, revocada |
-| Roles | Creado, actualizado, eliminado, permisos actualizados |
-| Catálogos | Opción creada, actualizada, desactivada, reordenada |
-| Admisiones | Entrevista creada, actualizada, anulada; adjunto subido, eliminado |
+| Sesión | Sesión iniciada, sesión revocada, intento de ingreso fallido |
+| Usuarios | Creado, actualizado, eliminado, correo verificado, contraseña restablecida o cambiada, rol actualizado, acceso revocado, acceso restaurado, segundo factor activado, segundo factor desactivado, códigos de respaldo regenerados; datos de ingreso y del segundo factor creados, actualizados o eliminados |
+| Invitaciones | Creada, actualizada, aceptada, revocada, eliminada |
+| Roles | Creado, actualizado, eliminado con sus permisos, permisos actualizados; rol asignado o quitado a un usuario |
+| Catálogos | Opción creada, actualizada, desactivada, reactivada, reordenada; profesional de salud creado, actualizado, desactivado, reactivado |
+| Admisiones | Entrevista creada, actualizada, anulada; cirugía de la entrevista agregada, actualizada o quitada; adjunto subido, eliminado |
 | Huéspedes | Creado desde admisión, creado manualmente, actualizado, anulado, carpeta impresa |
 | Evaluaciones | CAM creada; evaluación física creada; adjunto subido, eliminado |
 | Evoluciones | Creada, actualizada, anulada; nota aclaratoria creada |
 | Epicrisis | Creada, actualizada, anulada |
 | Configuración | Parámetros actualizados |
+| Preferencias | Columnas de un listado guardadas, cambiadas o restablecidas |
 
 ## 11. Requisitos no funcionales
 

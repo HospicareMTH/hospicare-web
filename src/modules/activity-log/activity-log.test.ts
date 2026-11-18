@@ -5,7 +5,10 @@ import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import type { Permission, UserAccess } from "@/modules/access";
-import { FAILED_SIGN_IN_ACTION } from "@/modules/audit";
+import {
+  FAILED_SIGN_IN_ACTION,
+  ROLE_PERMISSIONS_UPDATED_ACTION,
+} from "@/modules/audit";
 import { getDatabase } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
 
@@ -389,11 +392,13 @@ describe("registro de actividad: nombres", () => {
       ...(await listGenericTriggerActions()),
       ...(await listExplicitTriggerActions()),
       FAILED_SIGN_IN_ACTION,
+      ROLE_PERMISSIONS_UPDATED_ACTION,
     ]);
 
     expect([...recordedActions]).toEqual(
       expect.arrayContaining([
-        "role_permission.deleted",
+        "user_role.deleted",
+        "invitation.revoked",
         "user.two_factor_enabled",
         "admission_interview.annulled",
       ]),

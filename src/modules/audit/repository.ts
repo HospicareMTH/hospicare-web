@@ -12,7 +12,10 @@ import {
   sql,
 } from "drizzle-orm";
 
-import { getDatabase } from "@/platform/database/client";
+import {
+  type DatabaseTransaction,
+  getDatabase,
+} from "@/platform/database/client";
 
 import { type AuditOperation, type AuditStatus, auditLog } from "./tables";
 
@@ -20,6 +23,13 @@ export type NewAuditEntry = typeof auditLog.$inferInsert;
 
 export async function insertAuditEntry(entry: NewAuditEntry): Promise<void> {
   await getDatabase().insert(auditLog).values(entry);
+}
+
+export async function insertAuditEntryInTransaction(
+  transaction: DatabaseTransaction,
+  entry: NewAuditEntry,
+): Promise<void> {
+  await transaction.insert(auditLog).values(entry);
 }
 
 export type AuditEntryTextMatch = {

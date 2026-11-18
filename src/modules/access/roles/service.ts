@@ -1,3 +1,4 @@
+import { recordRolePermissionsChange } from "@/modules/audit";
 import {
   type Comparator,
   compareText,
@@ -145,9 +146,18 @@ export async function assignRolePermissions(
     if (!granted.every((permission) => hasPermission(actor, permission))) {
       return reject(ROLE_REJECTION_MESSAGES.permissionNotHeld);
     }
+    if (granted.length === 0 && revoked.length === 0) {
+      return SUCCESS;
+    }
 
     await removeRolePermissions(transaction, roleId, revoked);
     await addRolePermissions(transaction, roleId, granted);
+    await recordRolePermissionsChange(transaction, {
+      roleId,
+      actorUserId: actor.userId,
+      previousPermissions: role.permissions,
+      nextPermissions: [...requested],
+    });
     return SUCCESS;
   });
 }

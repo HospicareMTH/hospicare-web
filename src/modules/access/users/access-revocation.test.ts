@@ -196,7 +196,7 @@ describe("revocación de accesos", () => {
     ]);
   });
 
-  it("RN-20: revocar y restaurar quedan en el registro de actividad con su responsable", async () => {
+  it("RN-20, RN-21: revocar y restaurar quedan en el registro de actividad como tales, con su responsable", async () => {
     await revokeUserAccess(superUser, staff.userId, {
       duration: { kind: "permanent" },
       reason: REASON,
@@ -205,21 +205,26 @@ describe("revocación de accesos", () => {
 
     const result = await getDatabase().execute<{
       action: string;
+      operation: string;
       actor_user_id: string | null;
       revoked_reason: string | null;
     }>(sql`
-      select action, actor_user_id, new_value ->> 'access_revocation_reason' as revoked_reason
-      from audit_log where resource = 'user' and target_user_id = ${staff.userId} and action = 'user.updated'
+      select action, operation, actor_user_id, new_value ->> 'access_revocation_reason' as revoked_reason
+      from audit_log
+      where resource = 'user' and target_user_id = ${staff.userId}
+        and action in ('user.updated', 'user.access_revoked', 'user.access_restored')
       order by id
     `);
     expect(result.rows).toEqual([
       {
-        action: "user.updated",
+        action: "user.access_revoked",
+        operation: "security",
         actor_user_id: superUser.userId,
         revoked_reason: REASON,
       },
       {
-        action: "user.updated",
+        action: "user.access_restored",
+        operation: "security",
         actor_user_id: superUser.userId,
         revoked_reason: null,
       },

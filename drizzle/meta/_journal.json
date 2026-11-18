@@ -127,6 +127,13 @@
       "when": 1794804371068,
       "tag": "0017_admission_interviews_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794975748412,
+      "tag": "0018_audit_event_names",
+      "breakpoints": true
     }
   ]
 }
