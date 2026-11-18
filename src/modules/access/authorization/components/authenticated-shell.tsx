@@ -10,8 +10,10 @@ const SIDEBAR_STATE_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COLLAPSED_VALUE = "false";
 
 export async function AuthenticatedShell({
+  search,
   children,
 }: {
+  search: ReactNode;
   children: ReactNode;
 }) {
   const { access } = await getCurrentUser();
@@ -24,6 +26,7 @@ export async function AuthenticatedShell({
     <AppShell
       destinations={filterAllowedDestinations(access, NAVIGATION_DESTINATIONS)}
       isSidebarOpenByDefault={isSidebarOpenByDefault}
+      search={search}
     >
       {children}
     </AppShell>

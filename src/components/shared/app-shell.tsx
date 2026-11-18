@@ -179,10 +179,12 @@ function MobileNavigation({ destinations, pathname }: NavigationProps) {
 export function AppShell({
   destinations,
   isSidebarOpenByDefault,
+  search,
   children,
 }: {
   destinations: NavigationDestination[];
   isSidebarOpenByDefault: boolean;
+  search: ReactNode;
   children: ReactNode;
 }) {
   const pathname = usePathname();
@@ -198,7 +200,8 @@ export function AppShell({
             <SidebarBrand />
           </SidebarHeader>
           <SidebarContent>
-            <SidebarGroup>
+            <SidebarGroup className="gap-1">
+              {search}
               <SidebarNavigation
                 destinations={destinations}
                 pathname={pathname}
