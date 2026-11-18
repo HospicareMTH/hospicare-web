@@ -35,6 +35,13 @@ export const GENERAL_USE_SECTION: ManualSection = {
       steps: [],
     },
     {
+      title: "Buscar una pantalla o una sección del manual",
+      paragraphs: [
+        "Tocá «Buscar» en el menú o presioná Ctrl + K (⌘ K en Mac). Escribí parte del nombre: no importan las mayúsculas ni los acentos. Solo aparece lo que tu rol puede ver.",
+      ],
+      steps: [],
+    },
+    {
       title: "Buscar, ordenar y filtrar un listado",
       paragraphs: [
         "Al buscar no importan las mayúsculas ni los acentos: «jose» encuentra «José». Las columnas con flechas en el título se pueden ordenar. Tocá el título una vez para ordenar y otra vez para invertir el orden. Algunos listados tienen filtros junto a la búsqueda, por ejemplo por estado o por rol.",

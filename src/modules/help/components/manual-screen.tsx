@@ -7,15 +7,12 @@ import { SectionSheet } from "@/components/shared/section-sheet";
 import { requirePermission } from "@/modules/access";
 
 import {
+  buildManualSectionHref,
   findVisibleManualSection,
   listVisibleManualSections,
 } from "../service";
 import { ManualIndex } from "./manual-index";
 import { ManualSectionArticle } from "./manual-section-article";
-
-export function buildManualSectionHref(sectionId: string): string {
-  return `${DOCUMENTATION_DESTINATION.href}/${sectionId}`;
-}
 
 async function VisibleManualIndex() {
   const { access } = await requirePermission("documentation.app.view");

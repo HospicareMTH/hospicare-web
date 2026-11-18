@@ -1,4 +1,13 @@
-import { hasPermission, type UserAccess } from "@/modules/access";
+import {
+  DOCUMENTATION_DESTINATION,
+  NAVIGATION_DESTINATIONS,
+} from "@/components/shared/navigation";
+import {
+  filterAllowedDestinations,
+  getAllowedAdminSections,
+  hasPermission,
+  type UserAccess,
+} from "@/modules/access";
 import { listVisibleCatalogs } from "@/modules/catalogs";
 
 import {
@@ -92,4 +101,44 @@ export function findVisibleManualSection(
     return { status: "forbidden" };
   }
   return { status: "visible", section: entry.section };
+}
+
+export function buildManualSectionHref(sectionId: string): string {
+  return `${DOCUMENTATION_DESTINATION.href}/${sectionId}`;
+}
+
+export type SearchEntryGroup = "screens" | "manual";
+
+export type SearchEntry = {
+  label: string;
+  href: string;
+  group: SearchEntryGroup;
+};
+
+function listSearchableScreens(access: UserAccess): SearchEntry[] {
+  const destinations = filterAllowedDestinations(
+    access,
+    NAVIGATION_DESTINATIONS,
+  );
+  return [...destinations, ...getAllowedAdminSections(access)].map(
+    ({ label, href }) => ({ label, href, group: "screens" }),
+  );
+}
+
+function listSearchableManualSections(access: UserAccess): SearchEntry[] {
+  if (!hasPermission(access, "documentation.app.view")) {
+    return [];
+  }
+  return listVisibleManualSections(access).map(({ id, title }) => ({
+    label: title,
+    href: buildManualSectionHref(id),
+    group: "manual",
+  }));
+}
+
+export function listSearchEntries(access: UserAccess): SearchEntry[] {
+  return [
+    ...listSearchableScreens(access),
+    ...listSearchableManualSections(access),
+  ];
 }

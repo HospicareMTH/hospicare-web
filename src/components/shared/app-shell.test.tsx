@@ -13,6 +13,7 @@ function renderShell({ isSidebarOpenByDefault = true } = {}) {
     <AppShell
       destinations={[HOME_DESTINATION]}
       isSidebarOpenByDefault={isSidebarOpenByDefault}
+      search={null}
     >
       contenido
     </AppShell>,

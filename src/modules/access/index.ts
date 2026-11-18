@@ -21,7 +21,12 @@ export {
   type Permission,
   PERMISSION_GROUPS,
 } from "./permissions";
-export { hasPermission, type UserAccess } from "./authorization/service";
+export {
+  filterAllowedDestinations,
+  hasPermission,
+  type UserAccess,
+} from "./authorization/service";
+export { getAllowedAdminSections } from "./administration/sections";
 export { getHiddenColumns } from "./account/service";
 export { saveHiddenColumnsAction } from "./account/actions";
 export { emailSchema, personNameSchema } from "./schemas";
