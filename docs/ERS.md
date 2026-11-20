@@ -219,7 +219,7 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 94 p
 | RF-INV-05 | El listado debe filtrar por estado y rol. | Pendientes, aceptadas y revocadas. |
 | RF-CFG-01 | Administración debe poder configurar la ventana de edición de epicrisis. | Bloqueo inmediato o duración de 1 minuto a 30 días, en minutos, horas o días. Valor inicial: 24 horas. |
 | RF-CFG-02 | Administración debe poder configurar la ventana de edición de evoluciones diarias. | Mismas opciones y valor inicial. |
-| RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Epicrisis: vale solo para las nuevas, porque el límite se fija al emitir. Evoluciones: vale también para las ya registradas. |
+| RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Vale solo para los documentos nuevos: el límite de edición se fija al emitir la epicrisis o al registrar la evolución. |
 | RF-CFG-04 | Administración debe poder configurar el último número de historia clínica asignado. | Entero mayor o igual que 0, y nunca menor que el último número ya asignado. Valor inicial: 0. El siguiente huésped que se cree toma ese número más 1. |
 | RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado; usuario afectado, IP y navegador como columnas opcionales. Sin responsable figura Sistema. |
 | RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. Orden por fecha, de la más reciente a la más antigua por defecto. 50, 100 o 150 filas por página, como todo listado. |
@@ -235,7 +235,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | RF-ENT-01 | El personal debe poder listar entrevistas. | Busca por huésped, DNI o entrevistado. Filtra por vínculo y médico. Ordena por fecha, huésped, entrevistado o alta. Exporta. |
 | RF-ENT-02 | El personal debe poder crear una entrevista. | Campos de la tabla siguiente, organizados en pestañas. |
 | RF-ENT-03 | El personal debe poder ver el detalle y sus adjuntos. | Muestra etiquetas de catálogo, no códigos. |
-| RF-ENT-04 | El personal debe poder editar una entrevista. | Bloqueado si su huésped tiene epicrisis activa. Una opción de catálogo ya desactivada se conserva si ya estaba elegida. |
+| RF-ENT-04 | El personal debe poder editar una entrevista. | Bloqueado si su huésped tiene epicrisis activa. Una opción de catálogo ya desactivada se conserva si ya estaba elegida. En una entrevista aceptada, los cambios no se pasan al huésped y la pantalla lo avisa. |
 | RF-ENT-05 | El personal debe poder anular una entrevista. | Exige motivo de 10 a 500 caracteres. Bloqueado con epicrisis activa. No borra el registro. |
 | RF-ENT-06 | El personal debe poder aceptar una entrevista para crear el huésped. | Permiso de crear huéspedes. Ver RF-HUE-02. |
 
@@ -269,25 +269,25 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Muestra el número de historia clínica. Busca por huésped, DNI, número de historia clínica, obra social u origen. Ordena por alta, huésped, DNI o creación. Exporta. Excluye anulados. |
-| RF-HUE-02 | Aceptar una entrevista debe crear el huésped una sola vez. | Copia nombre, apellido, nacimiento, DNI, cobertura y dirección. Fecha de alta: hoy en Buenos Aires. Si ya existe, lleva al existente. Origen: admisión. |
+| RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Muestra el número de historia clínica. Busca por huésped, DNI, número de historia clínica, obra social u origen. Ordena por fecha de internación, huésped, DNI o creación. Exporta. Excluye anulados. |
+| RF-HUE-02 | Aceptar una entrevista debe crear el huésped una sola vez. | Copia nombre, apellido, nacimiento, DNI, cobertura y dirección. Fecha de internación: hoy en Buenos Aires. Si la entrevista ya tiene un huésped vigente, lleva a ese. Si su huésped fue anulado, crea uno nuevo con número nuevo. Origen: admisión. |
 | RF-HUE-03 | Un rol autorizado debe poder dar de alta un huésped sin entrevista. | Permiso propio. Origen: manual. El registro de actividad indica que se omitió la admisión. |
 | RF-HUE-04 | El personal debe ver la ficha del huésped en 3 pestañas. | Internación, Evolución diaria y Evaluaciones. Evaluaciones reúne la evaluación CAM y la evaluación física de ingreso, una debajo de la otra; cada una respeta su permiso y la pestaña se muestra si el rol tiene alguno de los dos. La pestaña activa queda en la dirección de la página. |
 | RF-HUE-05 | El personal debe poder editar datos del huésped. | Bloqueado con epicrisis activa; la acción se oculta y el servidor la rechaza. |
-| RF-HUE-06 | Un rol autorizado debe poder anular un huésped. | Bloqueado con epicrisis activa. No borra el registro. |
+| RF-HUE-06 | Un rol autorizado debe poder anular un huésped. | Exige motivo de 10 a 500 caracteres. Bloqueado con epicrisis activa. No borra el registro. |
 | RF-HUE-07 | El sistema debe asignar un número de historia clínica a cada huésped al crearlo. | Correlativo y único: toma el último número configurado más 1 (RF-CFG-04) y lo deja como último asignado, en la misma transacción que crea al huésped. Vale para el huésped creado desde una entrevista y para el alta manual. Lo asigna el sistema, no se edita nunca y no se reutiliza si el huésped se anula. |
 
 | Campo de huésped | Obligatorio | Regla |
 | --- | --- | --- |
 | Número de historia clínica | Sí, lo asigna el sistema | Entero correlativo y único; ver RF-HUE-07. No se edita |
-| Fecha de alta | Sí | No futura |
-| Nombre y apellido | Sí | Separados, mínimo 2 caracteres cada uno |
+| Fecha de internación | Sí | No futura |
+| Nombre y apellido | Sí | Separados, de 2 a 80 caracteres cada uno |
 | Fecha de nacimiento | Sí | No futura |
-| DNI | Sí | Misma validación que en admisión |
-| Dirección | Sí | Mínimo 3 caracteres |
-| Obra social y número de afiliado | No | Catálogo; ver RF-CAT-05 |
+| DNI | Sí | Misma validación que en admisión. Si ya hay otro huésped vigente con el mismo DNI, se avisa sin impedir el guardado. |
+| Dirección | Sí | De 3 a 200 caracteres |
+| Obra social y número de afiliado | No | Catálogo; ver RF-CAT-05. Número de afiliado de hasta 40 caracteres. |
 | Motivos de internación | No | Selección múltiple; solo opciones activas |
-| Otro motivo de internación | No | Texto |
+| Otro motivo de internación | No | Texto de hasta 500 caracteres |
 | Síntomas no controlados | No | Selección múltiple; solo opciones activas |
 
 ### 6.3 Evolución diaria
@@ -295,46 +295,55 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
 | RF-EVO-01 | El personal debe poder consultar las evoluciones de un huésped. | De la más reciente a la más antigua, con sus notas aclaratorias. Excluye anuladas. |
-| RF-EVO-02 | El personal debe poder registrar una evolución. | Texto de al menos 10 caracteres. Bloqueado con epicrisis activa. |
+| RF-EVO-02 | El personal debe poder registrar una evolución. | Texto de 10 a 5000 caracteres. Al registrarla se fija su límite de edición: fecha de registro más la ventana vigente (RF-CFG-02). Bloqueado con epicrisis activa. |
 | RF-EVO-03 | La firma profesional debe resolverla el sistema. | Toma la especialidad del profesional activo con el mismo correo; si no existe, el nombre del rol. Se muestra antes de guardar y no se escribe a mano. |
-| RF-EVO-04 | El personal debe poder editar una evolución dentro de la ventana. | Cambia el texto, nunca la firma. Fuera de ventana o con epicrisis activa queda marcada como bloqueada. |
-| RF-EVO-05 | El personal debe poder agregar una nota aclaratoria. | Al menos 10 caracteres, firmada con el mismo criterio. Se puede agregar fuera de la ventana; se bloquea con epicrisis activa. |
-| RF-EVO-06 | El personal debe poder anular una evolución dentro de la ventana. | Motivo de al menos 10 caracteres. Queda fuera del historial activo. |
+| RF-EVO-04 | El personal debe poder editar una evolución dentro de la ventana. | Solo su autor. Cambia el texto, nunca la firma. Fuera de ventana o con epicrisis activa queda marcada como bloqueada. |
+| RF-EVO-05 | El personal debe poder agregar una nota aclaratoria. | De 10 a 5000 caracteres, firmada con el mismo criterio. Requiere el permiso de crear evoluciones. Se puede agregar fuera de la ventana; se bloquea con epicrisis activa. |
+| RF-EVO-06 | El personal debe poder anular una evolución dentro de la ventana. | Solo su autor. Motivo de 10 a 500 caracteres. Queda fuera del historial activo. |
 | RF-EVO-07 | Si el texto es rechazado, debe conservarse lo escrito. | El aviso aparece junto al campo. |
 
 ### 6.4 Evaluación CAM
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-CAM-01 | El personal debe poder registrar la evaluación CAM del huésped. | Una sola por huésped, la de ingreso: si ya existe no se puede cargar otra. Fecha no futura, cuatro criterios y observaciones opcionales de hasta 100 caracteres. Bloqueado con epicrisis activa. |
+| RF-CAM-01 | El personal debe poder registrar la evaluación CAM del huésped. | Una sola por huésped, la de ingreso: si ya existe no se puede cargar otra. Fecha no futura; se propone la de hoy. Cuatro criterios y observaciones opcionales de hasta 100 caracteres. Bloqueado con epicrisis activa. |
 | RF-CAM-02 | La evaluación debe seguir el orden de los criterios. | Sin comienzo agudo se detiene ahí. Sin inatención se detiene ahí. Los criterios no alcanzados quedan como "No evaluado". |
 | RF-CAM-03 | El sistema debe calcular el resultado. | Delirium probable si hay comienzo agudo, inatención y, además, pensamiento desorganizado o conciencia alterada. |
 | RF-CAM-04 | El personal debe poder consultar y modificar la evaluación CAM. | Se muestra en la pestaña Evaluaciones. Se corrige con modificar, nunca se anula, y el resultado se recalcula. Cada cambio queda en el registro de actividad con el valor anterior y el nuevo. Bloqueado con epicrisis activa. |
+
+Cada criterio se responde Sí o No.
+
+| Criterio | Pregunta |
+| --- | --- |
+| Comienzo agudo | ¿Observaste un cambio agudo en el estado mental del huésped? |
+| Inatención | ¿Se distrae con facilidad o tiene dificultad para seguir una conversación? |
+| Pensamiento desorganizado | ¿Manifiesta ideas o conversaciones incoherentes, o confunde a las personas? |
+| Conciencia alterada | ¿Está alterado su nivel de conciencia? |
 
 ### 6.5 Evaluación física de ingreso
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-FIS-01 | El personal debe poder registrar la evaluación física de ingreso del huésped. | Una sola por huésped: si ya existe no se puede cargar otra. Campos de las dos tablas siguientes. Fecha no futura. Bloqueado con epicrisis activa. |
+| RF-FIS-01 | El personal debe poder registrar la evaluación física de ingreso del huésped. | Una sola por huésped: si ya existe no se puede cargar otra. Campos de las dos tablas siguientes. Fecha no futura; se propone la de hoy. Son obligatorios la fecha y los 10 puntajes de la ESAS; el resto es opcional, salvo los datos que se habilitan (RN-13). Bloqueado con epicrisis activa. |
 | RF-FIS-02 | El personal debe poder consultar y modificar la evaluación física de ingreso. | Se muestra en la pestaña Evaluaciones y tiene pantalla propia para cargarla y modificarla. Se corrige con modificar, nunca se anula. Cada cambio queda en el registro de actividad con el valor anterior y el nuevo. Bloqueado con epicrisis activa. |
 
 La evaluación tiene dos partes: la Escala de síntomas (ESAS) y la Evaluación de ingreso de enfermería.
 
 | Parte | Datos | Reglas |
 | --- | --- | --- |
-| Escala de síntomas (ESAS) | Dolor, cansancio, náuseas, depresión, ansiedad, somnolencia, apetito, disnea, dificultad para dormir, bienestar | Enteros de 0 a 10, con marcas Nada (0), Poco (4), Bastante (6) y Mucho (10). |
+| Escala de síntomas (ESAS) | Dolor, cansancio, náuseas, depresión, ansiedad, somnolencia, apetito, disnea, dificultad para dormir, bienestar | Enteros de 0 a 10, obligatorios y sin valor inicial, con marcas Nada (0), Poco (4), Bastante (6) y Mucho (10). |
 
 | Bloque de la Evaluación de ingreso de enfermería | Datos | Reglas |
 | --- | --- | --- |
-| Signos vitales | Frecuencia cardíaca, presión arterial, frecuencia respiratoria, temperatura | Texto libre, opcionales. |
-| Dolor | Causa, localización, intensidad, tipo | Obligatorios si el puntaje de dolor de la ESAS es mayor que 0. |
-| Movilidad | Deambulación, causa, ECOG, traslado al baño | Por catálogo. Con lesión neurológica exige detalle. |
+| Signos vitales | Frecuencia cardíaca, presión arterial, frecuencia respiratoria, temperatura | Texto libre de hasta 40 caracteres cada uno, opcionales. |
+| Dolor | Causa, localización, intensidad, tipo | Texto de hasta 200 caracteres cada uno. Obligatorios si el puntaje de dolor de la ESAS es mayor que 0. |
+| Movilidad | Deambulación, causa, ECOG, traslado al baño | Por catálogo. Con la causa de sistema "Lesión neurológica", exige un detalle de hasta 200 caracteres, aunque se cambie su etiqueta. |
 | Cuidado personal | Higiene, boca | Selección múltiple. |
 | Alimentación | Deglución, nutrición, hidratación y forma, abdomen | Por catálogo. |
 | Eliminación | Diuresis, orinas, catarsis, consistencia, fecha de última catarsis | Catarsis y consistencia, selección múltiple. Fecha no futura. |
-| Respiratorio | Aparato respiratorio, tipo de expectoración | Por catálogo y texto. |
-| Piel | Úlceras por presión, estadio I a IV, lugar, otras lesiones | Con úlceras, estadio y lugar son obligatorios. |
-| Otros | Edemas y lugar, ostomías y tipo, otros trastornos, plan de cuidados | Si se marca edema u ostomía, su detalle es obligatorio. |
+| Respiratorio | Aparato respiratorio, tipo de expectoración | Aparato respiratorio por catálogo. Tipo de expectoración: texto de hasta 200 caracteres. |
+| Piel | Úlceras por presión, estadio I a IV, lugar, otras lesiones | Úlceras por presión: Sí o No, "No" por defecto. Con úlceras, son obligatorios el estadio (lista cerrada: I, II, III o IV) y el lugar (hasta 200 caracteres). Otras lesiones: hasta 2000 caracteres. |
+| Otros | Edemas y lugar, ostomías y tipo, otros trastornos, plan de cuidados | Edemas y ostomías: Sí o No, "No" por defecto. Si se marca uno, su lugar o tipo es obligatorio (hasta 200 caracteres). Otros trastornos y plan de cuidados: hasta 2000 caracteres. |
 
 ### 6.6 Adjuntos
 
@@ -351,7 +360,7 @@ La evaluación tiene dos partes: la Escala de síntomas (ESAS) y la Evaluación 
 | --- | --- | --- |
 | RF-EPI-01 | El personal debe poder listar epicrisis. | Busca por huésped, obra social, enfermedad o emisor. Filtra por estado. Ordena por emisión, huésped, fecha de fin o estado. Exporta. |
 | RF-EPI-02 | El personal debe poder emitir una epicrisis para un huésped. | Se inicia desde la ficha o eligiendo huésped. Un huésped solo puede tener una activa; si ya existe, se abre esa. |
-| RF-EPI-03 | La emisión debe precargar datos. | Enfermedad oncológica, metástasis, enfermedad no oncológica, opioide, cobertura, inicio de atención (fecha de alta) y fin (hoy). Editables antes de emitir. |
+| RF-EPI-03 | La emisión debe precargar datos. | Enfermedad oncológica, metástasis, enfermedad no oncológica, opioide, cobertura, inicio de atención (fecha de internación) y fin (hoy). Editables antes de emitir. |
 | RF-EPI-04 | La epicrisis debe fijar la identidad del paciente al emitirse. | Nombre, DNI y nacimiento quedan guardados en el documento. Edad calculada a la fecha de fin. |
 | RF-EPI-05 | El sistema debe calcular los días de seguimiento. | Diferencia entre inicio y fin de atención. |
 | RF-EPI-06 | El sistema debe fijar el límite de edición al emitir. | Fecha de emisión más la ventana vigente. |
@@ -437,7 +446,7 @@ Todas las ventanas temporales son de 7 días y se calculan en hora de Buenos Air
 | Admisiones | Entrevistas registradas, conversión a huésped, pendientes de decisión |
 | Huéspedes | Huéspedes vigentes, altas desde admisión, cobertura cargada, carpetas impresas |
 | Epicrisis | Activas, emitidas en 7 días, anuladas |
-| Seguimiento clínico | Evaluaciones CAM con alerta positiva, evaluaciones físicas con úlceras, promedio de 10 síntomas |
+| Seguimiento clínico | Evaluaciones CAM con delirium probable y evaluaciones físicas de ingreso con úlceras, sobre huéspedes vigentes; promedio de cada síntoma de la ESAS, sobre huéspedes vigentes; evoluciones registradas en 7 días |
 | Calidad de datos | Completitud de cobertura, adjuntos clínicos, opciones activas por catálogo |
 | Accesos | Usuarios activos, multifactor activo, roles, invitaciones pendientes, actividad de 7 días |
 
@@ -584,8 +593,8 @@ Un huésped puede existir sin entrevista cuando nace de un alta manual.
 | Registro de actividad | Trazabilidad de datos y de acceso | Acción, operación, recurso, id, responsable, destino, estado, valor anterior y nuevo, IP y navegador en eventos de acceso, fecha | No aplica |
 | Entrevista | Datos previos al ingreso | Identidad, cobertura, entrevistado, clínica inicial, red de cuidado | Anulación con motivo |
 | Condición crónica | Enfermedad y tratamientos de la entrevista | Tumor, metástasis, tratamiento, cirugías, opioides, estudios | Con la entrevista |
-| Huésped | Registro de internación | Número de historia clínica, identidad, cobertura, fecha de alta, origen, entrevista vinculada, motivos y síntomas | Anulación |
-| Evolución diaria | Seguimiento | Huésped, autor, firma, texto, motivo de anulación | Anulación con motivo |
+| Huésped | Registro de internación | Número de historia clínica, identidad, cobertura, fecha de internación, origen, entrevista vinculada, motivos y síntomas | Anulación con motivo |
+| Evolución diaria | Seguimiento | Huésped, autor, firma, texto, límite de edición, motivo de anulación | Anulación con motivo |
 | Nota aclaratoria | Agregado a una evolución | Evolución, autor, firma, texto | No se puede anular |
 | Evaluación CAM | Delirium, una por huésped | Fecha, 4 criterios, resultado, criterio de corte, observaciones de hasta 100 caracteres | Se modifica; no se anula |
 | Evaluación física de ingreso | Estado físico, una por huésped | Fecha, 10 puntajes, signos, opciones clínicas, piel, plan de cuidados | Se modifica; no se anula |
@@ -763,7 +772,7 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | --- | --- | --- | --- | --- |
 | R-01 | Alta | Quien puede modificar usuarios se puede asignar a sí mismo el rol Super user. Quien invita o crea usuarios también puede otorgarlo. | Un permiso operativo termina en acceso total. | `src/lib/auth/permissions.ts:475` |
 | R-02 | Alta | Editar una evolución, epicrisis, entrevista u huésped sobrescribe el dato; el registro de actividad no guarda el valor anterior. | No se puede reconstruir qué decía el registro, pese a la inviolabilidad pedida por el hospice. | `src/lib/daily-evolutions/service.ts:158` |
-| R-03 | Alta | Cualquiera con permiso puede editar o anular evoluciones de otra persona, y la firma original se mantiene. | Un texto puede quedar firmado por quien no lo escribió. | `src/lib/daily-evolutions/actions.ts:75` |
+| R-03 | Alta | Cualquiera con permiso puede editar o anular evoluciones de otra persona, y la firma original se mantiene. | Un texto puede quedar firmado por quien no lo escribió. Se resuelve: solo el autor edita y anula (RF-EVO-04, RF-EVO-06). | `src/lib/daily-evolutions/actions.ts:75` |
 | R-04 | Alta | Los adjuntos clínicos se abren con un enlace directo al proveedor, sin pasar por la sesión del sistema. | Confirmar la privacidad configurada: quien tenga el enlace podría abrir el archivo. | `src/components/admissions/admission-attachments-panel.tsx:244` |
 | R-05 | Alta | Eliminar un adjunto borra el archivo físicamente en el proveedor. | Se pierde documentación clínica de forma irreversible. | `src/lib/admissions/service.ts:1857` |
 | R-06 | Alta | No hay mecanismo para crear el primer Super user. | Debe hacerse a mano sobre la base antes de operar. | `drizzle/`, `scripts/` |
@@ -773,16 +782,16 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | R-10 | Media | Las lecturas no se auditan: ver una ficha, imprimir una epicrisis o exportar a Excel no deja rastro. Solo la carpeta se registra. | No se puede saber quién consultó datos de un huésped. | `src/app/epicrisis/[id]/pdf/route.ts` |
 | R-11 | Media | El registro de actividad se escribe después del cambio y fuera de su transacción; el estado "fallido" nunca se usa. | Puede haber cambios sin registro y los intentos fallidos no constan. | `src/lib/audit/database-action-logs.ts:52` |
 | R-12 | Media | La carpeta "completa" omite las evoluciones anuladas. | El documento impreso no refleja todo lo ocurrido. | `src/lib/guests/folder/service.ts:64` |
-| R-13 | Media | El DNI no es único ni se advierte su repetición. | Huéspedes duplicados, contra la identificación inequívoca pedida. | `src/db/schema.ts:704` |
-| R-14 | Media | Tras anular un huésped creado desde admisión, aceptar de nuevo la entrevista falla por una restricción de unicidad. | La entrevista queda sin salida y el usuario ve un error técnico. | `src/db/schema.ts:700` |
+| R-13 | Media | El DNI no es único ni se advierte su repetición. | Huéspedes duplicados, contra la identificación inequívoca pedida. Se resuelve con un aviso, sin impedir el guardado, en entrevistas y huéspedes. | `src/db/schema.ts:704` |
+| R-14 | Media | Tras anular un huésped creado desde admisión, aceptar de nuevo la entrevista falla por una restricción de unicidad. | La entrevista queda sin salida y el usuario ve un error técnico. Se resuelve: aceptar de nuevo crea un huésped nuevo (RF-HUE-02). | `src/db/schema.ts:700` |
 | R-15 | Media | Pasada la ventana, una epicrisis no se puede corregir ni anular por ningún medio. | Un error queda firme y el huésped, bloqueado para siempre. | `src/lib/epicrises/service.ts:564` |
 | R-16 | Media | Una epicrisis por alta bloquea al huésped sin circuito de reingreso. | Un reingreso exige crear otro registro de la misma persona. | `src/lib/epicrises/lock.ts:29` |
 | R-17 | Media | La aplicación no define cabeceras de seguridad como CSP, HSTS o protección de marcos. | Verificar si las agrega la plataforma. | `next.config.ts` |
 | R-18 | Baja | Existen 5 permisos sin función: editar y anular CAM, editar y anular evaluación física, modificar adjuntos físicos. | Administración asigna permisos que no hacen nada. Hoy esos registros no se pueden corregir. Para CAM y evaluación física de ingreso se resuelve en la 5.1: ver, crear y modificar. | `src/lib/auth/permission-catalog.ts:98` |
 | R-19 | Baja | La exportación a Excel incluye solo la página visible, y los listados clínicos cargan toda la tabla en memoria. | Reportes incompletos; degradación al crecer el volumen. | `src/components/admin/base-data-table.tsx:192` |
-| R-20 | Baja | Anular exige criterios distintos: 4 caracteres en entrevista y epicrisis, 10 en evolución, ninguno en huésped. | Trazabilidad despareja. | `src/lib/guests/service.ts:795` |
+| R-20 | Baja | Anular exige criterios distintos: 4 caracteres en entrevista y epicrisis, 10 en evolución, ninguno en huésped. | Trazabilidad despareja. Entrevista, huésped y evolución usan de 10 a 500 caracteres; la epicrisis sigue pendiente. | `src/lib/guests/service.ts:795` |
 | R-21 | Baja | Si se anula una entrevista con huésped, la carpeta informa que se registró sin entrevista. | Dato impreso incorrecto. | `src/lib/guests/folder/service.ts:62` |
-| R-22 | Baja | Editar la entrevista luego de aceptarla no actualiza al huésped. | Dos versiones de la identidad de una misma persona. | `src/lib/admissions/service.ts:727` |
+| R-22 | Baja | Editar la entrevista luego de aceptarla no actualiza al huésped. | Dos versiones de la identidad de una misma persona. Se acepta: la entrevista aceptada avisa que sus cambios no se pasan al huésped (RF-ENT-04). | `src/lib/admissions/service.ts:727` |
 | R-23 | Baja | Solo obras sociales evita duplicados; los demás catálogos los admiten. | Reportes fragmentados. | `src/lib/guests/service.ts:1379` |
 | R-24 | Baja | El README describe un proveedor de autenticación que ya no se usa. | Confunde a quien despliega. | `README.md` |
 
