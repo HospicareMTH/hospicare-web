@@ -65,7 +65,7 @@ El sistema nace de las planillas que el hospice ya usaba: Historia Clínica, Epi
 | Super user | Administra todo, sin restricción de permisos. | Rol de sistema fijo. |
 | Usuario | Cuenta operativa sin permisos administrativos iniciales. | Rol de sistema fijo; permisos configurables. |
 | Personal médico | Entrevistas, evoluciones, evaluaciones, epicrisis. | Rol a crear por administración. |
-| Enfermería | Evoluciones, evaluaciones físicas y CAM. | Rol a crear por administración. |
+| Enfermería | Evoluciones, evaluación física de ingreso y CAM. | Rol a crear por administración. |
 | Trabajo social, psicología, asistencia espiritual | Evoluciones y notas aclaratorias. | Rol a crear por administración. |
 | Administración o admisión | Entrevistas, adjuntos, catálogos y usuarios. | Rol a crear por administración. |
 | Voluntariado | Mencionado por el hospice; sin definición de permisos. | Sin definir (ver sección 14). |
@@ -118,10 +118,9 @@ El sistema tiene 29 pantallas y 2 documentos PDF, organizados en 7 destinos de n
 | `/admisiones/[id]/editar` | Edición de entrevista | `admissions.interviews.update` |
 | `/huespedes` | Listado de huéspedes | `guests.records.view` |
 | `/huespedes/nuevo` | Alta manual | `guests.records.manual_create` |
-| `/huespedes/[id]` | Ficha con 4 pestañas | `guests.records.view` |
+| `/huespedes/[id]` | Ficha con 3 pestañas | `guests.records.view` |
 | `/huespedes/[id]/editar` | Edición de huésped | `guests.records.update` |
-| `/huespedes/[id]/evaluaciones-fisicas/nueva` | Nueva evaluación física | `guests.physical_evaluations.create` |
-| `/huespedes/[id]/evaluaciones-fisicas/[evaluationId]` | Detalle de evaluación física | `guests.physical_evaluations.view` |
+| `/huespedes/[id]/evaluacion-fisica` | Evaluación física de ingreso: carga, consulta y modificación | `guests.physical_evaluations.view`; cargar y modificar piden `guests.physical_evaluations.create` y `guests.physical_evaluations.update` |
 | `/huespedes/[id]/carpeta` | PDF de carpeta completa | `guests.folders.print` |
 | `/epicrisis` | Listado de epicrisis | `epicrises.records.view` |
 | `/epicrisis/nueva` | Selección de huésped y emisión | `epicrises.records.create` |
@@ -177,7 +176,7 @@ El acceso es exclusivamente por correo y contraseña de cuentas creadas por admi
 
 ## 5. Requisitos funcionales: roles, permisos y administración
 
-El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 permisos en 11 grupos, verificados en el servidor antes de cada lectura o cambio.
+El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 94 permisos en 11 grupos, verificados en el servidor antes de cada lectura o cambio.
 
 ### 5.1 Permisos
 
@@ -190,7 +189,7 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | Dashboard | 7 | Ver cada reporte |
 | Documentación | 1 | Ver |
 | Admisiones | 7 | Entrevistas: ver, crear, modificar y anular. Adjuntos: ver, crear y eliminar |
-| Huéspedes | 22 | Registros (5), CAM (4), evaluaciones físicas (4), adjuntos físicos (4), evoluciones (4) e imprimir carpeta (1) |
+| Huéspedes | 20 | Registros (5), CAM (3: ver, crear y modificar), evaluación física (3: ver, crear y modificar), adjuntos físicos (4), evoluciones (4) e imprimir carpeta (1) |
 | Epicrisis | 4 | Ver, crear, modificar y anular |
 | Configuración | 2 | Ver y modificar |
 | Registro de actividad | 1 | Ver |
@@ -221,6 +220,7 @@ El control de acceso se basa en roles dinámicos sobre un catálogo fijo de 96 p
 | RF-CFG-01 | Administración debe poder configurar la ventana de edición de epicrisis. | Bloqueo inmediato o duración de 1 minuto a 30 días, en minutos, horas o días. Valor inicial: 24 horas. |
 | RF-CFG-02 | Administración debe poder configurar la ventana de edición de evoluciones diarias. | Mismas opciones y valor inicial. |
 | RF-CFG-03 | El cambio de ventana debe respetar el alcance de cada documento. | Epicrisis: vale solo para las nuevas, porque el límite se fija al emitir. Evoluciones: vale también para las ya registradas. |
+| RF-CFG-04 | Administración debe poder configurar el último número de historia clínica asignado. | Entero mayor o igual que 0, y nunca menor que el último número ya asignado. Valor inicial: 0. El siguiente huésped que se cree toma ese número más 1. |
 | RF-LOG-01 | Administración debe poder consultar el registro de actividad. | Solo lectura. Fecha, acción, operación, recurso, responsable y estado; usuario afectado, IP y navegador como columnas opcionales. Sin responsable figura Sistema. |
 | RF-LOG-02 | El registro de actividad debe permitir buscar, filtrar, ordenar y exportar. | Búsqueda por acción o responsable. Filtros por operación y recurso. Orden por fecha, de la más reciente a la más antigua por defecto. 50, 100 o 150 filas por página, como todo listado. |
 
@@ -269,15 +269,17 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Busca por huésped, DNI, obra social u origen. Ordena por alta, huésped, DNI o creación. Exporta. Excluye anulados. |
+| RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Muestra el número de historia clínica. Busca por huésped, DNI, número de historia clínica, obra social u origen. Ordena por alta, huésped, DNI o creación. Exporta. Excluye anulados. |
 | RF-HUE-02 | Aceptar una entrevista debe crear el huésped una sola vez. | Copia nombre, apellido, nacimiento, DNI, cobertura y dirección. Fecha de alta: hoy en Buenos Aires. Si ya existe, lleva al existente. Origen: admisión. |
 | RF-HUE-03 | Un rol autorizado debe poder dar de alta un huésped sin entrevista. | Permiso propio. Origen: manual. El registro de actividad indica que se omitió la admisión. |
-| RF-HUE-04 | El personal debe ver la ficha del huésped en 4 pestañas. | Generales, Evolución diaria, Evaluación CAM y Evaluación física. La pestaña activa queda en la dirección de la página. Cada una respeta su permiso. |
+| RF-HUE-04 | El personal debe ver la ficha del huésped en 3 pestañas. | Internación, Evolución diaria y Evaluaciones. Evaluaciones reúne la evaluación CAM y la evaluación física de ingreso, una debajo de la otra; cada una respeta su permiso y la pestaña se muestra si el rol tiene alguno de los dos. La pestaña activa queda en la dirección de la página. |
 | RF-HUE-05 | El personal debe poder editar datos del huésped. | Bloqueado con epicrisis activa; la acción se oculta y el servidor la rechaza. |
 | RF-HUE-06 | Un rol autorizado debe poder anular un huésped. | Bloqueado con epicrisis activa. No borra el registro. |
+| RF-HUE-07 | El sistema debe asignar un número de historia clínica a cada huésped al crearlo. | Correlativo y único: toma el último número configurado más 1 (RF-CFG-04) y lo deja como último asignado, en la misma transacción que crea al huésped. Vale para el huésped creado desde una entrevista y para el alta manual. Lo asigna el sistema, no se edita nunca y no se reutiliza si el huésped se anula. |
 
 | Campo de huésped | Obligatorio | Regla |
 | --- | --- | --- |
+| Número de historia clínica | Sí, lo asigna el sistema | Entero correlativo y único; ver RF-HUE-07. No se edita |
 | Fecha de alta | Sí | No futura |
 | Nombre y apellido | Sí | Separados, mínimo 2 caracteres cada uno |
 | Fecha de nacimiento | Sí | No futura |
@@ -304,23 +306,28 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-CAM-01 | El personal debe poder registrar evaluaciones CAM. | Fecha no futura, cuatro criterios y notas opcionales. Bloqueado con epicrisis activa. |
+| RF-CAM-01 | El personal debe poder registrar la evaluación CAM del huésped. | Una sola por huésped, la de ingreso: si ya existe no se puede cargar otra. Fecha no futura, cuatro criterios y observaciones opcionales de hasta 100 caracteres. Bloqueado con epicrisis activa. |
 | RF-CAM-02 | La evaluación debe seguir el orden de los criterios. | Sin comienzo agudo se detiene ahí. Sin inatención se detiene ahí. Los criterios no alcanzados quedan como "No evaluado". |
 | RF-CAM-03 | El sistema debe calcular el resultado. | Delirium probable si hay comienzo agudo, inatención y, además, pensamiento desorganizado o conciencia alterada. |
-| RF-CAM-04 | El personal debe poder consultar el historial CAM. | Por fecha descendente. |
+| RF-CAM-04 | El personal debe poder consultar y modificar la evaluación CAM. | Se muestra en la pestaña Evaluaciones. Se corrige con modificar, nunca se anula, y el resultado se recalcula. Cada cambio queda en el registro de actividad con el valor anterior y el nuevo. Bloqueado con epicrisis activa. |
 
-### 6.5 Evaluación física
+### 6.5 Evaluación física de ingreso
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-FIS-01 | El personal debe poder registrar evaluaciones físicas. | Campos de la tabla siguiente. Fecha no futura. Bloqueado con epicrisis activa. |
-| RF-FIS-02 | El personal debe poder consultar evaluaciones y su detalle. | Listado en la ficha y pantalla propia para cada una. |
+| RF-FIS-01 | El personal debe poder registrar la evaluación física de ingreso del huésped. | Una sola por huésped: si ya existe no se puede cargar otra. Campos de las dos tablas siguientes. Fecha no futura. Bloqueado con epicrisis activa. |
+| RF-FIS-02 | El personal debe poder consultar y modificar la evaluación física de ingreso. | Se muestra en la pestaña Evaluaciones y tiene pantalla propia para cargarla y modificarla. Se corrige con modificar, nunca se anula. Cada cambio queda en el registro de actividad con el valor anterior y el nuevo. Bloqueado con epicrisis activa. |
 
-| Bloque | Datos | Reglas |
+La evaluación tiene dos partes: la Escala de síntomas (ESAS) y la Evaluación de ingreso de enfermería.
+
+| Parte | Datos | Reglas |
 | --- | --- | --- |
-| Escala de síntomas | Dolor, cansancio, náuseas, depresión, ansiedad, somnolencia, apetito, disnea, dificultad para dormir, bienestar | Enteros de 0 a 10, con marcas Nada (0), Poco (4), Bastante (6) y Mucho (10). |
+| Escala de síntomas (ESAS) | Dolor, cansancio, náuseas, depresión, ansiedad, somnolencia, apetito, disnea, dificultad para dormir, bienestar | Enteros de 0 a 10, con marcas Nada (0), Poco (4), Bastante (6) y Mucho (10). |
+
+| Bloque de la Evaluación de ingreso de enfermería | Datos | Reglas |
+| --- | --- | --- |
 | Signos vitales | Frecuencia cardíaca, presión arterial, frecuencia respiratoria, temperatura | Texto libre, opcionales. |
-| Dolor | Causa, localización, intensidad, tipo | Obligatorios si el puntaje de dolor es mayor que 0. |
+| Dolor | Causa, localización, intensidad, tipo | Obligatorios si el puntaje de dolor de la ESAS es mayor que 0. |
 | Movilidad | Deambulación, causa, ECOG, traslado al baño | Por catálogo. Con lesión neurológica exige detalle. |
 | Cuidado personal | Higiene, boca | Selección múltiple. |
 | Alimentación | Deglución, nutrición, hidratación y forma, abdomen | Por catálogo. |
@@ -333,7 +340,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-ADJ-01 | Debe poder adjuntarse documentación a entrevistas y evaluaciones físicas. | PDF hasta 16 MB (4 por carga), imágenes hasta 8 MB (4 por carga), otros hasta 16 MB (2 por carga). |
+| RF-ADJ-01 | Debe poder adjuntarse documentación a entrevistas y a la evaluación física de ingreso. | PDF hasta 16 MB (4 por carga), imágenes hasta 8 MB (4 por carga), otros hasta 16 MB (2 por carga). |
 | RF-ADJ-02 | Cada adjunto debe registrar quién lo subió y cuándo. | Nombre, tipo y tamaño. |
 | RF-ADJ-03 | Debe poder eliminarse un adjunto. | Baja lógica del vínculo. Bloqueado con epicrisis activa. Permiso propio. |
 | RF-ADJ-04 | Subir un adjunto debe validar sesión, permiso y existencia del registro. | Antes de aceptar el archivo. |
@@ -382,7 +389,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 | --- | --- | --- |
 | RF-DOC-01 | La epicrisis debe generar un PDF institucional. | Logo, estado, datos del paciente, 4 secciones en dos columnas, firma con aclaración y matrícula, datos de registro, marca de agua. Objetivo: una hoja A4; continúa si el texto lo requiere. |
 | RF-DOC-02 | Debe poder generarse la carpeta completa del huésped en un PDF. | En cualquier momento, desde la ficha o el listado. Permiso propio. |
-| RF-DOC-03 | La carpeta debe seguir un orden fijo. | Portada e índice, Admisión, Datos generales, Evolución diaria, CAM, Evaluación física, Anexos y Epicrisis. Cada parte en hoja nueva. Registros de más antiguo a más reciente. |
+| RF-DOC-03 | La carpeta debe seguir un orden fijo. | Portada e índice, Admisión, Internación, Evolución diaria, CAM, Evaluación física de ingreso, Anexos y Epicrisis. Cada parte en hoja nueva. Registros de más antiguo a más reciente. La portada muestra el número de historia clínica. |
 | RF-DOC-04 | Todas las hojas deben estar identificadas. | Marca de agua, nombre y DNI, y "Página X de Y", incluidos los adjuntos. |
 | RF-DOC-05 | Los adjuntos deben integrarse a la carpeta. | Imágenes JPG y PNG en hoja propia, PDF hoja por hoja. Lo no imprimible figura en el índice con su motivo. |
 | RF-DOC-06 | Cada generación de carpeta debe quedar en el registro de actividad. | Quién, cuándo, cantidad de páginas y adjuntos. |
@@ -554,8 +561,8 @@ flowchart TD
   E -->|1 a 1| CC[Condición crónica]
   H -->|1 a N, una activa| EP[Epicrisis]
   H -->|1 a N| EV[Evolución diaria]
-  H -->|1 a N| CAM[Evaluación CAM]
-  H -->|1 a N| FI[Evaluación física]
+  H -->|1 a 0..1| CAM[Evaluación CAM]
+  H -->|1 a 0..1| FI[Evaluación física de ingreso]
   EV -->|1 a N| N[Nota aclaratoria]
   FI -->|1 a N| A[Archivo adjunto]
   E -->|1 a N| A
@@ -577,11 +584,11 @@ Un huésped puede existir sin entrevista cuando nace de un alta manual.
 | Registro de actividad | Trazabilidad de datos y de acceso | Acción, operación, recurso, id, responsable, destino, estado, valor anterior y nuevo, IP y navegador en eventos de acceso, fecha | No aplica |
 | Entrevista | Datos previos al ingreso | Identidad, cobertura, entrevistado, clínica inicial, red de cuidado | Anulación con motivo |
 | Condición crónica | Enfermedad y tratamientos de la entrevista | Tumor, metástasis, tratamiento, cirugías, opioides, estudios | Con la entrevista |
-| Huésped | Registro de internación | Identidad, cobertura, fecha de alta, origen, entrevista vinculada, motivos y síntomas | Anulación |
+| Huésped | Registro de internación | Número de historia clínica, identidad, cobertura, fecha de alta, origen, entrevista vinculada, motivos y síntomas | Anulación |
 | Evolución diaria | Seguimiento | Huésped, autor, firma, texto, motivo de anulación | Anulación con motivo |
 | Nota aclaratoria | Agregado a una evolución | Evolución, autor, firma, texto | No se puede anular |
-| Evaluación CAM | Delirium | Fecha, 4 criterios, resultado, criterio de corte, notas | No se puede anular |
-| Evaluación física | Estado físico | Fecha, 10 puntajes, signos, opciones clínicas, piel, plan de cuidados | No se puede anular |
+| Evaluación CAM | Delirium, una por huésped | Fecha, 4 criterios, resultado, criterio de corte, observaciones de hasta 100 caracteres | Se modifica; no se anula |
+| Evaluación física de ingreso | Estado físico, una por huésped | Fecha, 10 puntajes, signos, opciones clínicas, piel, plan de cuidados | Se modifica; no se anula |
 | Epicrisis | Cierre médico-legal | Copia de identidad, cierre, asistencia, sedación, estado, límite de edición | Estado anulada, con motivo |
 | Archivo | Documento almacenado | Clave del proveedor, nombre, tipo, tamaño, enlace, quién lo subió | Lógica, con borrado en el proveedor |
 | Vínculo de archivo | Asocia archivos a registros | Archivo, tipo de entidad, id, etiqueta | Lógica |
@@ -631,7 +638,7 @@ Estas reglas aplican a todos los módulos y deben resolverse en un único lugar 
 | Catálogos | Opción creada, actualizada, desactivada, reactivada, reordenada; profesional de salud creado, actualizado, desactivado, reactivado |
 | Admisiones | Entrevista creada, actualizada, anulada; cirugía de la entrevista agregada, actualizada o quitada; adjunto subido, eliminado |
 | Huéspedes | Creado desde admisión, creado manualmente, actualizado, anulado, carpeta impresa |
-| Evaluaciones | CAM creada; evaluación física creada; adjunto subido, eliminado |
+| Evaluaciones | CAM creada, actualizada; evaluación física de ingreso creada, actualizada; adjunto subido, eliminado |
 | Evoluciones | Creada, actualizada, anulada; nota aclaratoria creada |
 | Epicrisis | Creada, actualizada, anulada |
 | Configuración | Parámetros actualizados |
@@ -723,6 +730,8 @@ La reconstrucción se acepta cuando cada escenario crítico de esta tabla pasa c
 | CA-18 | Una carpeta generada | Se consulta el registro de actividad | Figura quién la generó y cuándo | RF-DOC-06 |
 | CA-19 | Un cambio sobre cualquier entidad | Se consulta el registro de actividad | Hay una entrada con acción, responsable y recurso | RN-20 |
 | CA-20 | Un rol sin permiso de un reporte | Abre el inicio | El reporte no se calcula ni se muestra | RF-DAS-01 |
+| CA-21 | Un huésped con su evaluación CAM cargada | Se intenta cargar otra | Se rechaza; la existente se corrige con modificar | RF-CAM-01, RF-CAM-04 |
+| CA-22 | El último número de historia clínica configurado en 101 | Se crean dos huéspedes | Reciben el 102 y el 103, y quedan como últimos asignados | RF-CFG-04, RF-HUE-07 |
 
 ### 13.2 Trazabilidad con el sistema actual
 
@@ -769,7 +778,7 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | R-15 | Media | Pasada la ventana, una epicrisis no se puede corregir ni anular por ningún medio. | Un error queda firme y el huésped, bloqueado para siempre. | `src/lib/epicrises/service.ts:564` |
 | R-16 | Media | Una epicrisis por alta bloquea al huésped sin circuito de reingreso. | Un reingreso exige crear otro registro de la misma persona. | `src/lib/epicrises/lock.ts:29` |
 | R-17 | Media | La aplicación no define cabeceras de seguridad como CSP, HSTS o protección de marcos. | Verificar si las agrega la plataforma. | `next.config.ts` |
-| R-18 | Baja | Existen 5 permisos sin función: editar y anular CAM, editar y anular evaluación física, modificar adjuntos físicos. | Administración asigna permisos que no hacen nada. Hoy esos registros no se pueden corregir. | `src/lib/auth/permission-catalog.ts:98` |
+| R-18 | Baja | Existen 5 permisos sin función: editar y anular CAM, editar y anular evaluación física, modificar adjuntos físicos. | Administración asigna permisos que no hacen nada. Hoy esos registros no se pueden corregir. Para CAM y evaluación física de ingreso se resuelve en la 5.1: ver, crear y modificar. | `src/lib/auth/permission-catalog.ts:98` |
 | R-19 | Baja | La exportación a Excel incluye solo la página visible, y los listados clínicos cargan toda la tabla en memoria. | Reportes incompletos; degradación al crecer el volumen. | `src/components/admin/base-data-table.tsx:192` |
 | R-20 | Baja | Anular exige criterios distintos: 4 caracteres en entrevista y epicrisis, 10 en evolución, ninguno en huésped. | Trazabilidad despareja. | `src/lib/guests/service.ts:795` |
 | R-21 | Baja | Si se anula una entrevista con huésped, la carpeta informa que se registró sin entrevista. | Dato impreso incorrecto. | `src/lib/guests/folder/service.ts:62` |
@@ -783,7 +792,7 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | --- | --- | --- | --- | --- |
 | B-01 | Alta | Indicaciones médicas, registrables e inmodificables tras un período | No existe | Planilla Indicaciones médicas, reunión |
 | B-02 | Alta | Controles seriados: hora, pulso, TA, temperatura, FR, saturación, diuresis, catarsis, HGT, rescates, sonda, vía, ingesta y medicación | No existe | Planilla de controles |
-| B-03 | Alta | Número de historia clínica correlativo, con inicio configurable | No existe | Reunión |
+| B-03 | Alta | Número de historia clínica correlativo, con inicio configurable | No existe. Se resuelve con RF-CFG-04 y RF-HUE-07. | Reunión |
 | B-04 | Alta | Historia clínica foliada que impida alterar o insertar hojas | Numera páginas por impresión, sin foliado persistente ni control de integridad | Reunión |
 | B-05 | Media | Signos vitales estructurados | Texto libre en evaluación física; nada en evolución diaria | Reunión |
 | B-06 | Media | Catálogos de medicamentos y diagnósticos, con importación desde Excel | Solo medicación de sedación. Sin importación. | Reunión |
@@ -791,7 +800,7 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 | B-08 | Media | Cuidador principal y composición familiar obligatorios, con genograma | Sin campo de cuidador; composición opcional | Reunión, Historia Clínica |
 | B-09 | Media | Matrícula en la firma de cada evolución | Firma solo con rol o especialidad | Reunión |
 | B-10 | Media | Estadísticas anuales requeridas por el estatus de la organización | Solo reportes de 7 días y acumulados | Reunión |
-| B-11 | Media | CAM y evaluación física solo al ingreso | El sistema admite varias por huésped. Decidir cuál es la regla. | Reunión |
+| B-11 | Media | CAM y evaluación física solo al ingreso | El sistema admite varias por huésped. Resuelto: una sola de cada una (RF-CAM-01, RF-FIS-01). | Reunión |
 | B-12 | Baja | Teléfono del huésped, edad del entrevistado y fecha de la enfermedad oncológica | No se registran | Historia Clínica |
 | B-13 | Baja | Día de internación en el registro del equipo | No se calcula | Registro Equipo Terapéutico |
 | B-14 | Baja | Medicación y vía utilizada en la epicrisis | Reemplazado por catálogo de sedación, sin vía | Epicrisis 2025 |
@@ -820,8 +829,8 @@ Hay 8 riesgos de prioridad alta en el sistema actual que conviene resolver o ace
 - [ ] ¿Cuál es la matriz definitiva de roles y permisos, incluido voluntariado?
 - [ ] ¿Cómo se corrige una epicrisis fuera de ventana, y quién lo autoriza?
 - [ ] ¿Cómo se registra un reingreso de una persona con alta previa?
-- [ ] ¿Cuántas evaluaciones CAM y físicas puede tener un huésped, y se pueden corregir?
-- [ ] ¿Cuál es el formato del número de historia clínica y desde qué valor arranca?
+- [x] ¿Cuántas evaluaciones CAM y físicas puede tener un huésped, y se pueden corregir? Una sola de cada una, y se corrige con modificar (RF-CAM-01, RF-CAM-04, RF-FIS-01, RF-FIS-02).
+- [x] ¿Cuál es el formato del número de historia clínica y desde qué valor arranca? Entero correlativo, desde el último número que configura administración, con valor inicial 0 (RF-CFG-04, RF-HUE-07).
 - [ ] ¿Qué plazo de conservación aplica y qué exige el marco legal? A validar con asesoría legal: Ley 26.529 (derechos del paciente) y Ley 25.326 (datos personales).
 - [ ] ¿Qué validez legal se busca para la firma de los registros electrónicos?
 - [ ] ¿El segundo factor debe ser obligatorio para algún rol?
