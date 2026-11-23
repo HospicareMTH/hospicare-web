@@ -26,7 +26,10 @@ test("RF-CAT-01: el Super user recorre los catálogos de Admisiones y Huéspedes
   );
   await expect(page.getByRole("row", { name: /Hija\/o/ })).toBeVisible();
 
-  await page.getByRole("link", { name: "Huéspedes", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Grupos de catálogos" })
+    .getByRole("link", { name: "Huéspedes", exact: true })
+    .click();
   await expect(page).toHaveURL(/catalogo=motivo-de-internacion/);
   await expect(page.getByRole("combobox", { name: "Catálogo" })).toHaveText(
     "Motivo de internación",

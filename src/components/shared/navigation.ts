@@ -1,4 +1,5 @@
 import {
+  BedSingle01Icon,
   BookOpen01Icon,
   ClipboardPenLineIcon,
   Home01Icon,
@@ -34,6 +35,15 @@ export const ADMISSIONS_DESTINATION: NavigationDestination = {
   color: "green",
   isInMobileBar: true,
   requiredPermissions: ["admissions.interviews.view"],
+};
+
+export const GUESTS_DESTINATION: NavigationDestination = {
+  label: "Huéspedes",
+  href: "/huespedes",
+  icon: BedSingle01Icon,
+  color: "ochre",
+  isInMobileBar: true,
+  requiredPermissions: ["guests.records.view"],
 };
 
 export const ADMINISTRATION_DESTINATION: NavigationDestination = {
@@ -82,6 +92,7 @@ export const ACCOUNT_DESTINATION: NavigationDestination = {
 export const NAVIGATION_DESTINATIONS: NavigationDestination[] = [
   HOME_DESTINATION,
   ADMISSIONS_DESTINATION,
+  GUESTS_DESTINATION,
   ADMINISTRATION_DESTINATION,
   DOCUMENTATION_DESTINATION,
   ACCOUNT_DESTINATION,

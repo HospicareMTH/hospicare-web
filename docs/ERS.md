@@ -269,7 +269,7 @@ El registro clínico sigue un ciclo único: entrevista, huésped, seguimiento y 
 
 | ID | Requisito | Reglas |
 | --- | --- | --- |
-| RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Muestra el número de historia clínica. Busca por huésped, DNI, número de historia clínica, obra social u origen. Ordena por fecha de internación, huésped, DNI o creación. Exporta. Excluye anulados. |
+| RF-HUE-01 | El personal debe poder listar huéspedes vigentes. | Muestra el número de historia clínica. Busca por huésped, DNI, número de historia clínica u obra social. Filtra por origen: admisión o sin entrevista. Ordena por fecha de internación, huésped, DNI o creación. Exporta. Excluye anulados. |
 | RF-HUE-02 | Aceptar una entrevista debe crear el huésped una sola vez. | Copia nombre, apellido, nacimiento, DNI, cobertura y dirección. Fecha de internación: hoy en Buenos Aires. Si la entrevista ya tiene un huésped vigente, lleva a ese. Si su huésped fue anulado, crea uno nuevo con número nuevo. Origen: admisión. |
 | RF-HUE-03 | Un rol autorizado debe poder dar de alta un huésped sin entrevista. | Permiso propio. Origen: manual. El registro de actividad indica que se omitió la admisión. |
 | RF-HUE-04 | El personal debe ver la ficha del huésped en 3 pestañas. | Internación, Evolución diaria y Evaluaciones. Evaluaciones reúne la evaluación CAM y la evaluación física de ingreso, una debajo de la otra; cada una respeta su permiso y la pestaña se muestra si el rol tiene alguno de los dos. La pestaña activa queda en la dirección de la página. |

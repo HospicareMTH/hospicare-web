@@ -1,0 +1,150 @@
+"use client";
+
+import {
+  DataTable,
+  type DataTableColumn,
+} from "@/components/shared/data-table/data-table";
+import { FilterSelect } from "@/components/shared/data-table/filter-select";
+import {
+  type SaveHiddenColumnsAction,
+  saveHiddenColumnsWith,
+} from "@/components/shared/data-table/save-hidden-columns";
+import { formatDateTime, formatIsoDate } from "@/platform/dates";
+import { formatDni } from "@/platform/dni";
+import type { ListPage } from "@/platform/list-query";
+
+import {
+  DEFAULT_GUEST_SORT,
+  GUEST_ORIGIN_LABELS,
+  GUESTS_TABLE_KEY,
+  type GuestListQuery,
+  type GuestSortKey,
+  ORIGIN_FILTER_OPTIONS,
+  ORIGIN_FILTER_PARAMETER,
+  toOriginFilterValue,
+} from "../schemas";
+import type { GuestListItem } from "../service";
+
+const SECONDARY_LINE_CLASS_NAME = "text-sm text-muted-foreground";
+const SEARCH_LABEL = "Buscar huéspedes";
+
+function describeGuestCount(count: number): string {
+  return count === 1 ? "1 huésped" : `${count} huéspedes`;
+}
+
+function describeEmptyList(query: GuestListQuery): string {
+  if (query.search) {
+    return `Ningún huésped coincide con “${query.search}”.`;
+  }
+  if (query.origin) {
+    return "Ningún huésped coincide con el origen elegido.";
+  }
+  return "Todavía no hay huéspedes.";
+}
+
+const COLUMNS: DataTableColumn<GuestListItem, GuestSortKey>[] = [
+  {
+    id: "clinicalRecordNumber",
+    label: "N.° de historia clínica",
+    cellClassName: "tabular-nums",
+    cell: (guest) => guest.clinicalRecordNumber,
+  },
+  {
+    id: "guest",
+    label: "Huésped",
+    sortKey: "guestName",
+    canHide: false,
+    cellClassName: "whitespace-normal font-medium",
+    cell: (guest) => guest.fullName,
+  },
+  {
+    id: "dni",
+    label: "DNI",
+    sortKey: "dni",
+    cellClassName: "tabular-nums",
+    cell: (guest) => formatDni(guest.dni),
+  },
+  {
+    id: "hospitalizationDate",
+    label: "Fecha de internación",
+    sortKey: "hospitalizationDate",
+    className: "hidden @lg:table-cell",
+    cellClassName: "tabular-nums",
+    cell: (guest) => formatIsoDate(guest.hospitalizationDate),
+  },
+  {
+    id: "healthInsurance",
+    label: "Obra social",
+    className: "hidden @3xl:table-cell",
+    cellClassName: "whitespace-normal",
+    cell: (guest) =>
+      guest.healthInsuranceLabel && (
+        <div className="flex flex-col">
+          <span>{guest.healthInsuranceLabel}</span>
+          {guest.healthInsuranceMemberNumber && (
+            <span className={SECONDARY_LINE_CLASS_NAME}>
+              Afiliado {guest.healthInsuranceMemberNumber}
+            </span>
+          )}
+        </div>
+      ),
+  },
+  {
+    id: "origin",
+    label: "Origen",
+    className: "hidden @3xl:table-cell",
+    cell: (guest) => GUEST_ORIGIN_LABELS[guest.origin],
+  },
+  {
+    id: "createdAt",
+    label: "Fecha de carga",
+    sortKey: "createdAt",
+    className: "hidden @5xl:table-cell",
+    cellClassName: "tabular-nums text-muted-foreground",
+    cell: (guest) => formatDateTime(guest.createdAt),
+  },
+];
+
+export function GuestsTable({
+  page,
+  query,
+  hiddenColumns,
+  saveHiddenColumnsAction,
+}: {
+  page: ListPage<GuestListItem>;
+  query: GuestListQuery;
+  hiddenColumns: string[];
+  saveHiddenColumnsAction: SaveHiddenColumnsAction;
+}) {
+  return (
+    <DataTable
+      columns={COLUMNS}
+      page={page}
+      query={query}
+      defaultSort={DEFAULT_GUEST_SORT}
+      searchLabel={SEARCH_LABEL}
+      filters={
+        <FilterSelect
+          label="Filtrar por origen"
+          allLabel="Todos los orígenes"
+          parameter={ORIGIN_FILTER_PARAMETER}
+          value={toOriginFilterValue(query.origin)}
+          options={ORIGIN_FILTER_OPTIONS}
+        />
+      }
+      emptyMessage={describeEmptyList(query)}
+      totalLabel={describeGuestCount(page.totalCount)}
+      paginationLabel="Páginas de huéspedes"
+      getRowActions={() => []}
+      getActionsLabel={(guest) => `Acciones de ${guest.fullName}`}
+      hiddenColumns={hiddenColumns}
+      onHiddenColumnsChange={(columns) =>
+        saveHiddenColumnsWith(
+          saveHiddenColumnsAction,
+          GUESTS_TABLE_KEY,
+          columns,
+        )
+      }
+    />
+  );
+}
