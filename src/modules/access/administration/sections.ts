@@ -29,6 +29,11 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     anyOfPermissions: CATALOG_VIEW_PERMISSIONS,
   },
   {
+    label: "Configuración",
+    href: "/admin/configuracion",
+    anyOfPermissions: ["admin.system_settings.view"],
+  },
+  {
     label: "Registro de actividad",
     href: "/admin/actividad",
     anyOfPermissions: ["admin.logs.view"],
