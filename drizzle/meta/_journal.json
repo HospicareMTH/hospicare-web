@@ -134,6 +134,20 @@
       "when": 1794975748412,
       "tag": "0018_audit_event_names",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795203986744,
+      "tag": "0019_guests_and_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1795203988648,
+      "tag": "0020_guests_and_settings_audit",
+      "breakpoints": true
     }
   ]
 }

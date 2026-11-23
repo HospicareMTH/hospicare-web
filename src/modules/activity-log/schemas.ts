@@ -52,6 +52,10 @@ export const RESOURCE_PARAMETERS: Record<AuditResource, string> = {
   healthcare_professional: "profesional-de-salud",
   admission_interview: "entrevista-de-admision",
   admission_interview_surgery: "cirugia-de-entrevista",
+  guest: "huesped",
+  guest_hospitalization_reason: "motivo-de-internacion",
+  guest_uncontrolled_symptom: "sintoma-no-controlado",
+  system_setting: "configuracion",
 };
 
 export const ACTIVITY_LOG_SORT_KEYS = ["occurredAt"] as const;

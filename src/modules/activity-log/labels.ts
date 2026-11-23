@@ -33,6 +33,10 @@ export const RESOURCE_LABELS = {
   healthcare_professional: "Profesional de salud",
   admission_interview: "Entrevista de admisión",
   admission_interview_surgery: "Cirugía de entrevista",
+  guest: "Huésped",
+  guest_hospitalization_reason: "Motivo de internación",
+  guest_uncontrolled_symptom: "Síntoma no controlado",
+  system_setting: "Configuración",
 } as const;
 
 export type AuditResource = keyof typeof RESOURCE_LABELS;
@@ -92,6 +96,17 @@ const ACTION_LABELS = {
   "admission_interview_surgery.created": "Cirugía agregada",
   "admission_interview_surgery.updated": "Cirugía actualizada",
   "admission_interview_surgery.deleted": "Cirugía quitada",
+  "guest.created_from_admission": "Huésped creado desde admisión",
+  "guest.created_manually": "Huésped creado sin entrevista",
+  "guest.updated": "Huésped actualizado",
+  "guest.annulled": "Huésped anulado",
+  "guest_hospitalization_reason.created": "Motivo de internación agregado",
+  "guest_hospitalization_reason.updated": "Motivo de internación actualizado",
+  "guest_hospitalization_reason.deleted": "Motivo de internación quitado",
+  "guest_uncontrolled_symptom.created": "Síntoma no controlado agregado",
+  "guest_uncontrolled_symptom.updated": "Síntoma no controlado actualizado",
+  "guest_uncontrolled_symptom.deleted": "Síntoma no controlado quitado",
+  "system_setting.updated": "Parámetros actualizados",
 } as const;
 
 const ACTION_LABELS_BY_CODE: ReadonlyMap<string, string> = new Map(
