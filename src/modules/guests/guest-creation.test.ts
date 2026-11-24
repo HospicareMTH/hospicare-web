@@ -12,10 +12,7 @@ import {
   signInAsSuperUser,
 } from "@/testing/action-session";
 
-import {
-  checkDniInActiveGuestAction,
-  createGuestManuallyAction,
-} from "./actions";
+import { checkGuestDniAction, createGuestManuallyAction } from "./actions";
 import {
   buildEmptyGuest,
   type GuestDetailsInput,
@@ -241,14 +238,20 @@ describe("huéspedes: alta manual", () => {
       throw new Error("No se creó el huésped de prueba.");
     }
 
-    await expect(checkDniInActiveGuestAction("11.222.333")).resolves.toBe(true);
+    await expect(checkGuestDniAction("11.222.333")).resolves.toEqual({
+      hasActiveGuest: true,
+      hasPendingInterview: false,
+    });
 
     await getDatabase()
       .update(guests)
       .set({ annulledAt: new Date(), annulmentReason: "Carga duplicada" })
       .where(eq(guests.id, result.guestId));
 
-    await expect(checkDniInActiveGuestAction("11222333")).resolves.toBe(false);
+    await expect(checkGuestDniAction("11222333")).resolves.toEqual({
+      hasActiveGuest: false,
+      hasPendingInterview: false,
+    });
   });
 
   it("CA-03, RF-ROL-08: sin permiso de alta manual el servidor rechaza sin crear nada", async () => {

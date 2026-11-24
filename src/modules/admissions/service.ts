@@ -34,6 +34,7 @@ import {
   findAdmissionInterviewRecord,
   hasActiveInterviewWithDni,
   insertAdmissionInterview,
+  listActiveInterviewIdsWithDni,
   listAdmissionInterviewRecords,
   listUsedFilterIds,
   lockAdmissionInterviewRecord,
@@ -291,6 +292,43 @@ export function isDniInActiveInterview(
   excludedInterviewId: string | null,
 ): Promise<boolean> {
   return hasActiveInterviewWithDni(dni, excludedInterviewId);
+}
+
+export function findActiveInterviewIdsWithDni(dni: string): Promise<string[]> {
+  return listActiveInterviewIdsWithDni(dni);
+}
+
+export type InterviewToAccept = {
+  id: string;
+  isAnnulled: boolean;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  dni: string;
+  address: string;
+  healthInsuranceOptionId: string | null;
+  healthInsuranceMemberNumber: string | null;
+};
+
+export async function lockInterviewToAccept(
+  transaction: DatabaseTransaction,
+  interviewId: string,
+): Promise<InterviewToAccept | null> {
+  const record = await lockAdmissionInterviewRecord(transaction, interviewId);
+  if (!record) {
+    return null;
+  }
+  return {
+    id: record.id,
+    isAnnulled: record.annulledAt !== null,
+    firstName: record.guestFirstName,
+    lastName: record.guestLastName,
+    birthDate: record.guestBirthDate,
+    dni: record.guestDni,
+    address: record.guestAddress,
+    healthInsuranceOptionId: record.healthInsuranceOptionId,
+    healthInsuranceMemberNumber: record.healthInsuranceMemberNumber,
+  };
 }
 
 export type AdmissionInterviewView = {

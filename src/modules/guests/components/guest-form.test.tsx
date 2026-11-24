@@ -3,10 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CatalogFieldData } from "@/modules/catalogs";
 
-import {
-  checkDniInActiveGuestAction,
-  createGuestManuallyAction,
-} from "../actions";
+import { checkGuestDniAction, createGuestManuallyAction } from "../actions";
 import { buildEmptyGuest } from "../schemas";
 import { GuestForm } from "./guest-form";
 
@@ -18,7 +15,7 @@ vi.mock("next/navigation", async (importOriginal) => ({
 }));
 vi.mock("../actions", () => ({
   createGuestManuallyAction: vi.fn(),
-  checkDniInActiveGuestAction: vi.fn(),
+  checkGuestDniAction: vi.fn(),
 }));
 vi.mock("@/modules/catalogs/actions", () => ({
   createCatalogOptionAction: vi.fn(),
@@ -73,8 +70,11 @@ describe("GuestForm", () => {
     ).toHaveValue("20/11/2026");
   });
 
-  it("R-13: avisa el DNI repetido al salir del campo, sin impedir el guardado", async () => {
-    vi.mocked(checkDniInActiveGuestAction).mockResolvedValue(true);
+  it("R-13: avisa el DNI repetido y la entrevista pendiente al salir del campo, sin impedir el guardado", async () => {
+    vi.mocked(checkGuestDniAction).mockResolvedValue({
+      hasActiveGuest: true,
+      hasPendingInterview: true,
+    });
     renderForm();
 
     const dni = screen.getByRole("textbox", { name: /^DNI/ });
@@ -83,6 +83,9 @@ describe("GuestForm", () => {
 
     expect(
       await screen.findByText(/Ya hay otro huésped vigente con este DNI/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Hay una entrevista de admisión con este DNI/),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Guardar huésped" }),

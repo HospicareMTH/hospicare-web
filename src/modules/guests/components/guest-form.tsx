@@ -21,8 +21,9 @@ import {
 } from "@/platform/field-validation";
 
 import {
-  checkDniInActiveGuestAction,
+  checkGuestDniAction,
   createGuestManuallyAction,
+  type GuestDniCheck,
 } from "../actions";
 import {
   type GuestDetailsInput,
@@ -38,6 +39,11 @@ const FORM_ID_PREFIX = "guest";
 const DNI_INPUT_MAX_LENGTH = 40;
 const FIELD_GROUP_CLASS_NAME =
   "grid gap-x-4 gap-y-6 md:grid-cols-2 xl:grid-cols-3";
+const NO_DNI_MATCHES: GuestDniCheck = {
+  hasActiveGuest: false,
+  hasPendingInterview: false,
+};
+
 const INVALID_FORM_MESSAGE =
   "Hay datos para corregir. Revisá los campos marcados.";
 
@@ -73,6 +79,15 @@ function FormSection({
   );
 }
 
+function DniNotice({ children }: { children: ReactNode }) {
+  return (
+    <Alert>
+      <HugeiconsIcon icon={AlertCircleIcon} aria-hidden="true" />
+      <AlertDescription className="text-base">{children}</AlertDescription>
+    </Alert>
+  );
+}
+
 type GuestFormProps = {
   initialGuest: GuestDetailsInput;
   catalogFields: GuestCatalogFields;
@@ -93,7 +108,7 @@ function GuestFormContent({
   const router = useRouter();
   const [guest, setGuest] = useState(initialGuest);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [hasDuplicateDni, setHasDuplicateDni] = useState(false);
+  const [dniMatches, setDniMatches] = useState(NO_DNI_MATCHES);
   const [isSaving, startSaving] = useTransition();
   const [, startDniCheck] = useTransition();
 
@@ -113,10 +128,10 @@ function GuestFormContent({
     const dni = guest.dni;
     startDniCheck(async () => {
       try {
-        setHasDuplicateDni(await checkDniInActiveGuestAction(dni));
+        setDniMatches(await checkGuestDniAction(dni));
       } catch (error) {
         console.error("No se pudo revisar si el DNI ya estaba cargado.", error);
-        setHasDuplicateDni(false);
+        setDniMatches(NO_DNI_MATCHES);
       }
     });
   }
@@ -173,20 +188,24 @@ function GuestFormContent({
             value={guest.dni}
             onValueChange={(value) => {
               update("dni", value);
-              setHasDuplicateDni(false);
+              setDniMatches(NO_DNI_MATCHES);
             }}
             onBlur={checkDuplicateDni}
             maxLength={DNI_INPUT_MAX_LENGTH}
             isRequired
           />
-          {hasDuplicateDni && (
-            <Alert>
-              <HugeiconsIcon icon={AlertCircleIcon} aria-hidden="true" />
-              <AlertDescription className="text-base">
-                Ya hay otro huésped vigente con este DNI. Revisá que no sea la
-                misma persona antes de guardar.
-              </AlertDescription>
-            </Alert>
+          {dniMatches.hasActiveGuest && (
+            <DniNotice>
+              Ya hay otro huésped vigente con este DNI. Revisá que no sea la
+              misma persona antes de guardar.
+            </DniNotice>
+          )}
+          {dniMatches.hasPendingInterview && (
+            <DniNotice>
+              Hay una entrevista de admisión con este DNI que todavía no se
+              aceptó. Si es la misma persona, aceptá esa entrevista en lugar de
+              crear el huésped sin entrevista.
+            </DniNotice>
           )}
         </div>
         <TextField

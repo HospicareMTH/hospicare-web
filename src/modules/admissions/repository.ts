@@ -75,6 +75,21 @@ export async function hasActiveInterviewWithDni(
   return interview !== undefined;
 }
 
+export async function listActiveInterviewIdsWithDni(
+  dni: string,
+): Promise<string[]> {
+  const interviews = await getDatabase()
+    .select({ id: admissionInterviews.id })
+    .from(admissionInterviews)
+    .where(
+      and(
+        eq(admissionInterviews.guestDni, dni),
+        isNull(admissionInterviews.annulledAt),
+      ),
+    );
+  return interviews.map(({ id }) => id);
+}
+
 export type AdmissionInterviewRecord =
   typeof admissionInterviews.$inferSelect & {
     surgeryOptionIds: string[];

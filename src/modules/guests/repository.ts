@@ -187,6 +187,50 @@ export async function insertGuest(
   return guest.id;
 }
 
+export type InterviewGuestRecord = {
+  id: string;
+  clinicalRecordNumber: number;
+  createdAt: Date;
+};
+
+export async function findActiveGuestOfInterview(
+  database: DatabaseTransaction | ReturnType<typeof getDatabase>,
+  admissionInterviewId: string,
+): Promise<InterviewGuestRecord | null> {
+  const [guest] = await database
+    .select({
+      id: guests.id,
+      clinicalRecordNumber: guests.clinicalRecordNumber,
+      createdAt: guests.createdAt,
+    })
+    .from(guests)
+    .where(
+      and(
+        eq(guests.admissionInterviewId, admissionInterviewId),
+        isNull(guests.annulledAt),
+      ),
+    );
+  return guest ?? null;
+}
+
+export async function listInterviewIdsWithActiveGuest(
+  admissionInterviewIds: readonly string[],
+): Promise<string[]> {
+  if (admissionInterviewIds.length === 0) {
+    return [];
+  }
+  const rows = await getDatabase()
+    .select({ id: guests.admissionInterviewId })
+    .from(guests)
+    .where(
+      and(
+        inArray(guests.admissionInterviewId, [...admissionInterviewIds]),
+        isNull(guests.annulledAt),
+      ),
+    );
+  return rows.flatMap(({ id }) => (id ? [id] : []));
+}
+
 export async function hasActiveGuestWithDni(dni: string): Promise<boolean> {
   const [guest] = await getDatabase()
     .select({ id: guests.id })

@@ -1,5 +1,9 @@
 import type { UserAccess } from "@/modules/access";
 import {
+  findActiveInterviewIdsWithDni,
+  lockInterviewToAccept,
+} from "@/modules/admissions";
+import {
   type CatalogFieldData,
   type CatalogKey,
   listSelectableCatalogOptions,
@@ -9,22 +13,26 @@ import {
 import { assignNextClinicalRecordNumber } from "@/modules/settings";
 import {
   type DatabaseTransaction,
+  getDatabase,
   runInTransactionAs,
 } from "@/platform/database/client";
+import { getBusinessDate } from "@/platform/dates";
 import { removeDniSeparators } from "@/platform/dni";
 import {
   type ListPage,
   normalizeForSearch,
   resolvePageWindow,
 } from "@/platform/list-query";
-import type { FailedActionResult } from "@/platform/operation-result";
+import { type FailedActionResult, reject } from "@/platform/operation-result";
 
 import {
   countGuestRecords,
+  findActiveGuestOfInterview,
   type GuestSearch,
   hasActiveGuestWithDni,
   insertGuest,
   listGuestRecords,
+  listInterviewIdsWithActiveGuest,
   listUsedHealthInsuranceOptionIds,
 } from "./repository";
 import type { GuestDetails, GuestField, GuestListQuery } from "./schemas";
@@ -125,6 +133,100 @@ export function createGuestManually(
 
 export function isDniInActiveGuest(dni: string): Promise<boolean> {
   return hasActiveGuestWithDni(dni);
+}
+
+export async function isDniInPendingInterview(dni: string): Promise<boolean> {
+  const interviewIds = await findActiveInterviewIdsWithDni(dni);
+  const acceptedInterviewIds = new Set(
+    await listInterviewIdsWithActiveGuest(interviewIds),
+  );
+  return interviewIds.some((id) => !acceptedInterviewIds.has(id));
+}
+
+export const INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES = {
+  notFound:
+    "No encontramos esta entrevista. Volvé a Admisiones y buscala de nuevo.",
+  annulled: "Esta entrevista está anulada: no se puede aceptar.",
+} as const;
+
+export type AcceptInterviewResult =
+  | {
+      status: "success";
+      guestId: string;
+      clinicalRecordNumber: number;
+      wasCreated: boolean;
+    }
+  | FailedActionResult;
+
+export function acceptAdmissionInterview(
+  actorUserId: string,
+  interviewId: string,
+): Promise<AcceptInterviewResult> {
+  return runInTransactionAs(actorUserId, async (transaction) => {
+    const interview = await lockInterviewToAccept(transaction, interviewId);
+    if (!interview) {
+      return reject(INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES.notFound);
+    }
+    if (interview.isAnnulled) {
+      return reject(INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES.annulled);
+    }
+    const existingGuest = await findActiveGuestOfInterview(
+      transaction,
+      interviewId,
+    );
+    if (existingGuest) {
+      return {
+        status: "success",
+        guestId: existingGuest.id,
+        clinicalRecordNumber: existingGuest.clinicalRecordNumber,
+        wasCreated: false,
+      };
+    }
+    const clinicalRecordNumber =
+      await assignNextClinicalRecordNumber(transaction);
+    const guestId = await insertGuest(transaction, {
+      details: {
+        hospitalizationDate: getBusinessDate(new Date()),
+        firstName: interview.firstName,
+        lastName: interview.lastName,
+        birthDate: interview.birthDate,
+        dni: interview.dni,
+        address: interview.address,
+        healthInsuranceOptionId: interview.healthInsuranceOptionId,
+        healthInsuranceMemberNumber: interview.healthInsuranceMemberNumber,
+        hospitalizationReasonOptionIds: [],
+        otherHospitalizationReason: null,
+        uncontrolledSymptomOptionIds: [],
+      },
+      clinicalRecordNumber,
+      origin: "admission",
+      admissionInterviewId: interview.id,
+      actorUserId,
+    });
+    return {
+      status: "success",
+      guestId,
+      clinicalRecordNumber,
+      wasCreated: true,
+    };
+  });
+}
+
+export type InterviewGuest = {
+  clinicalRecordNumber: number;
+  acceptedAt: Date;
+};
+
+export async function findGuestOfInterview(
+  interviewId: string,
+): Promise<InterviewGuest | null> {
+  const guest = await findActiveGuestOfInterview(getDatabase(), interviewId);
+  return guest
+    ? {
+        clinicalRecordNumber: guest.clinicalRecordNumber,
+        acceptedAt: guest.createdAt,
+      }
+    : null;
 }
 
 export type GuestListItem = {

@@ -2,7 +2,7 @@ import { AlertCircleIcon, PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { LoadingStatus } from "@/components/shared/loading-status";
@@ -42,11 +42,22 @@ function RecordHistory({ interview }: { interview: AdmissionInterviewView }) {
   );
 }
 
+export type InterviewAcceptanceSlot = {
+  interviewId: string;
+  isAnnulled: boolean;
+  guestFullName: string;
+  guestDni: string;
+};
+
+type AdmissionInterviewScreenProps = {
+  params: Promise<{ id: string }>;
+  renderAcceptance: (interview: InterviewAcceptanceSlot) => ReactNode;
+};
+
 async function AdmissionInterviewContent({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  renderAcceptance,
+}: AdmissionInterviewScreenProps) {
   const { access } = await requirePermission("admissions.interviews.view");
   const { id } = await params;
   const interview = await findAdmissionInterview(id);
@@ -96,6 +107,12 @@ async function AdmissionInterviewContent({
           )}
         </div>
       </div>
+      {renderAcceptance({
+        interviewId: interview.id,
+        isAnnulled: interview.isAnnulled,
+        guestFullName,
+        guestDni: interview.details.guestDni,
+      })}
       {interview.annulment && (
         <Alert>
           <HugeiconsIcon icon={AlertCircleIcon} aria-hidden="true" />
@@ -122,9 +139,8 @@ async function AdmissionInterviewContent({
 
 export function AdmissionInterviewScreen({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  renderAcceptance,
+}: AdmissionInterviewScreenProps) {
   return (
     <Suspense
       fallback={
@@ -136,7 +152,10 @@ export function AdmissionInterviewScreen({
         </SectionSheet>
       }
     >
-      <AdmissionInterviewContent params={params} />
+      <AdmissionInterviewContent
+        params={params}
+        renderAcceptance={renderAcceptance}
+      />
     </Suspense>
   );
 }

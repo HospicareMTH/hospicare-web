@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { AdmissionInterviewScreen } from "@/modules/admissions";
+import { InterviewAcceptance } from "@/modules/guests";
 
 export const metadata: Metadata = {
   title: "Entrevista de admisión",
@@ -11,5 +12,10 @@ export const metadata: Metadata = {
 export default function AdmissionInterviewPage({
   params,
 }: PageProps<"/admisiones/[id]">) {
-  return <AdmissionInterviewScreen params={params} />;
+  return (
+    <AdmissionInterviewScreen
+      params={params}
+      renderAcceptance={(interview) => <InterviewAcceptance {...interview} />}
+    />
+  );
 }
