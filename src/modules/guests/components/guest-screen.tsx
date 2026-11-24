@@ -83,7 +83,11 @@ async function GuestContent({
       content: <GuestDetail guest={guest} interviewHref={interviewHref} />,
     },
   ];
-  if (hasPermission(access, "guests.cam_evaluations.view")) {
+  // RF-HUE-04: Evaluaciones aparece con el permiso de ver cualquiera de las dos.
+  if (
+    hasPermission(access, "guests.cam_evaluations.view") ||
+    hasPermission(access, "guests.physical_evaluations.view")
+  ) {
     panels.push({
       value: "evaluaciones",
       label: "Evaluaciones",

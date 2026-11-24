@@ -172,6 +172,16 @@ export function findReligionOtherOptionId(): Promise<string | null> {
   return findOptionIdBySystemKey("religion", RELIGION_OTHER_SYSTEM_KEY);
 }
 
+// La siembra de drizzle/0024 marca así "Lesión neurológica", que exige detalle aunque cambie su etiqueta.
+const NEUROLOGICAL_LESION_SYSTEM_KEY = "ambulation_cause_neurological_lesion";
+
+export function findNeurologicalLesionCauseOptionId(): Promise<string | null> {
+  return findOptionIdBySystemKey(
+    "ambulation_cause",
+    NEUROLOGICAL_LESION_SYSTEM_KEY,
+  );
+}
+
 export async function validateCatalogSelection(
   transaction: DatabaseTransaction,
   catalog: CatalogKey,

@@ -4,7 +4,9 @@ import {
   ADDRESS_LIMITS,
   dniSchema,
   HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
+  optionalOptionIdSchema,
   optionalTextSchema,
+  optionIdsSchema,
   pastOrTodayDateSchema,
   PERSON_NAME_LIMITS,
   requiredTextSchema,
@@ -40,6 +42,11 @@ export type GuestTab = (typeof GUEST_TABS)[number];
 
 export const DEFAULT_GUEST_TAB: GuestTab = "internacion";
 
+export function buildGuestEvaluationsPath(guestId: string): string {
+  const tabParameter: GuestTab = "evaluaciones";
+  return `${buildGuestPath(guestId)}?${GUEST_TAB_PARAMETER}=${tabParameter}`;
+}
+
 export function parseGuestTab(searchParams: SearchParams): GuestTab {
   const requestedTab = readSearchParam(searchParams, GUEST_TAB_PARAMETER);
   return (
@@ -49,15 +56,6 @@ export function parseGuestTab(searchParams: SearchParams): GuestTab {
 }
 
 export const OTHER_HOSPITALIZATION_REASON_MAX_LENGTH = 500;
-
-const INVALID_OPTION_MESSAGE =
-  "La opción elegida no es válida. Actualizá la pantalla.";
-
-const optionalOptionIdSchema = z
-  .union([z.literal(""), z.uuid()], { error: INVALID_OPTION_MESSAGE })
-  .transform((optionId) => optionId || null);
-
-const optionIdsSchema = z.array(z.uuid({ error: INVALID_OPTION_MESSAGE }));
 
 export const guestDetailsSchema = z.object({
   hospitalizationDate: pastOrTodayDateSchema("La fecha de internación"),

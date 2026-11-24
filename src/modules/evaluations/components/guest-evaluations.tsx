@@ -1,12 +1,7 @@
 import { DetailList } from "@/components/shared/detail-list";
-import { describeRecordAuthor } from "@/components/shared/record-author";
 import { getCurrentUser, hasPermission } from "@/modules/access";
 import type { GuestEvaluationsSlot } from "@/modules/guests";
-import {
-  formatDateTime,
-  formatIsoDate,
-  getBusinessDate,
-} from "@/platform/dates";
+import { formatIsoDate, getBusinessDate } from "@/platform/dates";
 
 import {
   buildEmptyCamEvaluation,
@@ -16,6 +11,8 @@ import {
 } from "../schemas";
 import { type CamEvaluationView, findCamEvaluationOfGuest } from "../service";
 import { CamEvaluationButton } from "./cam-evaluation-button";
+import { EvaluationHistory } from "./evaluation-history";
+import { PhysicalEvaluationSection } from "./physical-evaluation-section";
 
 const CAM_SECTION_TITLE_ID = "cam-evaluation-title";
 
@@ -24,23 +21,6 @@ function describeAnswer(answer: boolean | null): string {
     return NOT_EVALUATED_LABEL;
   }
   return answer ? "Sí" : "No";
-}
-
-function CamEvaluationHistory({
-  evaluation,
-}: {
-  evaluation: CamEvaluationView;
-}) {
-  const wasUpdated =
-    evaluation.updatedAt.getTime() !== evaluation.createdAt.getTime();
-  return (
-    <p className="text-base text-muted-foreground">
-      Cargada el {formatDateTime(evaluation.createdAt)} por{" "}
-      {describeRecordAuthor(evaluation.createdByName)}.
-      {wasUpdated &&
-        ` Última modificación el ${formatDateTime(evaluation.updatedAt)} por ${describeRecordAuthor(evaluation.updatedByName)}.`}
-    </p>
-  );
 }
 
 function CamEvaluationDetail({
@@ -124,7 +104,7 @@ async function CamEvaluationSection({
       </div>
       {evaluation ? (
         <>
-          <CamEvaluationHistory evaluation={evaluation} />
+          <EvaluationHistory {...evaluation} />
           <CamEvaluationDetail evaluation={evaluation} />
         </>
       ) : (
@@ -142,8 +122,14 @@ export async function GuestEvaluations({
   guest: GuestEvaluationsSlot;
 }) {
   const { access } = await getCurrentUser();
-  if (!hasPermission(access, "guests.cam_evaluations.view")) {
-    return null;
-  }
-  return <CamEvaluationSection guest={guest} />;
+  return (
+    <div className="flex flex-col gap-10">
+      {hasPermission(access, "guests.cam_evaluations.view") && (
+        <CamEvaluationSection guest={guest} />
+      )}
+      {hasPermission(access, "guests.physical_evaluations.view") && (
+        <PhysicalEvaluationSection guest={guest} />
+      )}
+    </div>
+  );
 }

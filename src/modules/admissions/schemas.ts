@@ -4,7 +4,9 @@ import {
   ADDRESS_LIMITS,
   dniSchema,
   HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
+  optionalOptionIdSchema,
   optionalTextSchema,
+  optionIdsSchema,
   pastOrTodayDateSchema,
   PERSON_NAME_LIMITS,
   requiredTextSchema,
@@ -73,16 +75,9 @@ export const INTERVIEWEE_NAME_LIMITS = { minLength: 2, maxLength: 120 };
 export const SHORT_TEXT_MAX_LENGTH = 40;
 export const RELIGION_DETAIL_MAX_LENGTH = 120;
 export const CLINICAL_TEXT_MAX_LENGTH = 2000;
-const INVALID_OPTION_MESSAGE =
-  "La opción elegida no es válida. Actualizá la pantalla.";
-
 function requiredOptionIdSchema(missingMessage: string) {
   return z.uuid({ error: missingMessage });
 }
-
-const optionalOptionIdSchema = z
-  .union([z.literal(""), z.uuid()], { error: INVALID_OPTION_MESSAGE })
-  .transform((optionId) => optionId || null);
 
 function clinicalTextSchema(fieldLabel: string) {
   return optionalTextSchema(fieldLabel, CLINICAL_TEXT_MAX_LENGTH);
@@ -131,7 +126,7 @@ export const admissionInterviewDetailsSchema = z
       "Elegí el tratamiento oncológico específico.",
     ),
     nonOncologicalDisease: clinicalTextSchema("La enfermedad no oncológica"),
-    surgeryOptionIds: z.array(z.uuid({ error: INVALID_OPTION_MESSAGE })),
+    surgeryOptionIds: optionIdsSchema,
     radiotherapy: clinicalTextSchema("La radioterapia"),
     chemotherapy: clinicalTextSchema("La quimioterapia"),
     hemotherapy: clinicalTextSchema("La hemoterapia"),

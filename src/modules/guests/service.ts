@@ -295,6 +295,32 @@ export function annulGuest(
   });
 }
 
+export type GuestSummary = {
+  id: string;
+  fullName: string;
+  clinicalRecordNumber: number;
+  isAnnulled: boolean;
+};
+
+export async function findGuestSummary(
+  candidateId: string,
+): Promise<GuestSummary | null> {
+  const parsedId = guestIdSchema.safeParse(candidateId);
+  if (!parsedId.success) {
+    return null;
+  }
+  const record = await findGuestRecord(parsedId.data);
+  if (!record) {
+    return null;
+  }
+  return {
+    id: record.id,
+    fullName: `${record.firstName} ${record.lastName}`,
+    clinicalRecordNumber: record.clinicalRecordNumber,
+    isAnnulled: record.annulledAt !== null,
+  };
+}
+
 export type GuestToEvaluate = { id: string; isAnnulled: boolean };
 
 export async function lockGuestToEvaluate(

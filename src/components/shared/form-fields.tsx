@@ -21,8 +21,11 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 
 const LABEL_CLASS_NAME = "text-base";
-const YES_NO_ITEM_CLASS_NAME =
-  "h-10 px-5 text-base data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:font-semibold data-[state=on]:text-primary";
+
+export const INVALID_FORM_MESSAGE =
+  "Hay datos para corregir. Revisá los campos marcados.";
+const CHOICE_ITEM_CLASS_NAME =
+  "h-10 text-base data-[state=on]:border-primary data-[state=on]:bg-primary/10 data-[state=on]:font-semibold data-[state=on]:text-primary";
 const YES_VALUE = "yes";
 const NO_VALUE = "no";
 
@@ -123,6 +126,7 @@ export function DateInputField({
   value,
   onValueChange,
   latestIsoDate,
+  isRequired = true,
   errors,
 }: {
   id: string;
@@ -130,10 +134,11 @@ export function DateInputField({
   value: string;
   onValueChange: (value: string) => void;
   latestIsoDate: string;
+  isRequired?: boolean;
   errors: string[] | undefined;
 }) {
   return (
-    <FieldFrame id={id} label={label} isRequired errors={errors}>
+    <FieldFrame id={id} label={label} isRequired={isRequired} errors={errors}>
       <DateField
         id={id}
         value={value}
@@ -146,31 +151,36 @@ export function DateInputField({
   );
 }
 
-function toToggleValue(value: boolean | null): string {
-  if (value === null) {
-    return "";
-  }
-  return value ? YES_VALUE : NO_VALUE;
-}
+export type ChoiceOption = {
+  value: string;
+  label: ReactNode;
+  accessibleLabel?: string;
+};
 
-export function YesNoField({
+export function ChoiceField({
   id,
   label,
   description,
+  options,
   value,
   onValueChange,
   isRequired = false,
   errors,
   className,
+  groupClassName,
+  itemClassName,
 }: {
   id: string;
   label: string;
   description?: string;
-  value: boolean | null;
-  onValueChange: (value: boolean) => void;
+  options: readonly ChoiceOption[];
+  value: string;
+  onValueChange: (value: string) => void;
   isRequired?: boolean;
   errors?: string[];
   className?: string;
+  groupClassName?: string;
+  itemClassName?: string;
 }) {
   const labelId = `${id}-label`;
   const descriptionId = `${id}-description`;
@@ -200,24 +210,66 @@ export function YesNoField({
           describedBy.length > 0 ? describedBy.join(" ") : undefined
         }
         aria-invalid={errors ? true : undefined}
-        value={toToggleValue(value)}
+        value={value}
         onValueChange={(nextValue) => {
           if (nextValue) {
-            onValueChange(nextValue === YES_VALUE);
+            onValueChange(nextValue);
           }
         }}
+        className={cn("flex-wrap", groupClassName)}
       >
-        <ToggleGroupItem value={YES_VALUE} className={YES_NO_ITEM_CLASS_NAME}>
-          Sí
-        </ToggleGroupItem>
-        <ToggleGroupItem value={NO_VALUE} className={YES_NO_ITEM_CLASS_NAME}>
-          No
-        </ToggleGroupItem>
+        {options.map((option) => (
+          <ToggleGroupItem
+            key={option.value}
+            value={option.value}
+            aria-label={option.accessibleLabel}
+            className={cn(CHOICE_ITEM_CLASS_NAME, itemClassName)}
+          >
+            {option.label}
+          </ToggleGroupItem>
+        ))}
       </ToggleGroup>
       <FieldError
         id={errorDescriptionId(id)}
         errors={errors?.map((message) => ({ message }))}
       />
     </Field>
+  );
+}
+
+const YES_NO_OPTIONS: readonly ChoiceOption[] = [
+  { value: YES_VALUE, label: "Sí" },
+  { value: NO_VALUE, label: "No" },
+];
+
+function toYesNoValue(value: boolean | null): string {
+  if (value === null) {
+    return "";
+  }
+  return value ? YES_VALUE : NO_VALUE;
+}
+
+export function YesNoField({
+  value,
+  onValueChange,
+  ...fieldProps
+}: {
+  id: string;
+  label: string;
+  description?: string;
+  value: boolean | null;
+  onValueChange: (value: boolean) => void;
+  isRequired?: boolean;
+  errors?: string[];
+  className?: string;
+}) {
+  return (
+    <ChoiceField
+      {...fieldProps}
+      options={YES_NO_OPTIONS}
+      value={toYesNoValue(value)}
+      onValueChange={(nextValue) => onValueChange(nextValue === YES_VALUE)}
+      itemClassName="px-5"
+    />
   );
 }

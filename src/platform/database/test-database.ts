@@ -38,6 +38,10 @@ const CATALOG_SEED_STATEMENTS: readonly MigrationStatement[] = [
     migration: `${MIGRATIONS_FOLDER}/0017_admission_interviews_audit.sql`,
     statementStart: 'UPDATE "catalog_options" SET "system_key"',
   },
+  {
+    migration: `${MIGRATIONS_FOLDER}/0024_physical_admission_evaluations_audit.sql`,
+    statementStart: 'UPDATE "catalog_options" SET "system_key"',
+  },
 ];
 
 const SYSTEM_SETTINGS_SEED_STATEMENT: MigrationStatement = {
@@ -109,7 +113,7 @@ export function resetTestDatabase(): Promise<void> {
     );
     await pool.query(`DELETE FROM "roles" WHERE "system_key" IS NULL`);
     await pool.query(SEED_ROLE_PERMISSIONS_SQL);
-    // CASCADE también vacía catalog_options, admission_interviews, guests, cam_evaluations y system_settings, que referencian a users.
+    // CASCADE también vacía catalog_options, admission_interviews, guests, sus evaluaciones y system_settings, que referencian a users.
     await pool.query(`TRUNCATE ${tableList} RESTART IDENTITY CASCADE`);
     for (const seedStatement of CATALOG_SEED_STATEMENTS) {
       await pool.query(await readMigrationStatement(seedStatement));

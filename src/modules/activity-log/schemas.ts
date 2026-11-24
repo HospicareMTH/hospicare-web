@@ -56,6 +56,12 @@ export const RESOURCE_PARAMETERS: Record<AuditResource, string> = {
   guest_hospitalization_reason: "motivo-de-internacion",
   guest_uncontrolled_symptom: "sintoma-no-controlado",
   cam_evaluation: "evaluacion-cam",
+  physical_evaluation: "evaluacion-fisica",
+  physical_evaluation_hygiene: "higiene-de-evaluacion-fisica",
+  physical_evaluation_mouth: "boca-de-evaluacion-fisica",
+  physical_evaluation_catarsis: "catarsis-de-evaluacion-fisica",
+  physical_evaluation_catarsis_consistency:
+    "consistencia-de-catarsis-de-evaluacion-fisica",
   system_setting: "configuracion",
 };
 

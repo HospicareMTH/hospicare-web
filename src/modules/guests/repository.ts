@@ -21,6 +21,7 @@ import {
   containsNormalizedTextSql,
   normalizeTextSql,
 } from "@/platform/database/text-normalization";
+import { findAddedAndRemoved } from "@/platform/selection-changes";
 
 import type { GuestDetails, GuestListQuery, GuestSortKey } from "./schemas";
 import {
@@ -104,16 +105,6 @@ export async function annulGuestRecord(
       annulmentReason: reason,
     })
     .where(eq(guests.id, guestId));
-}
-
-function findAddedAndRemoved(
-  savedIds: readonly string[],
-  nextIds: readonly string[],
-): { addedIds: string[]; removedIds: string[] } {
-  return {
-    addedIds: nextIds.filter((id) => !savedIds.includes(id)),
-    removedIds: savedIds.filter((id) => !nextIds.includes(id)),
-  };
 }
 
 export async function updateGuestRecord(

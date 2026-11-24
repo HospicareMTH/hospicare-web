@@ -126,6 +126,18 @@ export const PERMISSION_GROUPS = [
         key: "guests.cam_evaluations.update",
         label: "Modificar evaluaciones CAM",
       },
+      {
+        key: "guests.physical_evaluations.view",
+        label: "Ver evaluaciones físicas de ingreso",
+      },
+      {
+        key: "guests.physical_evaluations.create",
+        label: "Crear evaluaciones físicas de ingreso",
+      },
+      {
+        key: "guests.physical_evaluations.update",
+        label: "Modificar evaluaciones físicas de ingreso",
+      },
     ],
   },
   {

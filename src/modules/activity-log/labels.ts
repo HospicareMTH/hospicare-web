@@ -37,6 +37,12 @@ export const RESOURCE_LABELS = {
   guest_hospitalization_reason: "Motivo de internación",
   guest_uncontrolled_symptom: "Síntoma no controlado",
   cam_evaluation: "Evaluación CAM",
+  physical_evaluation: "Evaluación física de ingreso",
+  physical_evaluation_hygiene: "Higiene de la evaluación física",
+  physical_evaluation_mouth: "Boca de la evaluación física",
+  physical_evaluation_catarsis: "Catarsis de la evaluación física",
+  physical_evaluation_catarsis_consistency:
+    "Consistencia de catarsis de la evaluación física",
   system_setting: "Configuración",
 } as const;
 
@@ -109,6 +115,23 @@ const ACTION_LABELS = {
   "guest_uncontrolled_symptom.deleted": "Síntoma no controlado quitado",
   "cam_evaluation.created": "Evaluación CAM creada",
   "cam_evaluation.updated": "Evaluación CAM actualizada",
+  "physical_evaluation.created": "Evaluación física de ingreso creada",
+  "physical_evaluation.updated": "Evaluación física de ingreso actualizada",
+  "physical_evaluation_hygiene.created": "Higiene agregada",
+  "physical_evaluation_hygiene.updated": "Higiene actualizada",
+  "physical_evaluation_hygiene.deleted": "Higiene quitada",
+  "physical_evaluation_mouth.created": "Boca agregada",
+  "physical_evaluation_mouth.updated": "Boca actualizada",
+  "physical_evaluation_mouth.deleted": "Boca quitada",
+  "physical_evaluation_catarsis.created": "Catarsis agregada",
+  "physical_evaluation_catarsis.updated": "Catarsis actualizada",
+  "physical_evaluation_catarsis.deleted": "Catarsis quitada",
+  "physical_evaluation_catarsis_consistency.created":
+    "Consistencia de catarsis agregada",
+  "physical_evaluation_catarsis_consistency.updated":
+    "Consistencia de catarsis actualizada",
+  "physical_evaluation_catarsis_consistency.deleted":
+    "Consistencia de catarsis quitada",
   "system_setting.updated": "Parámetros actualizados",
 } as const;
 

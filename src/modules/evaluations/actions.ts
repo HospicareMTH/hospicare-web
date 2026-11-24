@@ -12,12 +12,27 @@ import {
   toRejectedResult,
 } from "@/platform/operation-result";
 
-import { camEvaluationSchema, type CamEvaluationInput } from "./schemas";
-import { createCamEvaluation, updateCamEvaluation } from "./service";
+import {
+  camEvaluationSchema,
+  type CamEvaluationInput,
+  physicalEvaluationSchema,
+  type PhysicalEvaluationInput,
+} from "./schemas";
+import {
+  createCamEvaluation,
+  createPhysicalEvaluation,
+  updateCamEvaluation,
+  updatePhysicalEvaluation,
+} from "./service";
 
-const versionSchema = z.iso.datetime({
+const camEvaluationVersionSchema = z.iso.datetime({
   error:
     "La evaluación CAM que estás editando no es válida. Actualizá la pantalla.",
+});
+
+const physicalEvaluationVersionSchema = z.iso.datetime({
+  error:
+    "La evaluación física de ingreso que estás editando no es válida. Actualizá la pantalla.",
 });
 
 export async function createCamEvaluationAction(
@@ -52,7 +67,7 @@ export async function updateCamEvaluationAction(
   if (!parsedGuestId.success) {
     return reject(GUEST_REJECTION_MESSAGES.notFound);
   }
-  const parsedVersion = versionSchema.safeParse(version);
+  const parsedVersion = camEvaluationVersionSchema.safeParse(version);
   if (!parsedVersion.success) {
     return toRejectedResult(parsedVersion.error);
   }
@@ -68,4 +83,56 @@ export async function updateCamEvaluationAction(
       parsedEvaluation.data,
     ),
   );
+}
+
+export async function createPhysicalEvaluationAction(
+  guestId: string,
+  input: PhysicalEvaluationInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission(
+    "guests.physical_evaluations.create",
+  );
+  const parsedGuestId = guestIdSchema.safeParse(guestId);
+  if (!parsedGuestId.success) {
+    return reject(GUEST_REJECTION_MESSAGES.notFound);
+  }
+  const parsedEvaluation = physicalEvaluationSchema.safeParse(input);
+  if (!parsedEvaluation.success) {
+    return toInvalidResult(parsedEvaluation.error);
+  }
+  const result = await createPhysicalEvaluation(
+    access.userId,
+    parsedGuestId.data,
+    parsedEvaluation.data,
+  );
+  return result.status === "invalid" ? result : refreshOnSuccess(result);
+}
+
+export async function updatePhysicalEvaluationAction(
+  guestId: string,
+  version: string,
+  input: PhysicalEvaluationInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission(
+    "guests.physical_evaluations.update",
+  );
+  const parsedGuestId = guestIdSchema.safeParse(guestId);
+  if (!parsedGuestId.success) {
+    return reject(GUEST_REJECTION_MESSAGES.notFound);
+  }
+  const parsedVersion = physicalEvaluationVersionSchema.safeParse(version);
+  if (!parsedVersion.success) {
+    return toRejectedResult(parsedVersion.error);
+  }
+  const parsedEvaluation = physicalEvaluationSchema.safeParse(input);
+  if (!parsedEvaluation.success) {
+    return toInvalidResult(parsedEvaluation.error);
+  }
+  const result = await updatePhysicalEvaluation(
+    access.userId,
+    parsedGuestId.data,
+    parsedVersion.data,
+    parsedEvaluation.data,
+  );
+  return result.status === "invalid" ? result : refreshOnSuccess(result);
 }

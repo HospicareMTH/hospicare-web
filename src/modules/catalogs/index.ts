@@ -2,6 +2,7 @@ export {
   type ActiveCatalogEntryCount,
   canCreateCatalogEntries,
   countActiveCatalogEntries,
+  findNeurologicalLesionCauseOptionId,
   findReligionOtherOptionId,
   listSelectableCatalogOptions,
   listVisibleCatalogs,

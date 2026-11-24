@@ -7,7 +7,11 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, type ReactNode, useState, useTransition } from "react";
 import { toast } from "sonner";
 
-import { DateInputField, TextField } from "@/components/shared/form-fields";
+import {
+  DateInputField,
+  INVALID_FORM_MESSAGE,
+  TextField,
+} from "@/components/shared/form-fields";
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { runAction } from "@/components/shared/run-action";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -49,9 +53,6 @@ const NO_DNI_MATCHES: GuestDniCheck = {
 };
 
 type FieldErrorsResult = Exclude<ActionResult, { status: "success" }>;
-
-const INVALID_FORM_MESSAGE =
-  "Hay datos para corregir. Revisá los campos marcados.";
 
 function fieldId(field: GuestField): string {
   return `${FORM_ID_PREFIX}-${field}`;

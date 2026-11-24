@@ -73,6 +73,17 @@ export function optionalTextSchema(fieldLabel: string, maxLength: number) {
     .transform((text) => text || null);
 }
 
+const INVALID_OPTION_MESSAGE =
+  "La opción elegida no es válida. Actualizá la pantalla.";
+
+export const optionalOptionIdSchema = z
+  .union([z.literal(""), z.uuid()], { error: INVALID_OPTION_MESSAGE })
+  .transform((optionId) => optionId || null);
+
+export const optionIdsSchema = z.array(
+  z.uuid({ error: INVALID_OPTION_MESSAGE }),
+);
+
 export const ANNULMENT_REASON_LIMITS: TextLengthLimits = {
   minLength: 10,
   maxLength: 500,
