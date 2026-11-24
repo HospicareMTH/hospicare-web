@@ -271,7 +271,7 @@ describe("huéspedes: base", () => {
     ]);
   });
 
-  it("RF-ROL-08: declara los permisos de huéspedes", () => {
+  it("RF-ROL-08, R-18: declara los permisos de huéspedes y de la evaluación CAM", () => {
     const guestsGroup = PERMISSION_GROUPS.find(
       (group) => group.key === "guests",
     );
@@ -284,6 +284,9 @@ describe("huéspedes: base", () => {
       "guests.records.manual_create",
       "guests.records.update",
       "guests.records.annul",
+      "guests.cam_evaluations.view",
+      "guests.cam_evaluations.create",
+      "guests.cam_evaluations.update",
     ]);
   });
 });

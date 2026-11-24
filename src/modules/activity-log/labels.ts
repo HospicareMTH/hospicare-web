@@ -36,6 +36,7 @@ export const RESOURCE_LABELS = {
   guest: "Huésped",
   guest_hospitalization_reason: "Motivo de internación",
   guest_uncontrolled_symptom: "Síntoma no controlado",
+  cam_evaluation: "Evaluación CAM",
   system_setting: "Configuración",
 } as const;
 
@@ -106,6 +107,8 @@ const ACTION_LABELS = {
   "guest_uncontrolled_symptom.created": "Síntoma no controlado agregado",
   "guest_uncontrolled_symptom.updated": "Síntoma no controlado actualizado",
   "guest_uncontrolled_symptom.deleted": "Síntoma no controlado quitado",
+  "cam_evaluation.created": "Evaluación CAM creada",
+  "cam_evaluation.updated": "Evaluación CAM actualizada",
   "system_setting.updated": "Parámetros actualizados",
 } as const;
 

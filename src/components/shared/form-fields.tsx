@@ -4,9 +4,13 @@ import type { ReactNode } from "react";
 
 import { DateField } from "@/components/shared/date-field";
 import { FIELD_CONTROL_CLASS_NAME } from "@/components/shared/form-styles";
-import { RequiredFieldLabel } from "@/components/shared/required-field-label";
+import {
+  RequiredFieldLabel,
+  RequiredMark,
+} from "@/components/shared/required-field-label";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldLabel,
   FieldTitle,
@@ -142,30 +146,61 @@ export function DateInputField({
   );
 }
 
+function toToggleValue(value: boolean | null): string {
+  if (value === null) {
+    return "";
+  }
+  return value ? YES_VALUE : NO_VALUE;
+}
+
 export function YesNoField({
   id,
   label,
+  description,
   value,
   onValueChange,
+  isRequired = false,
+  errors,
   className,
 }: {
   id: string;
   label: string;
-  value: boolean;
+  description?: string;
+  value: boolean | null;
   onValueChange: (value: boolean) => void;
+  isRequired?: boolean;
+  errors?: string[];
   className?: string;
 }) {
   const labelId = `${id}-label`;
+  const descriptionId = `${id}-description`;
+  const describedBy = [
+    description ? descriptionId : null,
+    errors ? errorDescriptionId(id) : null,
+  ].filter((elementId) => elementId !== null);
   return (
-    <Field className={cn("gap-2", className)}>
+    <Field
+      data-invalid={errors ? true : undefined}
+      className={cn("gap-2", className)}
+    >
       <FieldTitle id={labelId} className={LABEL_CLASS_NAME}>
         {label}
+        {isRequired && <RequiredMark />}
       </FieldTitle>
+      {description && (
+        <FieldDescription id={descriptionId} className={LABEL_CLASS_NAME}>
+          {description}
+        </FieldDescription>
+      )}
       <ToggleGroup
         type="single"
         variant="outline"
         aria-labelledby={labelId}
-        value={value ? YES_VALUE : NO_VALUE}
+        aria-describedby={
+          describedBy.length > 0 ? describedBy.join(" ") : undefined
+        }
+        aria-invalid={errors ? true : undefined}
+        value={toToggleValue(value)}
         onValueChange={(nextValue) => {
           if (nextValue) {
             onValueChange(nextValue === YES_VALUE);
@@ -179,6 +214,10 @@ export function YesNoField({
           No
         </ToggleGroupItem>
       </ToggleGroup>
+      <FieldError
+        id={errorDescriptionId(id)}
+        errors={errors?.map((message) => ({ message }))}
+      />
     </Field>
   );
 }

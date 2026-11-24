@@ -2,30 +2,44 @@ import { AlertCircleIcon, PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { LoadingStatus } from "@/components/shared/loading-status";
 import { GUESTS_DESTINATION } from "@/components/shared/navigation";
 import { SectionSheet } from "@/components/shared/section-sheet";
+import { describeRecordAuthor } from "@/components/shared/record-author";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { hasPermission, requirePermission } from "@/modules/access";
 import { buildAdmissionInterviewPath } from "@/modules/admissions";
 import { formatDateTime } from "@/platform/dates";
+import type { SearchParams } from "@/platform/list-query";
 
-import { buildEditGuestPath, GUESTS_PATH } from "../schemas";
+import {
+  buildEditGuestPath,
+  DEFAULT_GUEST_TAB,
+  GUESTS_PATH,
+  parseGuestTab,
+} from "../schemas";
 import { findGuest, type GuestView } from "../service";
 import { AnnulGuestButton } from "./annul-guest-button";
 import { GuestDetail } from "./guest-detail";
+import { type GuestTabPanel, GuestTabs } from "./guest-tabs";
 
 const GUEST_TITLE = "Huésped";
-const FORMER_USER_LABEL = "una persona que ya no tiene cuenta";
 
-function describeAuthor(name: string | null): string {
-  return name ?? FORMER_USER_LABEL;
-}
+export type GuestEvaluationsSlot = {
+  id: string;
+  fullName: string;
+  isAnnulled: boolean;
+};
 
+type GuestScreenProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<SearchParams>;
+  renderEvaluations: (guest: GuestEvaluationsSlot) => ReactNode;
+};
 function RecordHistory({ guest }: { guest: GuestView }) {
   const wasUpdated = guest.updatedAt.getTime() !== guest.createdAt.getTime();
   return (
@@ -34,16 +48,21 @@ function RecordHistory({ guest }: { guest: GuestView }) {
         Historia clínica N.° {guest.clinicalRecordNumber}.
       </span>{" "}
       Cargado el {formatDateTime(guest.createdAt)} por{" "}
-      {describeAuthor(guest.createdByName)}.
+      {describeRecordAuthor(guest.createdByName)}.
       {wasUpdated &&
-        ` Última modificación el ${formatDateTime(guest.updatedAt)} por ${describeAuthor(guest.updatedByName)}.`}
+        ` Última modificación el ${formatDateTime(guest.updatedAt)} por ${describeRecordAuthor(guest.updatedByName)}.`}
     </p>
   );
 }
 
-async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
+async function GuestContent({
+  params,
+  searchParams,
+  renderEvaluations,
+}: GuestScreenProps) {
   const { access } = await requirePermission("guests.records.view");
   const { id } = await params;
+  const requestedTab = parseGuestTab(await searchParams);
   const guest = await findGuest(id);
   if (!guest) {
     notFound();
@@ -57,6 +76,27 @@ async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
     !guest.annulment && hasPermission(access, "guests.records.update");
   const canAnnul =
     !guest.annulment && hasPermission(access, "guests.records.annul");
+  const panels: GuestTabPanel[] = [
+    {
+      value: "internacion",
+      label: "Internación",
+      content: <GuestDetail guest={guest} interviewHref={interviewHref} />,
+    },
+  ];
+  if (hasPermission(access, "guests.cam_evaluations.view")) {
+    panels.push({
+      value: "evaluaciones",
+      label: "Evaluaciones",
+      content: renderEvaluations({
+        id: guest.id,
+        fullName: guest.fullName,
+        isAnnulled: guest.annulment !== null,
+      }),
+    });
+  }
+  const initialTab = panels.some(({ value }) => value === requestedTab)
+    ? requestedTab
+    : DEFAULT_GUEST_TAB;
 
   return (
     <SectionSheet destination={GUESTS_DESTINATION} title={guest.fullName}>
@@ -100,7 +140,7 @@ async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
           <AlertDescription className="flex flex-col gap-1 text-base">
             <span>
               Anulado el {formatDateTime(guest.annulment.annulledAt)} por{" "}
-              {describeAuthor(guest.annulment.annulledByName)}. Se puede
+              {describeRecordAuthor(guest.annulment.annulledByName)}. Se puede
               consultar, pero ya no se puede modificar.
             </span>
             <span className="whitespace-pre-line">
@@ -109,12 +149,12 @@ async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
           </AlertDescription>
         </Alert>
       )}
-      <GuestDetail guest={guest} interviewHref={interviewHref} />
+      <GuestTabs initialTab={initialTab} panels={panels} />
     </SectionSheet>
   );
 }
 
-export function GuestScreen({ params }: { params: Promise<{ id: string }> }) {
+export function GuestScreen(props: GuestScreenProps) {
   return (
     <Suspense
       fallback={
@@ -123,7 +163,7 @@ export function GuestScreen({ params }: { params: Promise<{ id: string }> }) {
         </SectionSheet>
       }
     >
-      <GuestContent params={params} />
+      <GuestContent {...props} />
     </Suspense>
   );
 }

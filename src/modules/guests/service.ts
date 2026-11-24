@@ -295,6 +295,19 @@ export function annulGuest(
   });
 }
 
+export type GuestToEvaluate = { id: string; isAnnulled: boolean };
+
+export async function lockGuestToEvaluate(
+  transaction: DatabaseTransaction,
+  guestId: string,
+): Promise<GuestToEvaluate | null> {
+  const saved = await lockGuestRecord(transaction, guestId);
+  if (!saved) {
+    return null;
+  }
+  return { id: saved.id, isAnnulled: saved.annulledAt !== null };
+}
+
 export async function findPendingInterviewIdsWithDni(
   dni: string,
 ): Promise<string[]> {

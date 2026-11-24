@@ -55,6 +55,7 @@ export const RESOURCE_PARAMETERS: Record<AuditResource, string> = {
   guest: "huesped",
   guest_hospitalization_reason: "motivo-de-internacion",
   guest_uncontrolled_symptom: "sintoma-no-controlado",
+  cam_evaluation: "evaluacion-cam",
   system_setting: "configuracion",
 };
 

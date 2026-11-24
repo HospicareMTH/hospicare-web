@@ -117,6 +117,15 @@ export const PERMISSION_GROUPS = [
       },
       { key: "guests.records.update", label: "Modificar huéspedes" },
       { key: "guests.records.annul", label: "Anular huéspedes" },
+      { key: "guests.cam_evaluations.view", label: "Ver evaluaciones CAM" },
+      {
+        key: "guests.cam_evaluations.create",
+        label: "Crear evaluaciones CAM",
+      },
+      {
+        key: "guests.cam_evaluations.update",
+        label: "Modificar evaluaciones CAM",
+      },
     ],
   },
   {

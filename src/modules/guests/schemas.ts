@@ -32,6 +32,22 @@ export function buildEditGuestPath(guestId: string): string {
 
 export const guestIdSchema = z.uuid();
 
+export const GUEST_TAB_PARAMETER = "pestana";
+
+export const GUEST_TABS = ["internacion", "evaluaciones"] as const;
+
+export type GuestTab = (typeof GUEST_TABS)[number];
+
+export const DEFAULT_GUEST_TAB: GuestTab = "internacion";
+
+export function parseGuestTab(searchParams: SearchParams): GuestTab {
+  const requestedTab = readSearchParam(searchParams, GUEST_TAB_PARAMETER);
+  return (
+    GUEST_TABS.find((guestTab) => guestTab === requestedTab) ??
+    DEFAULT_GUEST_TAB
+  );
+}
+
 export const OTHER_HOSPITALIZATION_REASON_MAX_LENGTH = 500;
 
 const INVALID_OPTION_MESSAGE =
