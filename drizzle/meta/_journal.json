@@ -176,6 +176,20 @@
       "when": 1795545115737,
       "tag": "0024_physical_admission_evaluations_audit",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795547977514,
+      "tag": "0025_daily_evolutions",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1795547993744,
+      "tag": "0026_daily_evolutions_audit",
+      "breakpoints": true
     }
   ]
 }

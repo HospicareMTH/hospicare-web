@@ -199,3 +199,18 @@ export function findProfessionalsByIds(
     .from(healthcareProfessionals)
     .where(inArray(healthcareProfessionals.id, [...professionalIds]));
 }
+
+export async function findActiveProfessionalSpecialtyByEmail(
+  email: string,
+): Promise<string | null> {
+  const [professional] = await getDatabase()
+    .select({ specialty: healthcareProfessionals.specialty })
+    .from(healthcareProfessionals)
+    .where(
+      and(
+        eq(healthcareProfessionals.email, email),
+        eq(healthcareProfessionals.isActive, true),
+      ),
+    );
+  return professional?.specialty ?? null;
+}

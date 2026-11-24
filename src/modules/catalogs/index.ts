@@ -10,6 +10,7 @@ export {
   validateCatalogSelection,
 } from "./service";
 export {
+  findActiveProfessionalSpecialty,
   listSelectableHealthcareProfessionals,
   validateHealthcareProfessionalSelection,
 } from "./professionals/service";

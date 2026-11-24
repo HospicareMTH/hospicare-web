@@ -29,7 +29,7 @@ import { type GuestTabPanel, GuestTabs } from "./guest-tabs";
 
 const GUEST_TITLE = "Huésped";
 
-export type GuestEvaluationsSlot = {
+export type GuestTabSlot = {
   id: string;
   fullName: string;
   isAnnulled: boolean;
@@ -38,7 +38,8 @@ export type GuestEvaluationsSlot = {
 type GuestScreenProps = {
   params: Promise<{ id: string }>;
   searchParams: Promise<SearchParams>;
-  renderEvaluations: (guest: GuestEvaluationsSlot) => ReactNode;
+  renderDailyEvolutions: (guest: GuestTabSlot) => ReactNode;
+  renderEvaluations: (guest: GuestTabSlot) => ReactNode;
 };
 function RecordHistory({ guest }: { guest: GuestView }) {
   const wasUpdated = guest.updatedAt.getTime() !== guest.createdAt.getTime();
@@ -58,6 +59,7 @@ function RecordHistory({ guest }: { guest: GuestView }) {
 async function GuestContent({
   params,
   searchParams,
+  renderDailyEvolutions,
   renderEvaluations,
 }: GuestScreenProps) {
   const { access } = await requirePermission("guests.records.view");
@@ -76,6 +78,11 @@ async function GuestContent({
     !guest.annulment && hasPermission(access, "guests.records.update");
   const canAnnul =
     !guest.annulment && hasPermission(access, "guests.records.annul");
+  const tabSlot: GuestTabSlot = {
+    id: guest.id,
+    fullName: guest.fullName,
+    isAnnulled: guest.annulment !== null,
+  };
   const panels: GuestTabPanel[] = [
     {
       value: "internacion",
@@ -83,6 +90,13 @@ async function GuestContent({
       content: <GuestDetail guest={guest} interviewHref={interviewHref} />,
     },
   ];
+  if (hasPermission(access, "guests.daily_evolutions.view")) {
+    panels.push({
+      value: "evolucion-diaria",
+      label: "Evolución diaria",
+      content: renderDailyEvolutions(tabSlot),
+    });
+  }
   // RF-HUE-04: Evaluaciones aparece con el permiso de ver cualquiera de las dos.
   if (
     hasPermission(access, "guests.cam_evaluations.view") ||
@@ -91,11 +105,7 @@ async function GuestContent({
     panels.push({
       value: "evaluaciones",
       label: "Evaluaciones",
-      content: renderEvaluations({
-        id: guest.id,
-        fullName: guest.fullName,
-        isAnnulled: guest.annulment !== null,
-      }),
+      content: renderEvaluations(tabSlot),
     });
   }
   const initialTab = panels.some(({ value }) => value === requestedTab)

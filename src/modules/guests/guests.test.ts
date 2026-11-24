@@ -271,7 +271,7 @@ describe("huéspedes: base", () => {
     ]);
   });
 
-  it("RF-ROL-08, R-18: declara los permisos de huéspedes y de sus evaluaciones", () => {
+  it("RF-ROL-08, R-18: declara los permisos de huéspedes, sus evaluaciones y sus evoluciones", () => {
     const guestsGroup = PERMISSION_GROUPS.find(
       (group) => group.key === "guests",
     );
@@ -290,6 +290,8 @@ describe("huéspedes: base", () => {
       "guests.physical_evaluations.view",
       "guests.physical_evaluations.create",
       "guests.physical_evaluations.update",
+      "guests.daily_evolutions.view",
+      "guests.daily_evolutions.create",
     ]);
   });
 });

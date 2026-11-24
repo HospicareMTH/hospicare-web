@@ -6,12 +6,7 @@ import {
   loadCatalogField,
   validateCatalogSelection,
 } from "@/modules/catalogs";
-import {
-  GUEST_REJECTION_MESSAGES,
-  type GuestToEvaluate,
-  guestIdSchema,
-  lockGuestToEvaluate,
-} from "@/modules/guests";
+import { guestIdSchema, lockGuestForClinicalChange } from "@/modules/guests";
 import {
   type DatabaseTransaction,
   runInTransactionAs,
@@ -19,7 +14,6 @@ import {
 import {
   type ActionResult,
   type OperationResult,
-  type RejectedOperation,
   reject,
   SUCCESS,
 } from "@/platform/operation-result";
@@ -63,32 +57,16 @@ function toVersion(updatedAt: Date): string {
   return updatedAt.toISOString();
 }
 
-function findGuestRejection(
-  guest: GuestToEvaluate | null,
-): RejectedOperation | null {
-  if (!guest) {
-    return reject(GUEST_REJECTION_MESSAGES.notFound);
-  }
-  if (guest.isAnnulled) {
-    return reject(GUEST_REJECTION_MESSAGES.annulled);
-  }
-  return null;
-}
-
-async function lockGuestForChange(
-  transaction: DatabaseTransaction,
-  guestId: string,
-): Promise<RejectedOperation | null> {
-  return findGuestRejection(await lockGuestToEvaluate(transaction, guestId));
-}
-
 export function createCamEvaluation(
   actorUserId: string,
   guestId: string,
   details: CamEvaluationDetails,
 ): Promise<OperationResult> {
   return runInTransactionAs(actorUserId, async (transaction) => {
-    const guestRejection = await lockGuestForChange(transaction, guestId);
+    const guestRejection = await lockGuestForClinicalChange(
+      transaction,
+      guestId,
+    );
     if (guestRejection) {
       return guestRejection;
     }
@@ -107,7 +85,10 @@ export function updateCamEvaluation(
   details: CamEvaluationDetails,
 ): Promise<OperationResult> {
   return runInTransactionAs(actorUserId, async (transaction) => {
-    const guestRejection = await lockGuestForChange(transaction, guestId);
+    const guestRejection = await lockGuestForClinicalChange(
+      transaction,
+      guestId,
+    );
     if (guestRejection) {
       return guestRejection;
     }
@@ -297,7 +278,10 @@ export function createPhysicalEvaluation(
   details: PhysicalEvaluationDetails,
 ): Promise<ActionResult> {
   return runInTransactionAs(actorUserId, async (transaction) => {
-    const guestRejection = await lockGuestForChange(transaction, guestId);
+    const guestRejection = await lockGuestForClinicalChange(
+      transaction,
+      guestId,
+    );
     if (guestRejection) {
       return guestRejection;
     }
@@ -329,7 +313,10 @@ export function updatePhysicalEvaluation(
   details: PhysicalEvaluationDetails,
 ): Promise<ActionResult> {
   return runInTransactionAs(actorUserId, async (transaction) => {
-    const guestRejection = await lockGuestForChange(transaction, guestId);
+    const guestRejection = await lockGuestForClinicalChange(
+      transaction,
+      guestId,
+    );
     if (guestRejection) {
       return guestRejection;
     }

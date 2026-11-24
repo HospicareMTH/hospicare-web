@@ -5,7 +5,12 @@ import {
   getDatabase,
 } from "@/platform/database/client";
 
-import { LAST_CLINICAL_RECORD_NUMBER_KEY, systemSettings } from "./tables";
+import type { EditWindow } from "./schemas";
+import {
+  DAILY_EVOLUTION_EDIT_WINDOW_KEY,
+  LAST_CLINICAL_RECORD_NUMBER_KEY,
+  systemSettings,
+} from "./tables";
 
 export type SystemSettingRecord = {
   value: unknown;
@@ -64,4 +69,43 @@ export async function saveLastClinicalRecordNumberValue(
     .update(systemSettings)
     .set({ value, updatedByUserId: actorUserId, updatedAt: new Date() })
     .where(byLastClinicalRecordNumber);
+}
+
+const byDailyEvolutionEditWindow = eq(
+  systemSettings.key,
+  DAILY_EVOLUTION_EDIT_WINDOW_KEY,
+);
+
+export async function findDailyEvolutionEditWindowRecord(): Promise<SystemSettingRecord | null> {
+  const [record] = await getDatabase()
+    .select({
+      value: systemSettings.value,
+      updatedByUserId: systemSettings.updatedByUserId,
+      updatedAt: systemSettings.updatedAt,
+    })
+    .from(systemSettings)
+    .where(byDailyEvolutionEditWindow);
+  return record ?? null;
+}
+
+export async function lockDailyEvolutionEditWindowValue(
+  transaction: DatabaseTransaction,
+): Promise<unknown> {
+  const [record] = await transaction
+    .select({ value: systemSettings.value })
+    .from(systemSettings)
+    .where(byDailyEvolutionEditWindow)
+    .for("update");
+  return record?.value;
+}
+
+export async function saveDailyEvolutionEditWindowValue(
+  transaction: DatabaseTransaction,
+  value: EditWindow,
+  actorUserId: string,
+): Promise<void> {
+  await transaction
+    .update(systemSettings)
+    .set({ value, updatedByUserId: actorUserId, updatedAt: new Date() })
+    .where(byDailyEvolutionEditWindow);
 }

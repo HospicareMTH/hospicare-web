@@ -204,3 +204,17 @@ export async function updateUserRole(
     .set({ roleId, updatedAt: new Date() })
     .where(eq(userRoles.userId, userId));
 }
+
+export type SignerRecord = { email: string; roleName: string | null };
+
+export async function findSignerRecord(
+  userId: string,
+): Promise<SignerRecord | null> {
+  const [signer] = await getDatabase()
+    .select({ email: users.email, roleName: roles.name })
+    .from(users)
+    .leftJoin(userRoles, eq(userRoles.userId, users.id))
+    .leftJoin(roles, eq(roles.id, userRoles.roleId))
+    .where(eq(users.id, userId));
+  return signer ?? null;
+}

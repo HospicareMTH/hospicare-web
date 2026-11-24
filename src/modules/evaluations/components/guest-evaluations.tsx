@@ -1,6 +1,6 @@
 import { DetailList } from "@/components/shared/detail-list";
 import { getCurrentUser, hasPermission } from "@/modules/access";
-import type { GuestEvaluationsSlot } from "@/modules/guests";
+import type { GuestTabSlot } from "@/modules/guests";
 import { formatIsoDate, getBusinessDate } from "@/platform/dates";
 
 import {
@@ -57,11 +57,7 @@ function CamEvaluationDetail({
   );
 }
 
-async function CamEvaluationSection({
-  guest,
-}: {
-  guest: GuestEvaluationsSlot;
-}) {
+async function CamEvaluationSection({ guest }: { guest: GuestTabSlot }) {
   const { access } = await getCurrentUser();
   const evaluation = await findCamEvaluationOfGuest(guest.id);
   const today = getBusinessDate(new Date());
@@ -116,11 +112,7 @@ async function CamEvaluationSection({
   );
 }
 
-export async function GuestEvaluations({
-  guest,
-}: {
-  guest: GuestEvaluationsSlot;
-}) {
+export async function GuestEvaluations({ guest }: { guest: GuestTabSlot }) {
   const { access } = await getCurrentUser();
   return (
     <div className="flex flex-col gap-10">

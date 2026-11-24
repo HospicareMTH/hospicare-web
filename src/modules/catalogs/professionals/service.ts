@@ -25,6 +25,7 @@ import {
 } from "../selection";
 import {
   countActiveProfessionals,
+  findActiveProfessionalSpecialtyByEmail,
   findProfessionalsByIds,
   type HealthcareProfessionalRecord,
   hasOtherActiveProfessionalWithEmail,
@@ -243,4 +244,11 @@ export async function validateHealthcareProfessionalSelection(
     foundProfessionals,
     HEALTHCARE_PROFESSIONAL_REJECTION_MESSAGES.professionalMissing,
   );
+}
+
+// RF-EVO-03: la especialidad con la que firma un profesional activo, buscado por correo.
+export function findActiveProfessionalSpecialty(
+  email: string,
+): Promise<string | null> {
+  return findActiveProfessionalSpecialtyByEmail(email);
 }

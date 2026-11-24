@@ -5,7 +5,7 @@ import Link from "next/link";
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { Button } from "@/components/ui/button";
 import { getCurrentUser, hasPermission } from "@/modules/access";
-import type { GuestEvaluationsSlot } from "@/modules/guests";
+import type { GuestTabSlot } from "@/modules/guests";
 
 import { buildPhysicalEvaluationPath } from "../schemas";
 import { findPhysicalEvaluationOfGuest } from "../service";
@@ -17,7 +17,7 @@ const SECTION_TITLE_ID = "physical-evaluation-title";
 export async function PhysicalEvaluationSection({
   guest,
 }: {
-  guest: GuestEvaluationsSlot;
+  guest: GuestTabSlot;
 }) {
   const { access } = await getCurrentUser();
   const evaluation = await findPhysicalEvaluationOfGuest(guest.id);

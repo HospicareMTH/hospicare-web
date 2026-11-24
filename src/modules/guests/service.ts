@@ -27,6 +27,7 @@ import {
   type ActionResult,
   type FailedActionResult,
   type OperationResult,
+  type RejectedOperation,
   reject,
   SUCCESS,
 } from "@/platform/operation-result";
@@ -321,17 +322,19 @@ export async function findGuestSummary(
   };
 }
 
-export type GuestToEvaluate = { id: string; isAnnulled: boolean };
-
-export async function lockGuestToEvaluate(
+// Bloquea al huésped mientras se guarda un registro clínico suyo; lo rechaza si no existe o está anulado.
+export async function lockGuestForClinicalChange(
   transaction: DatabaseTransaction,
   guestId: string,
-): Promise<GuestToEvaluate | null> {
+): Promise<RejectedOperation | null> {
   const saved = await lockGuestRecord(transaction, guestId);
   if (!saved) {
-    return null;
+    return reject(GUEST_REJECTION_MESSAGES.notFound);
   }
-  return { id: saved.id, isAnnulled: saved.annulledAt !== null };
+  if (saved.annulledAt) {
+    return reject(GUEST_REJECTION_MESSAGES.annulled);
+  }
+  return null;
 }
 
 export async function findPendingInterviewIdsWithDni(

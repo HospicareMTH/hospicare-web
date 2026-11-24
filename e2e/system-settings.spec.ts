@@ -48,7 +48,9 @@ test("RF-CFG-04, RN-20: Administración sube el último número, ve el próximo 
     ),
   ).toBeVisible();
   await expect(
-    page.getByText(`Última modificación: ${FICTITIOUS_SUPER_USER.name}`),
+    page
+      .getByRole("region", { name: "Número de historia clínica" })
+      .getByText(`Última modificación: ${FICTITIOUS_SUPER_USER.name}`),
   ).toBeVisible();
 
   await field.fill(String(currentNumber));

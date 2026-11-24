@@ -36,7 +36,11 @@ export const guestIdSchema = z.uuid();
 
 export const GUEST_TAB_PARAMETER = "pestana";
 
-export const GUEST_TABS = ["internacion", "evaluaciones"] as const;
+export const GUEST_TABS = [
+  "internacion",
+  "evolucion-diaria",
+  "evaluaciones",
+] as const;
 
 export type GuestTab = (typeof GUEST_TABS)[number];
 

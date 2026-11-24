@@ -138,6 +138,8 @@ export const PERMISSION_GROUPS = [
         key: "guests.physical_evaluations.update",
         label: "Modificar evaluaciones físicas de ingreso",
       },
+      { key: "guests.daily_evolutions.view", label: "Ver evoluciones" },
+      { key: "guests.daily_evolutions.create", label: "Crear evoluciones" },
     ],
   },
   {

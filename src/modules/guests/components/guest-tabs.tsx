@@ -47,12 +47,12 @@ export function GuestTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={changeTab} className="gap-6">
-      <TabsList variant="line" className="h-auto">
+      <TabsList variant="line" className="h-auto max-w-full gap-0 sm:gap-1">
         {panels.map(({ value, label }) => (
           <TabsTrigger
             key={value}
             value={value}
-            className="h-10 px-3 text-base"
+            className="h-10 px-2 text-sm sm:px-3 sm:text-base"
           >
             {label}
           </TabsTrigger>
