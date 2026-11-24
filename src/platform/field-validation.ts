@@ -72,3 +72,14 @@ export function optionalTextSchema(fieldLabel: string, maxLength: number) {
     })
     .transform((text) => text || null);
 }
+
+export const ANNULMENT_REASON_LIMITS: TextLengthLimits = {
+  minLength: 10,
+  maxLength: 500,
+};
+
+export const annulmentSchema = z.object({
+  reason: requiredTextSchema("El motivo", ANNULMENT_REASON_LIMITS),
+});
+
+export type AnnulmentInput = z.input<typeof annulmentSchema>;

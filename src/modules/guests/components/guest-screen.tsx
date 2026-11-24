@@ -16,6 +16,7 @@ import { formatDateTime } from "@/platform/dates";
 
 import { buildEditGuestPath, GUESTS_PATH } from "../schemas";
 import { findGuest, type GuestView } from "../service";
+import { AnnulGuestButton } from "./annul-guest-button";
 import { GuestDetail } from "./guest-detail";
 
 const GUEST_TITLE = "Huésped";
@@ -54,6 +55,8 @@ async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
       : null;
   const canEdit =
     !guest.annulment && hasPermission(access, "guests.records.update");
+  const canAnnul =
+    !guest.annulment && hasPermission(access, "guests.records.annul");
 
   return (
     <SectionSheet destination={GUESTS_DESTINATION} title={guest.fullName}>
@@ -67,6 +70,16 @@ async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
           >
             <Link href={GUESTS_PATH}>Volver a Huéspedes</Link>
           </Button>
+          {canAnnul && (
+            <AnnulGuestButton
+              guest={{
+                id: guest.id,
+                fullName: guest.fullName,
+                clinicalRecordNumber: guest.clinicalRecordNumber,
+                origin: guest.origin,
+              }}
+            />
+          )}
           {canEdit && (
             <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
               <Link href={buildEditGuestPath(guest.id)}>

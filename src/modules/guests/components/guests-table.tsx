@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Cancel01Icon,
   PencilEdit02Icon,
   UserAdd01Icon,
   ViewIcon,
@@ -8,6 +9,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import type { RowAction } from "@/components/shared/data-table/action-table-row";
 import {
@@ -38,6 +40,7 @@ import {
   ORIGIN_FILTER_PARAMETER,
   toOriginFilterValue,
 } from "../schemas";
+import { AnnulGuestDialog } from "./annul-guest-dialog";
 import type { GuestListItem } from "../service";
 
 const SECONDARY_LINE_CLASS_NAME = "text-sm text-muted-foreground";
@@ -127,6 +130,7 @@ export function GuestsTable({
   saveHiddenColumnsAction,
   canCreateManually,
   canUpdate,
+  canAnnul,
 }: {
   page: ListPage<GuestListItem>;
   query: GuestListQuery;
@@ -134,8 +138,10 @@ export function GuestsTable({
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
   canCreateManually: boolean;
   canUpdate: boolean;
+  canAnnul: boolean;
 }) {
   const router = useRouter();
+  const [guestToAnnul, setGuestToAnnul] = useState<GuestListItem | null>(null);
 
   function openGuest(guest: GuestListItem) {
     router.push(buildGuestPath(guest.id));
@@ -158,53 +164,69 @@ export function GuestsTable({
         open: () => router.push(buildEditGuestPath(guest.id)),
       });
     }
+    if (canAnnul) {
+      actions.push({
+        label: "Anular",
+        icon: Cancel01Icon,
+        isDestructive: true,
+        open: () => setGuestToAnnul(guest),
+      });
+    }
     return actions;
   }
 
   return (
-    <DataTable
-      columns={COLUMNS}
-      page={page}
-      query={query}
-      defaultSort={DEFAULT_GUEST_SORT}
-      searchLabel={SEARCH_LABEL}
-      filters={
-        <FilterSelect
-          label="Filtrar por origen"
-          allLabel="Todos los orígenes"
-          parameter={ORIGIN_FILTER_PARAMETER}
-          value={toOriginFilterValue(query.origin)}
-          options={ORIGIN_FILTER_OPTIONS}
+    <>
+      <DataTable
+        columns={COLUMNS}
+        page={page}
+        query={query}
+        defaultSort={DEFAULT_GUEST_SORT}
+        searchLabel={SEARCH_LABEL}
+        filters={
+          <FilterSelect
+            label="Filtrar por origen"
+            allLabel="Todos los orígenes"
+            parameter={ORIGIN_FILTER_PARAMETER}
+            value={toOriginFilterValue(query.origin)}
+            options={ORIGIN_FILTER_OPTIONS}
+          />
+        }
+        action={
+          canCreateManually && (
+            <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
+              <Link href={NEW_GUEST_PATH}>
+                <HugeiconsIcon
+                  icon={UserAdd01Icon}
+                  data-icon="inline-start"
+                  aria-hidden="true"
+                />
+                Nuevo huésped
+              </Link>
+            </Button>
+          )
+        }
+        emptyMessage={describeEmptyList(query)}
+        totalLabel={describeGuestCount(page.totalCount)}
+        paginationLabel="Páginas de huéspedes"
+        getRowActions={getGuestActions}
+        onOpenRow={openGuest}
+        getActionsLabel={(guest) => `Acciones de ${guest.fullName}`}
+        hiddenColumns={hiddenColumns}
+        onHiddenColumnsChange={(columns) =>
+          saveHiddenColumnsWith(
+            saveHiddenColumnsAction,
+            GUESTS_TABLE_KEY,
+            columns,
+          )
+        }
+      />
+      {guestToAnnul && (
+        <AnnulGuestDialog
+          guest={guestToAnnul}
+          onClose={() => setGuestToAnnul(null)}
         />
-      }
-      action={
-        canCreateManually && (
-          <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
-            <Link href={NEW_GUEST_PATH}>
-              <HugeiconsIcon
-                icon={UserAdd01Icon}
-                data-icon="inline-start"
-                aria-hidden="true"
-              />
-              Nuevo huésped
-            </Link>
-          </Button>
-        )
-      }
-      emptyMessage={describeEmptyList(query)}
-      totalLabel={describeGuestCount(page.totalCount)}
-      paginationLabel="Páginas de huéspedes"
-      getRowActions={getGuestActions}
-      onOpenRow={openGuest}
-      getActionsLabel={(guest) => `Acciones de ${guest.fullName}`}
-      hiddenColumns={hiddenColumns}
-      onHiddenColumnsChange={(columns) =>
-        saveHiddenColumnsWith(
-          saveHiddenColumnsAction,
-          GUESTS_TABLE_KEY,
-          columns,
-        )
-      }
-    />
+      )}
+    </>
   );
 }

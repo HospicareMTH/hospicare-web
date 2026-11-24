@@ -90,6 +90,22 @@ export async function lockGuestRecord(
   return { ...guest, ...(await listSelectedOptionIds(transaction, guestId)) };
 }
 
+export async function annulGuestRecord(
+  transaction: DatabaseTransaction,
+  guestId: string,
+  reason: string,
+  actorUserId: string,
+): Promise<void> {
+  await transaction
+    .update(guests)
+    .set({
+      annulledAt: sql`now()`,
+      annulledByUserId: actorUserId,
+      annulmentReason: reason,
+    })
+    .where(eq(guests.id, guestId));
+}
+
 function findAddedAndRemoved(
   savedIds: readonly string[],
   nextIds: readonly string[],
@@ -350,6 +366,35 @@ export async function findActiveGuestOfInterview(
       ),
     );
   return guest ?? null;
+}
+
+export type AnnulledInterviewGuestRecord = InterviewGuestRecord & {
+  annulledAt: Date;
+};
+
+export async function findLatestAnnulledGuestOfInterview(
+  admissionInterviewId: string,
+): Promise<AnnulledInterviewGuestRecord | null> {
+  const [guest] = await getDatabase()
+    .select({
+      id: guests.id,
+      clinicalRecordNumber: guests.clinicalRecordNumber,
+      createdAt: guests.createdAt,
+      annulledAt: guests.annulledAt,
+    })
+    .from(guests)
+    .where(
+      and(
+        eq(guests.admissionInterviewId, admissionInterviewId),
+        isNotNull(guests.annulledAt),
+      ),
+    )
+    .orderBy(desc(guests.annulledAt))
+    .limit(1);
+  if (!guest?.annulledAt) {
+    return null;
+  }
+  return { ...guest, annulledAt: guest.annulledAt };
 }
 
 export async function listInterviewIdsWithActiveGuest(

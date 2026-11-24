@@ -73,14 +73,6 @@ export const INTERVIEWEE_NAME_LIMITS = { minLength: 2, maxLength: 120 };
 export const SHORT_TEXT_MAX_LENGTH = 40;
 export const RELIGION_DETAIL_MAX_LENGTH = 120;
 export const CLINICAL_TEXT_MAX_LENGTH = 2000;
-export const ANNULMENT_REASON_LIMITS = { minLength: 10, maxLength: 500 };
-
-export const annulmentSchema = z.object({
-  reason: requiredTextSchema("El motivo", ANNULMENT_REASON_LIMITS),
-});
-
-export type AnnulmentInput = z.input<typeof annulmentSchema>;
-
 const INVALID_OPTION_MESSAGE =
   "La opción elegida no es válida. Actualizá la pantalla.";
 

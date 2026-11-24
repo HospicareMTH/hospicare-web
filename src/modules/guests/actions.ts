@@ -12,7 +12,11 @@ import {
   buildAdmissionInterviewPath,
   buildAdmissionInterviewSearchPath,
 } from "@/modules/admissions";
-import { dniSchema } from "@/platform/field-validation";
+import {
+  annulmentSchema,
+  type AnnulmentInput,
+  dniSchema,
+} from "@/platform/field-validation";
 import {
   type ActionResult,
   refreshOnSuccess,
@@ -28,6 +32,7 @@ import {
 import {
   type AcceptInterviewResult,
   acceptAdmissionInterview,
+  annulGuest,
   createGuestManually,
   type CreateGuestResult,
   INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES,
@@ -83,6 +88,24 @@ export async function updateGuestAction(
     parsedDetails.data,
   );
   return result.status === "invalid" ? result : refreshOnSuccess(result);
+}
+
+export async function annulGuestAction(
+  guestId: string,
+  input: AnnulmentInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("guests.records.annul");
+  const parsedId = guestIdSchema.safeParse(guestId);
+  if (!parsedId.success) {
+    return { status: "rejected", message: GUEST_REJECTION_MESSAGES.notFound };
+  }
+  const parsedAnnulment = annulmentSchema.safeParse(input);
+  if (!parsedAnnulment.success) {
+    return toInvalidResult(parsedAnnulment.error);
+  }
+  return refreshOnSuccess(
+    await annulGuest(access.userId, parsedId.data, parsedAnnulment.data.reason),
+  );
 }
 
 export async function acceptAdmissionInterviewAction(

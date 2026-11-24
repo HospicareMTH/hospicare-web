@@ -26,14 +26,17 @@ import {
 import {
   type ActionResult,
   type FailedActionResult,
+  type OperationResult,
   reject,
   SUCCESS,
 } from "@/platform/operation-result";
 
 import {
+  annulGuestRecord,
   countGuestRecords,
   findActiveGuestOfInterview,
   findGuestRecord,
+  findLatestAnnulledGuestOfInterview,
   type GuestRecord,
   type GuestSearch,
   hasActiveGuestWithDni,
@@ -189,6 +192,7 @@ export const GUEST_REJECTION_MESSAGES = {
   notFound:
     "No encontramos este huésped. Volvé a Huéspedes y buscalo de nuevo.",
   annulled: "Este huésped está anulado y ya no se puede modificar.",
+  alreadyAnnulled: "Este huésped ya estaba anulado.",
   changedMeanwhile:
     "Otra persona cambió este huésped mientras lo editabas, así que tus cambios no se guardaron. Actualizá la pantalla para ver la versión actual.",
 } as const;
@@ -269,6 +273,24 @@ export function updateGuest(
       return { status: "invalid", fieldErrors };
     }
     await updateGuestRecord(transaction, saved, details, actorUserId);
+    return SUCCESS;
+  });
+}
+
+export function annulGuest(
+  actorUserId: string,
+  guestId: string,
+  reason: string,
+): Promise<OperationResult> {
+  return runInTransactionAs(actorUserId, async (transaction) => {
+    const saved = await lockGuestRecord(transaction, guestId);
+    if (!saved) {
+      return reject(GUEST_REJECTION_MESSAGES.notFound);
+    }
+    if (saved.annulledAt) {
+      return reject(GUEST_REJECTION_MESSAGES.alreadyAnnulled);
+    }
+    await annulGuestRecord(transaction, guestId, reason, actorUserId);
     return SUCCESS;
   });
 }
@@ -485,6 +507,24 @@ export async function findGuestOfInterview(
         guestId: guest.id,
         clinicalRecordNumber: guest.clinicalRecordNumber,
         acceptedAt: guest.createdAt,
+      }
+    : null;
+}
+
+export type AnnulledInterviewGuest = InterviewGuest & {
+  annulledAt: Date;
+};
+
+export async function findAnnulledGuestOfInterview(
+  interviewId: string,
+): Promise<AnnulledInterviewGuest | null> {
+  const guest = await findLatestAnnulledGuestOfInterview(interviewId);
+  return guest
+    ? {
+        guestId: guest.id,
+        clinicalRecordNumber: guest.clinicalRecordNumber,
+        acceptedAt: guest.createdAt,
+        annulledAt: guest.annulledAt,
       }
     : null;
 }
