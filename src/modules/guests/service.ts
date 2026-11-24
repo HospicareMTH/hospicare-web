@@ -23,21 +23,30 @@ import {
   normalizeForSearch,
   resolvePageWindow,
 } from "@/platform/list-query";
-import { type FailedActionResult, reject } from "@/platform/operation-result";
+import {
+  type ActionResult,
+  type FailedActionResult,
+  reject,
+  SUCCESS,
+} from "@/platform/operation-result";
 
 import {
   countGuestRecords,
   findActiveGuestOfInterview,
   findGuestRecord,
+  type GuestRecord,
   type GuestSearch,
   hasActiveGuestWithDni,
   insertGuest,
   listGuestRecords,
   listInterviewIdsWithActiveGuest,
   listUsedHealthInsuranceOptionIds,
+  lockGuestRecord,
+  updateGuestRecord,
 } from "./repository";
 import {
   type GuestDetails,
+  type GuestDetailsInput,
   type GuestField,
   guestIdSchema,
   type GuestListQuery,
@@ -49,14 +58,40 @@ export type GuestCatalogFields = Record<
   CatalogFieldData
 >;
 
+type SavedSelections = Pick<
+  GuestDetails,
+  | "healthInsuranceOptionId"
+  | "hospitalizationReasonOptionIds"
+  | "uncontrolledSymptomOptionIds"
+>;
+
+const NO_SAVED_SELECTIONS: SavedSelections = {
+  healthInsuranceOptionId: null,
+  hospitalizationReasonOptionIds: [],
+  uncontrolledSymptomOptionIds: [],
+};
+
 export async function loadGuestCatalogFields(
   access: UserAccess,
+  saved: SavedSelections = NO_SAVED_SELECTIONS,
 ): Promise<GuestCatalogFields> {
   const [healthInsurance, hospitalizationReason, uncontrolledSymptom] =
     await Promise.all([
-      loadCatalogField(access, "health_insurance", []),
-      loadCatalogField(access, "hospitalization_reason", []),
-      loadCatalogField(access, "uncontrolled_symptom", []),
+      loadCatalogField(
+        access,
+        "health_insurance",
+        saved.healthInsuranceOptionId ? [saved.healthInsuranceOptionId] : [],
+      ),
+      loadCatalogField(
+        access,
+        "hospitalization_reason",
+        saved.hospitalizationReasonOptionIds,
+      ),
+      loadCatalogField(
+        access,
+        "uncontrolled_symptom",
+        saved.uncontrolledSymptomOptionIds,
+      ),
     ]);
   return { healthInsurance, hospitalizationReason, uncontrolledSymptom };
 }
@@ -68,7 +103,7 @@ type CatalogSelectionCheck = {
 };
 
 function listCatalogSelectionChecks(
-  details: GuestDetails,
+  details: SavedSelections,
 ): CatalogSelectionCheck[] {
   return [
     {
@@ -94,15 +129,17 @@ function listCatalogSelectionChecks(
 async function findSelectionErrors(
   transaction: DatabaseTransaction,
   details: GuestDetails,
+  saved: SavedSelections,
 ): Promise<Partial<Record<GuestField, string[]>>> {
   const fieldErrors: Partial<Record<GuestField, string[]>> = {};
+  const savedChecks = listCatalogSelectionChecks(saved);
   // Una transacción usa una sola conexión: las consultas van una detrás de otra.
-  for (const check of listCatalogSelectionChecks(details)) {
+  for (const [index, check] of listCatalogSelectionChecks(details).entries()) {
     const result = await validateCatalogSelection(
       transaction,
       check.catalog,
       check.selectedIds,
-      [],
+      savedChecks[index]?.selectedIds ?? [],
     );
     if (result.status === "rejected") {
       fieldErrors[check.field] = [result.message];
@@ -120,7 +157,11 @@ export function createGuestManually(
   details: GuestDetails,
 ): Promise<CreateGuestResult> {
   return runInTransactionAs(actorUserId, async (transaction) => {
-    const fieldErrors = await findSelectionErrors(transaction, details);
+    const fieldErrors = await findSelectionErrors(
+      transaction,
+      details,
+      NO_SAVED_SELECTIONS,
+    );
     if (Object.keys(fieldErrors).length > 0) {
       return { status: "invalid", fieldErrors };
     }
@@ -137,8 +178,99 @@ export function createGuestManually(
   });
 }
 
-export function isDniInActiveGuest(dni: string): Promise<boolean> {
-  return hasActiveGuestWithDni(dni);
+export function isDniInActiveGuest(
+  dni: string,
+  excludedGuestId: string | null = null,
+): Promise<boolean> {
+  return hasActiveGuestWithDni(dni, excludedGuestId);
+}
+
+export const GUEST_REJECTION_MESSAGES = {
+  notFound:
+    "No encontramos este huésped. Volvé a Huéspedes y buscalo de nuevo.",
+  annulled: "Este huésped está anulado y ya no se puede modificar.",
+  changedMeanwhile:
+    "Otra persona cambió este huésped mientras lo editabas, así que tus cambios no se guardaron. Actualizá la pantalla para ver la versión actual.",
+} as const;
+
+function toVersion(updatedAt: Date): string {
+  return updatedAt.toISOString();
+}
+
+function toDetailsInput(record: GuestRecord): GuestDetailsInput {
+  return {
+    hospitalizationDate: record.hospitalizationDate,
+    firstName: record.firstName,
+    lastName: record.lastName,
+    birthDate: record.birthDate,
+    dni: record.dni,
+    address: record.address,
+    healthInsuranceOptionId: record.healthInsuranceOptionId ?? "",
+    healthInsuranceMemberNumber: record.healthInsuranceMemberNumber ?? "",
+    hospitalizationReasonOptionIds: record.hospitalizationReasonOptionIds,
+    otherHospitalizationReason: record.otherHospitalizationReason ?? "",
+    uncontrolledSymptomOptionIds: record.uncontrolledSymptomOptionIds,
+  };
+}
+
+export type GuestToEdit = {
+  id: string;
+  fullName: string;
+  version: string;
+  isAnnulled: boolean;
+  details: GuestDetailsInput;
+  savedSelections: SavedSelections;
+};
+
+export async function findGuestToEdit(
+  candidateId: string,
+): Promise<GuestToEdit | null> {
+  const parsedId = guestIdSchema.safeParse(candidateId);
+  if (!parsedId.success) {
+    return null;
+  }
+  const record = await findGuestRecord(parsedId.data);
+  if (!record) {
+    return null;
+  }
+  return {
+    id: record.id,
+    fullName: `${record.firstName} ${record.lastName}`,
+    version: toVersion(record.updatedAt),
+    isAnnulled: record.annulledAt !== null,
+    details: toDetailsInput(record),
+    savedSelections: {
+      healthInsuranceOptionId: record.healthInsuranceOptionId,
+      hospitalizationReasonOptionIds: record.hospitalizationReasonOptionIds,
+      uncontrolledSymptomOptionIds: record.uncontrolledSymptomOptionIds,
+    },
+  };
+}
+
+export function updateGuest(
+  actorUserId: string,
+  guestId: string,
+  expectedVersion: string,
+  details: GuestDetails,
+): Promise<ActionResult> {
+  return runInTransactionAs(actorUserId, async (transaction) => {
+    const saved = await lockGuestRecord(transaction, guestId);
+    if (!saved) {
+      return reject(GUEST_REJECTION_MESSAGES.notFound);
+    }
+    if (saved.annulledAt) {
+      return reject(GUEST_REJECTION_MESSAGES.annulled);
+    }
+    if (toVersion(saved.updatedAt) !== expectedVersion) {
+      return reject(GUEST_REJECTION_MESSAGES.changedMeanwhile);
+    }
+    const fieldErrors = await findSelectionErrors(transaction, details, saved);
+    if (Object.keys(fieldErrors).length > 0) {
+      return { status: "invalid", fieldErrors };
+    }
+    await updateGuestRecord(transaction, saved, details, actorUserId);
+    return SUCCESS;
+  });
 }
 
 export async function findPendingInterviewIdsWithDni(

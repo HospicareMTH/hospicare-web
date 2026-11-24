@@ -7,6 +7,7 @@ import {
   inArray,
   isNotNull,
   isNull,
+  ne,
   or,
   type SQL,
   sql,
@@ -34,6 +35,32 @@ export type GuestRecord = typeof guests.$inferSelect & {
   uncontrolledSymptomOptionIds: string[];
 };
 
+type GuestDatabase = DatabaseTransaction | ReturnType<typeof getDatabase>;
+
+async function listSelectedOptionIds(
+  database: GuestDatabase,
+  guestId: string,
+): Promise<
+  Pick<
+    GuestRecord,
+    "hospitalizationReasonOptionIds" | "uncontrolledSymptomOptionIds"
+  >
+> {
+  // Van una detrás de otra: dentro de una transacción hay una sola conexión.
+  const reasons = await database
+    .select({ id: guestHospitalizationReasons.hospitalizationReasonOptionId })
+    .from(guestHospitalizationReasons)
+    .where(eq(guestHospitalizationReasons.guestId, guestId));
+  const symptoms = await database
+    .select({ id: guestUncontrolledSymptoms.uncontrolledSymptomOptionId })
+    .from(guestUncontrolledSymptoms)
+    .where(eq(guestUncontrolledSymptoms.guestId, guestId));
+  return {
+    hospitalizationReasonOptionIds: reasons.map(({ id }) => id),
+    uncontrolledSymptomOptionIds: symptoms.map(({ id }) => id),
+  };
+}
+
 export async function findGuestRecord(
   guestId: string,
 ): Promise<GuestRecord | null> {
@@ -45,21 +72,100 @@ export async function findGuestRecord(
   if (!guest) {
     return null;
   }
-  const [reasons, symptoms] = await Promise.all([
-    database
-      .select({ id: guestHospitalizationReasons.hospitalizationReasonOptionId })
-      .from(guestHospitalizationReasons)
-      .where(eq(guestHospitalizationReasons.guestId, guestId)),
-    database
-      .select({ id: guestUncontrolledSymptoms.uncontrolledSymptomOptionId })
-      .from(guestUncontrolledSymptoms)
-      .where(eq(guestUncontrolledSymptoms.guestId, guestId)),
-  ]);
+  return { ...guest, ...(await listSelectedOptionIds(database, guestId)) };
+}
+
+export async function lockGuestRecord(
+  transaction: DatabaseTransaction,
+  guestId: string,
+): Promise<GuestRecord | null> {
+  const [guest] = await transaction
+    .select()
+    .from(guests)
+    .where(eq(guests.id, guestId))
+    .for("update");
+  if (!guest) {
+    return null;
+  }
+  return { ...guest, ...(await listSelectedOptionIds(transaction, guestId)) };
+}
+
+function findAddedAndRemoved(
+  savedIds: readonly string[],
+  nextIds: readonly string[],
+): { addedIds: string[]; removedIds: string[] } {
   return {
-    ...guest,
-    hospitalizationReasonOptionIds: reasons.map(({ id }) => id),
-    uncontrolledSymptomOptionIds: symptoms.map(({ id }) => id),
+    addedIds: nextIds.filter((id) => !savedIds.includes(id)),
+    removedIds: savedIds.filter((id) => !nextIds.includes(id)),
   };
+}
+
+export async function updateGuestRecord(
+  transaction: DatabaseTransaction,
+  saved: GuestRecord,
+  {
+    hospitalizationReasonOptionIds,
+    uncontrolledSymptomOptionIds,
+    ...details
+  }: GuestDetails,
+  actorUserId: string,
+): Promise<void> {
+  await transaction
+    .update(guests)
+    .set({ ...details, updatedByUserId: actorUserId, updatedAt: sql`now()` })
+    .where(eq(guests.id, saved.id));
+
+  const reasons = findAddedAndRemoved(
+    saved.hospitalizationReasonOptionIds,
+    hospitalizationReasonOptionIds,
+  );
+  if (reasons.removedIds.length > 0) {
+    await transaction
+      .delete(guestHospitalizationReasons)
+      .where(
+        and(
+          eq(guestHospitalizationReasons.guestId, saved.id),
+          inArray(
+            guestHospitalizationReasons.hospitalizationReasonOptionId,
+            reasons.removedIds,
+          ),
+        ),
+      );
+  }
+  if (reasons.addedIds.length > 0) {
+    await transaction.insert(guestHospitalizationReasons).values(
+      reasons.addedIds.map((hospitalizationReasonOptionId) => ({
+        guestId: saved.id,
+        hospitalizationReasonOptionId,
+      })),
+    );
+  }
+
+  const symptoms = findAddedAndRemoved(
+    saved.uncontrolledSymptomOptionIds,
+    uncontrolledSymptomOptionIds,
+  );
+  if (symptoms.removedIds.length > 0) {
+    await transaction
+      .delete(guestUncontrolledSymptoms)
+      .where(
+        and(
+          eq(guestUncontrolledSymptoms.guestId, saved.id),
+          inArray(
+            guestUncontrolledSymptoms.uncontrolledSymptomOptionId,
+            symptoms.removedIds,
+          ),
+        ),
+      );
+  }
+  if (symptoms.addedIds.length > 0) {
+    await transaction.insert(guestUncontrolledSymptoms).values(
+      symptoms.addedIds.map((uncontrolledSymptomOptionId) => ({
+        guestId: saved.id,
+        uncontrolledSymptomOptionId,
+      })),
+    );
+  }
 }
 
 export type GuestListRecord = {
@@ -264,11 +370,20 @@ export async function listInterviewIdsWithActiveGuest(
   return rows.flatMap(({ id }) => (id ? [id] : []));
 }
 
-export async function hasActiveGuestWithDni(dni: string): Promise<boolean> {
+export async function hasActiveGuestWithDni(
+  dni: string,
+  excludedGuestId: string | null,
+): Promise<boolean> {
   const [guest] = await getDatabase()
     .select({ id: guests.id })
     .from(guests)
-    .where(and(eq(guests.dni, dni), isNull(guests.annulledAt)))
+    .where(
+      and(
+        eq(guests.dni, dni),
+        isNull(guests.annulledAt),
+        excludedGuestId ? ne(guests.id, excludedGuestId) : undefined,
+      ),
+    )
     .limit(1);
   return guest !== undefined;
 }

@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
 import { CatalogOptionField } from "@/modules/catalogs/components";
+import type { ActionResult } from "@/platform/operation-result";
 import {
   ADDRESS_LIMITS,
   HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
@@ -24,6 +25,7 @@ import {
   checkGuestDniAction,
   createGuestManuallyAction,
   type GuestDniCheck,
+  updateGuestAction,
 } from "../actions";
 import {
   type GuestDetailsInput,
@@ -45,6 +47,8 @@ const NO_DNI_MATCHES: GuestDniCheck = {
   hasPendingInterview: false,
   pendingInterviewHref: null,
 };
+
+type FieldErrorsResult = Exclude<ActionResult, { status: "success" }>;
 
 const INVALID_FORM_MESSAGE =
   "Hay datos para corregir. Revisá los campos marcados.";
@@ -90,19 +94,48 @@ function DniNotice({ children }: { children: ReactNode }) {
   );
 }
 
+type FormMode =
+  { kind: "create" } | { kind: "edit"; guestId: string; version: string };
+
+const NEW_GUEST_KEY = "new";
+
 type GuestFormProps = {
+  mode: FormMode;
   initialGuest: GuestDetailsInput;
   catalogFields: GuestCatalogFields;
   today: string;
 };
 
-// Next conserva el estado de la pantalla al salir (Activity): entrar con un clic arranca de cero.
+async function saveGuest(
+  mode: FormMode,
+  guest: GuestDetailsInput,
+): Promise<{ status: "success"; guestId: string } | FieldErrorsResult | null> {
+  if (mode.kind === "create") {
+    return runAction(
+      () => createGuestManuallyAction(guest),
+      (created) =>
+        `Creaste el huésped con historia clínica N.° ${created.clinicalRecordNumber}.`,
+    );
+  }
+  const result = await runAction(
+    () => updateGuestAction(mode.guestId, mode.version, guest),
+    "Guardaste los cambios.",
+  );
+  return result?.status === "success"
+    ? { status: "success", guestId: mode.guestId }
+    : result;
+}
+
+// Next conserva el estado de la pantalla al salir (Activity): entrar con un clic o editar otra versión arranca de cero.
 export function GuestForm(props: GuestFormProps) {
   const { bfcacheId } = useRouter();
-  return <GuestFormContent key={bfcacheId} {...props} />;
+  const contentKey =
+    props.mode.kind === "edit" ? props.mode.version : NEW_GUEST_KEY;
+  return <GuestFormContent key={`${bfcacheId}-${contentKey}`} {...props} />;
 }
 
 function GuestFormContent({
+  mode,
   initialGuest,
   catalogFields,
   today,
@@ -130,7 +163,12 @@ function GuestFormContent({
     const dni = guest.dni;
     startDniCheck(async () => {
       try {
-        setDniMatches(await checkGuestDniAction(dni));
+        setDniMatches(
+          await checkGuestDniAction(
+            dni,
+            mode.kind === "edit" ? mode.guestId : null,
+          ),
+        );
       } catch (error) {
         console.error("No se pudo revisar si el DNI ya estaba cargado.", error);
         setDniMatches(NO_DNI_MATCHES);
@@ -141,11 +179,7 @@ function GuestFormContent({
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     startSaving(async () => {
-      const result = await runAction(
-        () => createGuestManuallyAction(guest),
-        (created) =>
-          `Creaste el huésped con historia clínica N.° ${created.clinicalRecordNumber}.`,
-      );
+      const result = await saveGuest(mode, guest);
       if (result?.status === "invalid") {
         setFieldErrors(result.fieldErrors);
         toast.error(INVALID_FORM_MESSAGE);
@@ -202,7 +236,7 @@ function GuestFormContent({
               misma persona antes de guardar.
             </DniNotice>
           )}
-          {dniMatches.hasPendingInterview && (
+          {mode.kind === "create" && dniMatches.hasPendingInterview && (
             <DniNotice>
               Hay una entrevista de admisión con este DNI que todavía no se
               aceptó. Si es la misma persona, aceptá esa entrevista en lugar de
@@ -294,14 +328,24 @@ function GuestFormContent({
 
       <div className="flex flex-col-reverse gap-2 border-t pt-4 sm:flex-row sm:justify-end">
         <Button asChild variant="outline" className={DIALOG_BUTTON_CLASS_NAME}>
-          <Link href={GUESTS_PATH}>Cancelar</Link>
+          <Link
+            href={
+              mode.kind === "edit" ? buildGuestPath(mode.guestId) : GUESTS_PATH
+            }
+          >
+            Cancelar
+          </Link>
         </Button>
         <Button
           type="submit"
           disabled={isSaving}
           className={DIALOG_BUTTON_CLASS_NAME}
         >
-          {isSaving ? "Guardando…" : "Guardar huésped"}
+          {isSaving
+            ? "Guardando…"
+            : mode.kind === "edit"
+              ? "Guardar cambios"
+              : "Guardar huésped"}
         </Button>
       </div>
     </form>

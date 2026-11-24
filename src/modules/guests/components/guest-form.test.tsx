@@ -3,7 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CatalogFieldData } from "@/modules/catalogs";
 
-import { checkGuestDniAction, createGuestManuallyAction } from "../actions";
+import {
+  checkGuestDniAction,
+  createGuestManuallyAction,
+  updateGuestAction,
+} from "../actions";
 import { buildEmptyGuest } from "../schemas";
 import { GuestForm } from "./guest-form";
 
@@ -16,6 +20,7 @@ vi.mock("next/navigation", async (importOriginal) => ({
 vi.mock("../actions", () => ({
   createGuestManuallyAction: vi.fn(),
   checkGuestDniAction: vi.fn(),
+  updateGuestAction: vi.fn(),
 }));
 vi.mock("@/modules/catalogs/actions", () => ({
   createCatalogOptionAction: vi.fn(),
@@ -30,9 +35,35 @@ const EMPTY_CATALOG_FIELD: CatalogFieldData = {
   canCreate: false,
 };
 
+const GUEST_ID = "00000000-0000-4000-8000-000000000001";
+const VERSION = "2026-11-20T12:00:00.000Z";
+
+function renderEditForm() {
+  render(
+    <GuestForm
+      mode={{ kind: "edit", guestId: GUEST_ID, version: VERSION }}
+      initialGuest={{
+        ...buildEmptyGuest("2026-11-18"),
+        firstName: "Persona",
+        lastName: "Ficticia",
+        birthDate: "1950-01-01",
+        dni: "11222333",
+        address: "Calle Ficticia 123",
+      }}
+      catalogFields={{
+        healthInsurance: EMPTY_CATALOG_FIELD,
+        hospitalizationReason: EMPTY_CATALOG_FIELD,
+        uncontrolledSymptom: EMPTY_CATALOG_FIELD,
+      }}
+      today="2026-11-20"
+    />,
+  );
+}
+
 function renderForm() {
   render(
     <GuestForm
+      mode={{ kind: "create" }}
       initialGuest={buildEmptyGuest("2026-11-20")}
       catalogFields={{
         healthInsurance: EMPTY_CATALOG_FIELD,
@@ -135,5 +166,60 @@ describe("GuestForm", () => {
         "/huespedes/00000000-0000-4000-8000-000000000001",
       );
     });
+  });
+
+  it("RF-HUE-05: en edición trae los datos guardados y Cancelar vuelve a la ficha", () => {
+    renderEditForm();
+
+    expect(screen.getByRole("textbox", { name: /^Dirección/ })).toHaveValue(
+      "Calle Ficticia 123",
+    );
+    expect(
+      screen.getByRole("textbox", { name: /^Fecha de internación/ }),
+    ).toHaveValue("18/11/2026");
+    expect(screen.getByRole("link", { name: "Cancelar" })).toHaveAttribute(
+      "href",
+      `/huespedes/${GUEST_ID}`,
+    );
+  });
+
+  it("RF-HUE-05: al guardar envía la versión editada y vuelve a la ficha", async () => {
+    vi.mocked(updateGuestAction).mockResolvedValue({ status: "success" });
+    renderEditForm();
+
+    fireEvent.change(screen.getByRole("textbox", { name: /^Dirección/ }), {
+      target: { value: "Otra Calle Ficticia 456" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => {
+      expect(updateGuestAction).toHaveBeenCalledWith(
+        GUEST_ID,
+        VERSION,
+        expect.objectContaining({ address: "Otra Calle Ficticia 456" }),
+      );
+    });
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(`/huespedes/${GUEST_ID}`);
+    });
+  });
+
+  it("R-13: en edición avisa el DNI repetido excluyendo al propio huésped y no sugiere aceptar entrevistas", async () => {
+    vi.mocked(checkGuestDniAction).mockResolvedValue({
+      hasActiveGuest: true,
+      hasPendingInterview: true,
+      pendingInterviewHref: null,
+    });
+    renderEditForm();
+
+    fireEvent.blur(screen.getByRole("textbox", { name: /^DNI/ }));
+
+    expect(
+      await screen.findByText(/Ya hay otro huésped vigente con este DNI/),
+    ).toBeInTheDocument();
+    expect(checkGuestDniAction).toHaveBeenCalledWith("11222333", GUEST_ID);
+    expect(
+      screen.queryByText(/Hay una entrevista de admisión con este DNI/),
+    ).not.toBeInTheDocument();
   });
 });

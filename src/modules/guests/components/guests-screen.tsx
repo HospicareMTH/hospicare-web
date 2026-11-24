@@ -32,6 +32,7 @@ async function GuestsContent({
       hiddenColumns={hiddenColumns}
       saveHiddenColumnsAction={saveHiddenColumnsAction}
       canCreateManually={hasPermission(access, "guests.records.manual_create")}
+      canUpdate={hasPermission(access, "guests.records.update")}
     />
   );
 }

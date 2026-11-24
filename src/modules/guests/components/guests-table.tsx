@@ -1,6 +1,10 @@
 "use client";
 
-import { UserAdd01Icon, ViewIcon } from "@hugeicons/core-free-icons";
+import {
+  PencilEdit02Icon,
+  UserAdd01Icon,
+  ViewIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +26,7 @@ import { formatDni } from "@/platform/dni";
 import type { ListPage } from "@/platform/list-query";
 
 import {
+  buildEditGuestPath,
   buildGuestPath,
   DEFAULT_GUEST_SORT,
   GUEST_ORIGIN_LABELS,
@@ -121,12 +126,14 @@ export function GuestsTable({
   hiddenColumns,
   saveHiddenColumnsAction,
   canCreateManually,
+  canUpdate,
 }: {
   page: ListPage<GuestListItem>;
   query: GuestListQuery;
   hiddenColumns: string[];
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
   canCreateManually: boolean;
+  canUpdate: boolean;
 }) {
   const router = useRouter();
 
@@ -135,7 +142,7 @@ export function GuestsTable({
   }
 
   function getGuestActions(guest: GuestListItem): RowAction[] {
-    return [
+    const actions: RowAction[] = [
       {
         label: "Ver huésped",
         icon: ViewIcon,
@@ -143,6 +150,15 @@ export function GuestsTable({
         open: () => openGuest(guest),
       },
     ];
+    if (canUpdate) {
+      actions.push({
+        label: "Editar",
+        icon: PencilEdit02Icon,
+        isDestructive: false,
+        open: () => router.push(buildEditGuestPath(guest.id)),
+      });
+    }
+    return actions;
   }
 
   return (

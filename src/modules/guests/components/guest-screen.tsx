@@ -1,4 +1,4 @@
-import { AlertCircleIcon } from "@hugeicons/core-free-icons";
+import { AlertCircleIcon, PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,7 +14,7 @@ import { hasPermission, requirePermission } from "@/modules/access";
 import { buildAdmissionInterviewPath } from "@/modules/admissions";
 import { formatDateTime } from "@/platform/dates";
 
-import { GUESTS_PATH } from "../schemas";
+import { buildEditGuestPath, GUESTS_PATH } from "../schemas";
 import { findGuest, type GuestView } from "../service";
 import { GuestDetail } from "./guest-detail";
 
@@ -52,14 +52,34 @@ async function GuestContent({ params }: { params: Promise<{ id: string }> }) {
     hasPermission(access, "admissions.interviews.view")
       ? buildAdmissionInterviewPath(guest.admissionInterviewId)
       : null;
+  const canEdit =
+    !guest.annulment && hasPermission(access, "guests.records.update");
 
   return (
     <SectionSheet destination={GUESTS_DESTINATION} title={guest.fullName}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <RecordHistory guest={guest} />
-        <Button asChild variant="outline" className={DIALOG_BUTTON_CLASS_NAME}>
-          <Link href={GUESTS_PATH}>Volver a Huéspedes</Link>
-        </Button>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row">
+          <Button
+            asChild
+            variant="outline"
+            className={DIALOG_BUTTON_CLASS_NAME}
+          >
+            <Link href={GUESTS_PATH}>Volver a Huéspedes</Link>
+          </Button>
+          {canEdit && (
+            <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
+              <Link href={buildEditGuestPath(guest.id)}>
+                <HugeiconsIcon
+                  icon={PencilEdit02Icon}
+                  data-icon="inline-start"
+                  aria-hidden="true"
+                />
+                Editar
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
       {guest.annulment && (
         <Alert>

@@ -13,9 +13,18 @@ import {
   buildAdmissionInterviewSearchPath,
 } from "@/modules/admissions";
 import { dniSchema } from "@/platform/field-validation";
-import { toInvalidResult, toRejectedResult } from "@/platform/operation-result";
+import {
+  type ActionResult,
+  refreshOnSuccess,
+  toInvalidResult,
+  toRejectedResult,
+} from "@/platform/operation-result";
 
-import { guestDetailsSchema, type GuestDetailsInput } from "./schemas";
+import {
+  guestDetailsSchema,
+  type GuestDetailsInput,
+  guestIdSchema,
+} from "./schemas";
 import {
   type AcceptInterviewResult,
   acceptAdmissionInterview,
@@ -23,11 +32,19 @@ import {
   type CreateGuestResult,
   INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES,
   findPendingInterviewIdsWithDni,
+  GUEST_REJECTION_MESSAGES,
   isDniInActiveGuest,
+  updateGuest,
 } from "./service";
 
 const interviewIdSchema = z.uuid({
   error: INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES.notFound,
+});
+
+const editedGuestIdSchema = guestIdSchema.nullable();
+
+const versionSchema = z.iso.datetime({
+  error: "El huésped que estás editando no es válido. Actualizá la pantalla.",
 });
 
 export async function createGuestManuallyAction(
@@ -39,6 +56,33 @@ export async function createGuestManuallyAction(
     return toInvalidResult(parsedDetails.error);
   }
   return createGuestManually(access.userId, parsedDetails.data);
+}
+
+export async function updateGuestAction(
+  guestId: string,
+  version: string,
+  input: GuestDetailsInput,
+): Promise<ActionResult> {
+  const { access } = await requirePermission("guests.records.update");
+  const parsedId = guestIdSchema.safeParse(guestId);
+  if (!parsedId.success) {
+    return { status: "rejected", message: GUEST_REJECTION_MESSAGES.notFound };
+  }
+  const parsedVersion = versionSchema.safeParse(version);
+  if (!parsedVersion.success) {
+    return toRejectedResult(parsedVersion.error);
+  }
+  const parsedDetails = guestDetailsSchema.safeParse(input);
+  if (!parsedDetails.success) {
+    return toInvalidResult(parsedDetails.error);
+  }
+  const result = await updateGuest(
+    access.userId,
+    parsedId.data,
+    parsedVersion.data,
+    parsedDetails.data,
+  );
+  return result.status === "invalid" ? result : refreshOnSuccess(result);
 }
 
 export async function acceptAdmissionInterviewAction(
@@ -83,17 +127,19 @@ function toPendingInterviewHref(
 
 export async function checkGuestDniAction(
   candidate: string,
+  excludedGuestId: string | null = null,
 ): Promise<GuestDniCheck> {
   const { access } = await getCurrentUser();
   const canLoadGuests =
     hasPermission(access, "guests.records.manual_create") ||
     hasPermission(access, "guests.records.update");
   const parsedDni = dniSchema.safeParse(candidate);
-  if (!canLoadGuests || !parsedDni.success) {
+  const parsedExcludedId = editedGuestIdSchema.safeParse(excludedGuestId);
+  if (!canLoadGuests || !parsedDni.success || !parsedExcludedId.success) {
     return NO_DNI_MATCHES;
   }
   const [hasActiveGuest, pendingInterviewIds] = await Promise.all([
-    isDniInActiveGuest(parsedDni.data),
+    isDniInActiveGuest(parsedDni.data, parsedExcludedId.data),
     findPendingInterviewIdsWithDni(parsedDni.data),
   ]);
   const canSeeInterviews = hasPermission(access, "admissions.interviews.view");

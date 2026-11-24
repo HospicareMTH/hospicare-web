@@ -26,6 +26,10 @@ export function buildGuestPath(guestId: string): string {
   return `${GUESTS_PATH}/${guestId}`;
 }
 
+export function buildEditGuestPath(guestId: string): string {
+  return `${buildGuestPath(guestId)}/editar`;
+}
+
 export const guestIdSchema = z.uuid();
 
 export const OTHER_HOSPITALIZATION_REASON_MAX_LENGTH = 500;

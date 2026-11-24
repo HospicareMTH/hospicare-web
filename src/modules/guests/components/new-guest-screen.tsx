@@ -15,6 +15,7 @@ async function NewGuestContent() {
 
   return (
     <GuestForm
+      mode={{ kind: "create" }}
       initialGuest={buildEmptyGuest(today)}
       catalogFields={catalogFields}
       today={today}
