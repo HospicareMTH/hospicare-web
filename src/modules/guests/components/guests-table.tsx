@@ -1,5 +1,9 @@
 "use client";
 
+import { UserAdd01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
+
 import {
   DataTable,
   type DataTableColumn,
@@ -9,6 +13,8 @@ import {
   type SaveHiddenColumnsAction,
   saveHiddenColumnsWith,
 } from "@/components/shared/data-table/save-hidden-columns";
+import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
+import { Button } from "@/components/ui/button";
 import { formatDateTime, formatIsoDate } from "@/platform/dates";
 import { formatDni } from "@/platform/dni";
 import type { ListPage } from "@/platform/list-query";
@@ -19,6 +25,7 @@ import {
   GUESTS_TABLE_KEY,
   type GuestListQuery,
   type GuestSortKey,
+  NEW_GUEST_PATH,
   ORIGIN_FILTER_OPTIONS,
   ORIGIN_FILTER_PARAMETER,
   toOriginFilterValue,
@@ -110,11 +117,13 @@ export function GuestsTable({
   query,
   hiddenColumns,
   saveHiddenColumnsAction,
+  canCreateManually,
 }: {
   page: ListPage<GuestListItem>;
   query: GuestListQuery;
   hiddenColumns: string[];
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
+  canCreateManually: boolean;
 }) {
   return (
     <DataTable
@@ -131,6 +140,20 @@ export function GuestsTable({
           value={toOriginFilterValue(query.origin)}
           options={ORIGIN_FILTER_OPTIONS}
         />
+      }
+      action={
+        canCreateManually && (
+          <Button asChild className={DIALOG_BUTTON_CLASS_NAME}>
+            <Link href={NEW_GUEST_PATH}>
+              <HugeiconsIcon
+                icon={UserAdd01Icon}
+                data-icon="inline-start"
+                aria-hidden="true"
+              />
+              Nuevo huésped
+            </Link>
+          </Button>
+        )
       }
       emptyMessage={describeEmptyList(query)}
       totalLabel={describeGuestCount(page.totalCount)}

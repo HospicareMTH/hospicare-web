@@ -5,6 +5,7 @@ export {
   findReligionOtherOptionId,
   listSelectableCatalogOptions,
   listVisibleCatalogs,
+  loadCatalogField,
   validateCatalogSelection,
 } from "./service";
 export {
@@ -18,6 +19,9 @@ export {
   HEALTHCARE_PROFESSIONALS_PICKER,
   type PickerCatalog,
 } from "./definitions";
-export { type SelectableCatalogEntry } from "./selection";
+export {
+  type CatalogFieldData,
+  type SelectableCatalogEntry,
+} from "./selection";
 export { buildCatalogHref } from "./schemas";
 export { CatalogsScreen } from "./components/catalogs-screen";

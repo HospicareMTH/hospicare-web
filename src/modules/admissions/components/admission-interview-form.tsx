@@ -7,12 +7,23 @@ import { useRouter } from "next/navigation";
 import { type FormEvent, useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import {
+  DateInputField,
+  TextField,
+  YesNoField,
+} from "@/components/shared/form-fields";
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { runAction } from "@/components/shared/run-action";
 import { SectionTabPanel, SectionTabs } from "@/components/shared/section-tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FieldGroup } from "@/components/ui/field";
+import { CatalogOptionField } from "@/modules/catalogs/components";
+import {
+  ADDRESS_LIMITS,
+  HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
+  PERSON_NAME_LIMITS,
+} from "@/platform/field-validation";
 
 import {
   checkDniInActiveInterviewAction,
@@ -20,14 +31,12 @@ import {
   updateAdmissionInterviewAction,
 } from "../actions";
 import {
-  ADDRESS_LIMITS,
   ADMISSIONS_PATH,
   buildAdmissionInterviewPath,
   type AdmissionInterviewDetailsInput,
   type AdmissionInterviewField,
   CLINICAL_TEXT_MAX_LENGTH,
   INTERVIEWEE_NAME_LIMITS,
-  PERSON_NAME_LIMITS,
   RELIGION_DETAIL_MAX_LENGTH,
   SHORT_TEXT_MAX_LENGTH,
 } from "../schemas";
@@ -35,12 +44,6 @@ import type {
   CreateAdmissionInterviewResult,
   InterviewCatalogFields,
 } from "../service";
-import {
-  DateInputField,
-  OptionField,
-  TextField,
-  YesNoField,
-} from "./interview-fields";
 import {
   INTERVIEW_SECTION_FIELDS,
   INTERVIEW_SECTION_IDS,
@@ -282,7 +285,7 @@ function AdmissionInterviewFormContent({
             maxLength={ADDRESS_LIMITS.maxLength}
             isRequired
           />
-          <OptionField
+          <CatalogOptionField
             {...textProps("healthInsuranceOptionId")}
             label="Obra social"
             catalogField={catalogFields.healthInsurance}
@@ -302,9 +305,9 @@ function AdmissionInterviewFormContent({
             onValueChange={(value) =>
               update("healthInsuranceMemberNumber", value)
             }
-            maxLength={SHORT_TEXT_MAX_LENGTH}
+            maxLength={HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH}
           />
-          <OptionField
+          <CatalogOptionField
             {...textProps("informationAwarenessOptionId")}
             label="Información general"
             catalogField={catalogFields.informationAwareness}
@@ -318,7 +321,7 @@ function AdmissionInterviewFormContent({
             }
             isRequired
           />
-          <OptionField
+          <CatalogOptionField
             {...textProps("religionOptionId")}
             label="Religión"
             catalogField={catalogFields.religion}
@@ -339,7 +342,7 @@ function AdmissionInterviewFormContent({
               isRequired
             />
           )}
-          <OptionField
+          <CatalogOptionField
             {...textProps("ecogScoreOptionId")}
             label="ECOG"
             catalogField={catalogFields.ecogScore}
@@ -383,7 +386,7 @@ function AdmissionInterviewFormContent({
             onValueChange={(value) => update("intervieweePhone", value)}
             maxLength={SHORT_TEXT_MAX_LENGTH}
           />
-          <OptionField
+          <CatalogOptionField
             {...textProps("intervieweeRelationshipOptionId")}
             label="Vínculo con el huésped"
             catalogField={catalogFields.relationship}
@@ -396,7 +399,7 @@ function AdmissionInterviewFormContent({
               )
             }
           />
-          <OptionField
+          <CatalogOptionField
             {...textProps("primaryDoctorId")}
             label="Médico de cabecera"
             catalogField={catalogFields.primaryDoctor}
@@ -471,7 +474,7 @@ function AdmissionInterviewFormContent({
             onValueChange={(value) => update("hasMetastasis", value)}
           />
           {interview.hasMetastasis && (
-            <OptionField
+            <CatalogOptionField
               {...textProps("metastasisLocationOptionId")}
               label="Lugar de la metástasis"
               catalogField={catalogFields.metastasisLocation}
@@ -486,7 +489,7 @@ function AdmissionInterviewFormContent({
               isRequired
             />
           )}
-          <OptionField
+          <CatalogOptionField
             {...textProps("oncologicalTreatmentOptionId")}
             label="Tratamiento oncológico específico"
             catalogField={catalogFields.oncologicalTreatment}
@@ -510,7 +513,7 @@ function AdmissionInterviewFormContent({
             isMultiline
             className="md:col-span-full"
           />
-          <OptionField
+          <CatalogOptionField
             {...textProps("surgeryOptionIds")}
             label="Cirugías"
             catalogField={catalogFields.surgery}

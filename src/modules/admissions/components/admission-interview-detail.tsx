@@ -8,7 +8,9 @@ import { formatIsoDate } from "@/platform/dates";
 import { formatDni } from "@/platform/dni";
 
 import type { AdmissionInterviewDetailsInput } from "../schemas";
-import type { CatalogFieldData, InterviewCatalogFields } from "../service";
+import type { CatalogFieldData } from "@/modules/catalogs";
+
+import type { InterviewCatalogFields } from "../service";
 import {
   INTERVIEW_SECTION_IDS,
   INTERVIEW_SECTION_LABELS,

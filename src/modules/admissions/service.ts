@@ -1,11 +1,12 @@
 import { findUserNames, type UserAccess } from "@/modules/access";
 import {
   canCreateCatalogEntries,
+  type CatalogFieldData,
   type CatalogKey,
   findReligionOtherOptionId,
   HEALTHCARE_PROFESSIONALS_PICKER,
-  type PickerCatalog,
   listSelectableCatalogOptions,
+  loadCatalogField,
   listSelectableHealthcareProfessionals,
   type SelectableCatalogEntry,
   validateCatalogSelection,
@@ -493,12 +494,6 @@ export async function searchAdmissionInterviews(
   };
 }
 
-export type CatalogFieldData = {
-  catalog: PickerCatalog;
-  options: SelectableCatalogEntry[];
-  canCreate: boolean;
-};
-
 export type InterviewCatalogFields = Record<
   | "healthInsurance"
   | "informationAwareness"
@@ -519,18 +514,6 @@ export type InterviewFormOptions = {
 
 function toSavedIds(optionId: string | undefined): string[] {
   return optionId ? [optionId] : [];
-}
-
-async function loadCatalogField(
-  access: UserAccess,
-  catalog: CatalogKey,
-  savedIds: string[],
-): Promise<CatalogFieldData> {
-  return {
-    catalog,
-    options: await listSelectableCatalogOptions(catalog, savedIds),
-    canCreate: canCreateCatalogEntries(access, catalog),
-  };
 }
 
 async function loadPrimaryDoctorField(

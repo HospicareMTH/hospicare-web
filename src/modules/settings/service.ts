@@ -1,10 +1,14 @@
 import { findUserNames } from "@/modules/access";
-import { runInTransactionAs } from "@/platform/database/client";
+import {
+  type DatabaseTransaction,
+  runInTransactionAs,
+} from "@/platform/database/client";
 import { type ActionResult, SUCCESS } from "@/platform/operation-result";
 
 import {
   findLastClinicalRecordNumberRecord,
   lockLastClinicalRecordNumberValue,
+  saveAssignedClinicalRecordNumberValue,
   saveLastClinicalRecordNumberValue,
 } from "./repository";
 import {
@@ -38,6 +42,17 @@ export async function getClinicalRecordNumberSetting(): Promise<ClinicalRecordNu
       ? { modifiedAt: record.updatedAt, modifiedByName }
       : null,
   };
+}
+
+export async function assignNextClinicalRecordNumber(
+  transaction: DatabaseTransaction,
+): Promise<number> {
+  const lastAssignedNumber = storedClinicalRecordNumberSchema.parse(
+    await lockLastClinicalRecordNumberValue(transaction),
+  );
+  const assignedNumber = lastAssignedNumber + 1;
+  await saveAssignedClinicalRecordNumberValue(transaction, assignedNumber);
+  return assignedNumber;
 }
 
 export function updateLastClinicalRecordNumber(

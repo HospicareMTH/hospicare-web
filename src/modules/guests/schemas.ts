@@ -1,3 +1,14 @@
+import { z } from "zod";
+
+import {
+  ADDRESS_LIMITS,
+  dniSchema,
+  HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
+  optionalTextSchema,
+  pastOrTodayDateSchema,
+  PERSON_NAME_LIMITS,
+  requiredTextSchema,
+} from "@/platform/field-validation";
 import {
   type ListQuery,
   type ListSort,
@@ -9,6 +20,58 @@ import {
 import type { GuestOrigin } from "./tables";
 
 export const GUESTS_PATH = "/huespedes";
+export const NEW_GUEST_PATH = "/huespedes/nuevo";
+
+export const OTHER_HOSPITALIZATION_REASON_MAX_LENGTH = 500;
+
+const INVALID_OPTION_MESSAGE =
+  "La opción elegida no es válida. Actualizá la pantalla.";
+
+const optionalOptionIdSchema = z
+  .union([z.literal(""), z.uuid()], { error: INVALID_OPTION_MESSAGE })
+  .transform((optionId) => optionId || null);
+
+const optionIdsSchema = z.array(z.uuid({ error: INVALID_OPTION_MESSAGE }));
+
+export const guestDetailsSchema = z.object({
+  hospitalizationDate: pastOrTodayDateSchema("La fecha de internación"),
+  firstName: requiredTextSchema("El nombre", PERSON_NAME_LIMITS),
+  lastName: requiredTextSchema("El apellido", PERSON_NAME_LIMITS),
+  birthDate: pastOrTodayDateSchema("La fecha de nacimiento"),
+  dni: dniSchema,
+  address: requiredTextSchema("La dirección", ADDRESS_LIMITS),
+  healthInsuranceOptionId: optionalOptionIdSchema,
+  healthInsuranceMemberNumber: optionalTextSchema(
+    "El número de afiliado",
+    HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
+  ),
+  hospitalizationReasonOptionIds: optionIdsSchema,
+  otherHospitalizationReason: optionalTextSchema(
+    "El otro motivo de internación",
+    OTHER_HOSPITALIZATION_REASON_MAX_LENGTH,
+  ),
+  uncontrolledSymptomOptionIds: optionIdsSchema,
+});
+
+export type GuestDetailsInput = z.input<typeof guestDetailsSchema>;
+export type GuestDetails = z.output<typeof guestDetailsSchema>;
+export type GuestField = keyof GuestDetailsInput;
+
+export function buildEmptyGuest(today: string): GuestDetailsInput {
+  return {
+    hospitalizationDate: today,
+    firstName: "",
+    lastName: "",
+    birthDate: "",
+    dni: "",
+    address: "",
+    healthInsuranceOptionId: "",
+    healthInsuranceMemberNumber: "",
+    hospitalizationReasonOptionIds: [],
+    otherHospitalizationReason: "",
+    uncontrolledSymptomOptionIds: [],
+  };
+}
 
 export const GUESTS_TABLE_KEY = "guests";
 

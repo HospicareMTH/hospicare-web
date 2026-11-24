@@ -12,14 +12,22 @@ import {
   sql,
 } from "drizzle-orm";
 
-import { getDatabase } from "@/platform/database/client";
+import {
+  type DatabaseTransaction,
+  getDatabase,
+} from "@/platform/database/client";
 import {
   containsNormalizedTextSql,
   normalizeTextSql,
 } from "@/platform/database/text-normalization";
 
-import type { GuestListQuery, GuestSortKey } from "./schemas";
-import { type GuestOrigin, guests } from "./tables";
+import type { GuestDetails, GuestListQuery, GuestSortKey } from "./schemas";
+import {
+  type GuestOrigin,
+  guestHospitalizationReasons,
+  guests,
+  guestUncontrolledSymptoms,
+} from "./tables";
 
 export type GuestListRecord = {
   id: string;
@@ -122,6 +130,70 @@ export function listGuestRecords(
     )
     .offset(offset)
     .limit(limit);
+}
+
+type NewGuestRecord = {
+  details: GuestDetails;
+  clinicalRecordNumber: number;
+  origin: GuestOrigin;
+  admissionInterviewId: string | null;
+  actorUserId: string;
+};
+
+export async function insertGuest(
+  transaction: DatabaseTransaction,
+  {
+    details: {
+      hospitalizationReasonOptionIds,
+      uncontrolledSymptomOptionIds,
+      ...details
+    },
+    clinicalRecordNumber,
+    origin,
+    admissionInterviewId,
+    actorUserId,
+  }: NewGuestRecord,
+): Promise<string> {
+  const [guest] = await transaction
+    .insert(guests)
+    .values({
+      ...details,
+      clinicalRecordNumber,
+      origin,
+      admissionInterviewId,
+      createdByUserId: actorUserId,
+      updatedByUserId: actorUserId,
+    })
+    .returning({ id: guests.id });
+  if (!guest) {
+    throw new Error("La base no devolvió el huésped creado.");
+  }
+  if (hospitalizationReasonOptionIds.length > 0) {
+    await transaction.insert(guestHospitalizationReasons).values(
+      hospitalizationReasonOptionIds.map((hospitalizationReasonOptionId) => ({
+        guestId: guest.id,
+        hospitalizationReasonOptionId,
+      })),
+    );
+  }
+  if (uncontrolledSymptomOptionIds.length > 0) {
+    await transaction.insert(guestUncontrolledSymptoms).values(
+      uncontrolledSymptomOptionIds.map((uncontrolledSymptomOptionId) => ({
+        guestId: guest.id,
+        uncontrolledSymptomOptionId,
+      })),
+    );
+  }
+  return guest.id;
+}
+
+export async function hasActiveGuestWithDni(dni: string): Promise<boolean> {
+  const [guest] = await getDatabase()
+    .select({ id: guests.id })
+    .from(guests)
+    .where(and(eq(guests.dni, dni), isNull(guests.annulledAt)))
+    .limit(1);
+  return guest !== undefined;
 }
 
 export async function listUsedHealthInsuranceOptionIds(): Promise<string[]> {

@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -39,6 +39,20 @@ export async function lockLastClinicalRecordNumberValue(
     .where(byLastClinicalRecordNumber)
     .for("update");
   return record?.value;
+}
+
+export async function saveAssignedClinicalRecordNumberValue(
+  transaction: DatabaseTransaction,
+  value: number,
+): Promise<void> {
+  // El trigger de auditoría omite este cambio: el número consta en la entrada del huésped creado.
+  await transaction.execute(
+    sql`select set_config('hospicare.audit_context', 'clinical_record_number_assignment', true)`,
+  );
+  await transaction
+    .update(systemSettings)
+    .set({ value })
+    .where(byLastClinicalRecordNumber);
 }
 
 export async function saveLastClinicalRecordNumberValue(

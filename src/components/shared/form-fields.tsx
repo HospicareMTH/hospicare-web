@@ -14,13 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  CatalogOptionPicker,
-  type CatalogSelectionMode,
-} from "@/modules/catalogs/components";
 import { cn } from "@/lib/utils";
-
-import type { CatalogFieldData } from "../service";
 
 const LABEL_CLASS_NAME = "text-base";
 const YES_NO_ITEM_CLASS_NAME =
@@ -28,11 +22,11 @@ const YES_NO_ITEM_CLASS_NAME =
 const YES_VALUE = "yes";
 const NO_VALUE = "no";
 
-function errorDescriptionId(id: string): string {
+export function errorDescriptionId(id: string): string {
   return `${id}-error`;
 }
 
-function FieldFrame({
+export function FieldFrame({
   id,
   label,
   isRequired,
@@ -143,49 +137,6 @@ export function DateInputField({
         latestIsoDate={latestIsoDate}
         isInvalid={Boolean(errors)}
         describedBy={errors ? errorDescriptionId(id) : undefined}
-      />
-    </FieldFrame>
-  );
-}
-
-export function OptionField({
-  id,
-  label,
-  catalogField,
-  selectionMode,
-  value,
-  onValueChange,
-  isRequired = false,
-  errors,
-  className,
-}: {
-  id: string;
-  label: string;
-  catalogField: CatalogFieldData;
-  selectionMode: CatalogSelectionMode;
-  value: string[];
-  onValueChange: (selectedIds: string[]) => void;
-  isRequired?: boolean;
-  errors: string[] | undefined;
-  className?: string;
-}) {
-  return (
-    <FieldFrame
-      id={id}
-      label={label}
-      isRequired={isRequired}
-      errors={errors}
-      className={className}
-    >
-      <CatalogOptionPicker
-        id={id}
-        catalog={catalogField.catalog}
-        options={catalogField.options}
-        selectionMode={selectionMode}
-        value={value}
-        onValueChange={onValueChange}
-        canCreate={catalogField.canCreate}
-        isInvalid={Boolean(errors)}
       />
     </FieldFrame>
   );

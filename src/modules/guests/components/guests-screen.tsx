@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { DataTableSkeleton } from "@/components/shared/data-table/data-table-skeleton";
 import {
   getHiddenColumns,
+  hasPermission,
   requirePermission,
   saveHiddenColumnsAction,
 } from "@/modules/access";
@@ -30,6 +31,7 @@ async function GuestsContent({
       query={query}
       hiddenColumns={hiddenColumns}
       saveHiddenColumnsAction={saveHiddenColumnsAction}
+      canCreateManually={hasPermission(access, "guests.records.manual_create")}
     />
   );
 }

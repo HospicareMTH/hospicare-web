@@ -45,6 +45,7 @@ import {
   updateOptionDetails,
 } from "./repository";
 import {
+  type CatalogFieldData,
   checkCatalogSelection,
   isCatalogEntryId,
   type SelectableCatalogEntry,
@@ -201,6 +202,18 @@ export function canCreateCatalogEntries(
       ? HEALTHCARE_PROFESSIONALS_CATALOG
       : findCatalogByKey(catalog);
   return hasPermission(access, catalogPermission(scope, "create"));
+}
+
+export async function loadCatalogField(
+  access: UserAccess,
+  catalog: CatalogKey,
+  savedIds: readonly string[],
+): Promise<CatalogFieldData> {
+  return {
+    catalog,
+    options: await listSelectableCatalogOptions(catalog, savedIds),
+    canCreate: canCreateCatalogEntries(access, catalog),
+  };
 }
 
 export async function updateCatalogOption(

@@ -38,6 +38,16 @@ type TextLengthLimits = {
   maxLength: number;
 };
 
+export const PERSON_NAME_LIMITS: TextLengthLimits = {
+  minLength: 2,
+  maxLength: 80,
+};
+export const ADDRESS_LIMITS: TextLengthLimits = {
+  minLength: 3,
+  maxLength: 200,
+};
+export const HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH = 40;
+
 export function requiredTextSchema(
   fieldLabel: string,
   { minLength, maxLength }: TextLengthLimits,

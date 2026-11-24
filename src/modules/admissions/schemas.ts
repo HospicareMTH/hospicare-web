@@ -1,9 +1,12 @@
 import { z } from "zod";
 
 import {
+  ADDRESS_LIMITS,
   dniSchema,
+  HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
   optionalTextSchema,
   pastOrTodayDateSchema,
+  PERSON_NAME_LIMITS,
   requiredTextSchema,
 } from "@/platform/field-validation";
 import {
@@ -61,8 +64,6 @@ function parseFilterId(value: string | undefined): string | null {
   return result.success ? result.data : null;
 }
 
-export const PERSON_NAME_LIMITS = { minLength: 2, maxLength: 80 };
-export const ADDRESS_LIMITS = { minLength: 3, maxLength: 200 };
 export const INTERVIEWEE_NAME_LIMITS = { minLength: 2, maxLength: 120 };
 export const SHORT_TEXT_MAX_LENGTH = 40;
 export const RELIGION_DETAIL_MAX_LENGTH = 120;
@@ -101,7 +102,7 @@ export const admissionInterviewDetailsSchema = z
     healthInsuranceOptionId: optionalOptionIdSchema,
     healthInsuranceMemberNumber: optionalTextSchema(
       "El número de afiliado",
-      SHORT_TEXT_MAX_LENGTH,
+      HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
     ),
     informationAwarenessOptionId: requiredOptionIdSchema(
       "Elegí la información general.",
