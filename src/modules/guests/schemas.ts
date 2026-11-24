@@ -22,6 +22,12 @@ import type { GuestOrigin } from "./tables";
 export const GUESTS_PATH = "/huespedes";
 export const NEW_GUEST_PATH = "/huespedes/nuevo";
 
+export function buildGuestPath(guestId: string): string {
+  return `${GUESTS_PATH}/${guestId}`;
+}
+
+export const guestIdSchema = z.uuid();
+
 export const OTHER_HOSPITALIZATION_REASON_MAX_LENGTH = 500;
 
 const INVALID_OPTION_MESSAGE =

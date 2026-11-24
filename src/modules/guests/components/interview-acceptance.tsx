@@ -1,11 +1,13 @@
 import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getCurrentUser, hasPermission } from "@/modules/access";
 import type { InterviewAcceptanceSlot } from "@/modules/admissions";
 import { formatDateTime } from "@/platform/dates";
 
+import { buildGuestPath } from "../schemas";
 import { findGuestOfInterview, isDniInActiveGuest } from "../service";
 import { AcceptInterviewButton } from "./accept-interview-button";
 
@@ -25,9 +27,20 @@ export async function InterviewAcceptance({
         <HugeiconsIcon icon={CheckmarkCircle02Icon} aria-hidden="true" />
         <AlertDescription className="text-base">
           Aceptada el {formatDateTime(guest.acceptedAt)}
-          {canSeeGuest
-            ? `: huésped con historia clínica N.° ${guest.clinicalRecordNumber}.`
-            : "."}
+          {canSeeGuest ? (
+            <>
+              :{" "}
+              <Link
+                href={buildGuestPath(guest.guestId)}
+                className="font-medium text-primary underline underline-offset-4"
+              >
+                huésped con historia clínica N.° {guest.clinicalRecordNumber}
+              </Link>
+              .
+            </>
+          ) : (
+            "."
+          )}
         </AlertDescription>
       </Alert>
     );

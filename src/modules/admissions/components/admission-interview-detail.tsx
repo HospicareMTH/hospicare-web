@@ -1,9 +1,9 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 
+import { type DetailItem, DetailList } from "@/components/shared/detail-list";
 import { SectionTabPanel, SectionTabs } from "@/components/shared/section-tabs";
-import { cn } from "@/lib/utils";
 import { formatIsoDate } from "@/platform/dates";
 import { formatDni } from "@/platform/dni";
 
@@ -20,15 +20,8 @@ import {
 } from "./interview-sections";
 
 const DETAIL_ID_PREFIX = "admission-interview-detail";
-const EMPTY_VALUE_LABEL = "Sin cargar";
 const YES_LABEL = "Sí";
 const NO_LABEL = "No";
-
-type DetailItem = {
-  label: string;
-  value: string;
-  isWide?: boolean;
-};
 
 function textValue(text: string): string {
   return text.trim();
@@ -207,32 +200,6 @@ function buildSectionItems(
       },
     ],
   };
-}
-
-function DetailList({ items }: { items: DetailItem[] }): ReactNode {
-  return (
-    <dl className="grid gap-x-4 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
-      {items.map((item) => (
-        <div
-          key={item.label}
-          className={cn(
-            "flex flex-col gap-1",
-            item.isWide && "md:col-span-full",
-          )}
-        >
-          <dt className="text-base font-medium">{item.label}</dt>
-          <dd
-            className={cn(
-              "text-base whitespace-pre-line",
-              !item.value && "text-muted-foreground",
-            )}
-          >
-            {item.value || EMPTY_VALUE_LABEL}
-          </dd>
-        </div>
-      ))}
-    </dl>
-  );
 }
 
 export function AdmissionInterviewDetail({

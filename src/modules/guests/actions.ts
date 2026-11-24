@@ -8,6 +8,10 @@ import {
   hasPermission,
   requirePermission,
 } from "@/modules/access";
+import {
+  buildAdmissionInterviewPath,
+  buildAdmissionInterviewSearchPath,
+} from "@/modules/admissions";
 import { dniSchema } from "@/platform/field-validation";
 import { toInvalidResult, toRejectedResult } from "@/platform/operation-result";
 
@@ -18,8 +22,8 @@ import {
   createGuestManually,
   type CreateGuestResult,
   INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES,
+  findPendingInterviewIdsWithDni,
   isDniInActiveGuest,
-  isDniInPendingInterview,
 } from "./service";
 
 const interviewIdSchema = z.uuid({
@@ -55,12 +59,27 @@ export async function acceptAdmissionInterviewAction(
 export type GuestDniCheck = {
   hasActiveGuest: boolean;
   hasPendingInterview: boolean;
+  pendingInterviewHref: string | null;
 };
 
 const NO_DNI_MATCHES: GuestDniCheck = {
   hasActiveGuest: false,
   hasPendingInterview: false,
+  pendingInterviewHref: null,
 };
+
+function toPendingInterviewHref(
+  pendingInterviewIds: string[],
+  dni: string,
+): string | null {
+  const [onlyInterviewId] = pendingInterviewIds;
+  if (onlyInterviewId === undefined) {
+    return null;
+  }
+  return pendingInterviewIds.length === 1
+    ? buildAdmissionInterviewPath(onlyInterviewId)
+    : buildAdmissionInterviewSearchPath(dni);
+}
 
 export async function checkGuestDniAction(
   candidate: string,
@@ -73,9 +92,16 @@ export async function checkGuestDniAction(
   if (!canLoadGuests || !parsedDni.success) {
     return NO_DNI_MATCHES;
   }
-  const [hasActiveGuest, hasPendingInterview] = await Promise.all([
+  const [hasActiveGuest, pendingInterviewIds] = await Promise.all([
     isDniInActiveGuest(parsedDni.data),
-    isDniInPendingInterview(parsedDni.data),
+    findPendingInterviewIdsWithDni(parsedDni.data),
   ]);
-  return { hasActiveGuest, hasPendingInterview };
+  const canSeeInterviews = hasPermission(access, "admissions.interviews.view");
+  return {
+    hasActiveGuest,
+    hasPendingInterview: pendingInterviewIds.length > 0,
+    pendingInterviewHref: canSeeInterviews
+      ? toPendingInterviewHref(pendingInterviewIds, parsedDni.data)
+      : null,
+  };
 }

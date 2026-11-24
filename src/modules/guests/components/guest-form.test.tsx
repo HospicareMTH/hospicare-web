@@ -74,6 +74,7 @@ describe("GuestForm", () => {
     vi.mocked(checkGuestDniAction).mockResolvedValue({
       hasActiveGuest: true,
       hasPendingInterview: true,
+      pendingInterviewHref: "/admisiones/00000000-0000-4000-8000-000000000003",
     });
     renderForm();
 
@@ -87,6 +88,12 @@ describe("GuestForm", () => {
     expect(
       screen.getByText(/Hay una entrevista de admisión con este DNI/),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Ver la entrevista" }),
+    ).toHaveAttribute(
+      "href",
+      "/admisiones/00000000-0000-4000-8000-000000000003",
+    );
     expect(
       screen.getByRole("button", { name: "Guardar huésped" }),
     ).toBeEnabled();
@@ -113,7 +120,7 @@ describe("GuestForm", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it("RF-HUE-03: al crear vuelve al listado", async () => {
+  it("RF-HUE-03: al crear abre la ficha del huésped", async () => {
     vi.mocked(createGuestManuallyAction).mockResolvedValue({
       status: "success",
       guestId: "00000000-0000-4000-8000-000000000001",
@@ -124,7 +131,9 @@ describe("GuestForm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Guardar huésped" }));
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith("/huespedes");
+      expect(push).toHaveBeenCalledWith(
+        "/huespedes/00000000-0000-4000-8000-000000000001",
+      );
     });
   });
 });

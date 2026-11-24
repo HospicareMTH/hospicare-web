@@ -1,9 +1,11 @@
 "use client";
 
-import { UserAdd01Icon } from "@hugeicons/core-free-icons";
+import { UserAdd01Icon, ViewIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
+import type { RowAction } from "@/components/shared/data-table/action-table-row";
 import {
   DataTable,
   type DataTableColumn,
@@ -20,6 +22,7 @@ import { formatDni } from "@/platform/dni";
 import type { ListPage } from "@/platform/list-query";
 
 import {
+  buildGuestPath,
   DEFAULT_GUEST_SORT,
   GUEST_ORIGIN_LABELS,
   GUESTS_TABLE_KEY,
@@ -125,6 +128,23 @@ export function GuestsTable({
   saveHiddenColumnsAction: SaveHiddenColumnsAction;
   canCreateManually: boolean;
 }) {
+  const router = useRouter();
+
+  function openGuest(guest: GuestListItem) {
+    router.push(buildGuestPath(guest.id));
+  }
+
+  function getGuestActions(guest: GuestListItem): RowAction[] {
+    return [
+      {
+        label: "Ver huésped",
+        icon: ViewIcon,
+        isDestructive: false,
+        open: () => openGuest(guest),
+      },
+    ];
+  }
+
   return (
     <DataTable
       columns={COLUMNS}
@@ -158,7 +178,8 @@ export function GuestsTable({
       emptyMessage={describeEmptyList(query)}
       totalLabel={describeGuestCount(page.totalCount)}
       paginationLabel="Páginas de huéspedes"
-      getRowActions={() => []}
+      getRowActions={getGuestActions}
+      onOpenRow={openGuest}
       getActionsLabel={(guest) => `Acciones de ${guest.fullName}`}
       hiddenColumns={hiddenColumns}
       onHiddenColumnsChange={(columns) =>

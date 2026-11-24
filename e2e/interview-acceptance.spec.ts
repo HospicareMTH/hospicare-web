@@ -34,16 +34,20 @@ test("RF-ENT-06, RF-HUE-02, CA-08: aceptar la entrevista crea el huésped y la e
   const clinicalRecordNumber = (await createdMessage.textContent())?.match(
     /\d+/,
   )?.[0];
-  await expect(
-    page.getByText(
-      new RegExp(
-        `Aceptada el .*: huésped con historia clínica N\\.° ${clinicalRecordNumber}\\.`,
-      ),
-    ),
-  ).toBeVisible();
+  const guestLink = page.getByRole("link", {
+    name: `huésped con historia clínica N.° ${clinicalRecordNumber}`,
+  });
+  await expect(guestLink).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Aceptar entrevista" }),
   ).toHaveCount(0);
+
+  await guestLink.click();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Marta Aceptada" }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Ver la entrevista" }).click();
+  await expect(page).toHaveURL(new RegExp(`/admisiones/${interview.id}$`));
 
   await page.goto(`/admisiones/${interview.id}/editar`);
   await expect(

@@ -1,4 +1,4 @@
-import type { UserAccess } from "@/modules/access";
+import { findUserNames, type UserAccess } from "@/modules/access";
 import {
   findActiveInterviewIdsWithDni,
   lockInterviewToAccept,
@@ -28,6 +28,7 @@ import { type FailedActionResult, reject } from "@/platform/operation-result";
 import {
   countGuestRecords,
   findActiveGuestOfInterview,
+  findGuestRecord,
   type GuestSearch,
   hasActiveGuestWithDni,
   insertGuest,
@@ -35,7 +36,12 @@ import {
   listInterviewIdsWithActiveGuest,
   listUsedHealthInsuranceOptionIds,
 } from "./repository";
-import type { GuestDetails, GuestField, GuestListQuery } from "./schemas";
+import {
+  type GuestDetails,
+  type GuestField,
+  guestIdSchema,
+  type GuestListQuery,
+} from "./schemas";
 import type { GuestOrigin } from "./tables";
 
 export type GuestCatalogFields = Record<
@@ -135,12 +141,14 @@ export function isDniInActiveGuest(dni: string): Promise<boolean> {
   return hasActiveGuestWithDni(dni);
 }
 
-export async function isDniInPendingInterview(dni: string): Promise<boolean> {
+export async function findPendingInterviewIdsWithDni(
+  dni: string,
+): Promise<string[]> {
   const interviewIds = await findActiveInterviewIdsWithDni(dni);
   const acceptedInterviewIds = new Set(
     await listInterviewIdsWithActiveGuest(interviewIds),
   );
-  return interviewIds.some((id) => !acceptedInterviewIds.has(id));
+  return interviewIds.filter((id) => !acceptedInterviewIds.has(id));
 }
 
 export const INTERVIEW_ACCEPTANCE_REJECTION_MESSAGES = {
@@ -212,7 +220,126 @@ export function acceptAdmissionInterview(
   });
 }
 
+export type GuestView = {
+  id: string;
+  clinicalRecordNumber: number;
+  fullName: string;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  dni: string;
+  address: string;
+  healthInsuranceLabel: string | null;
+  healthInsuranceMemberNumber: string | null;
+  hospitalizationDate: string;
+  hospitalizationReasonLabels: string[];
+  otherHospitalizationReason: string | null;
+  uncontrolledSymptomLabels: string[];
+  origin: GuestOrigin;
+  admissionInterviewId: string | null;
+  createdAt: Date;
+  createdByName: string | null;
+  updatedAt: Date;
+  updatedByName: string | null;
+  annulment: {
+    annulledAt: Date;
+    annulledByName: string | null;
+    reason: string;
+  } | null;
+};
+
+async function findOptionLabels(
+  catalog: CatalogKey,
+  savedOptionIds: string[],
+): Promise<string[]> {
+  if (savedOptionIds.length === 0) {
+    return [];
+  }
+  const options = await listSelectableCatalogOptions(catalog, savedOptionIds);
+  return options
+    .filter((option) => savedOptionIds.includes(option.id))
+    .map((option) => option.label);
+}
+
+function nameOf(
+  namesById: ReadonlyMap<string, string>,
+  userId: string | null,
+): string | null {
+  return userId ? (namesById.get(userId) ?? null) : null;
+}
+
+export async function findGuest(
+  candidateId: string,
+): Promise<GuestView | null> {
+  const parsedId = guestIdSchema.safeParse(candidateId);
+  if (!parsedId.success) {
+    return null;
+  }
+  const record = await findGuestRecord(parsedId.data);
+  if (!record) {
+    return null;
+  }
+  const [
+    healthInsuranceLabels,
+    hospitalizationReasonLabels,
+    uncontrolledSymptomLabels,
+    userNames,
+  ] = await Promise.all([
+    findOptionLabels(
+      "health_insurance",
+      record.healthInsuranceOptionId ? [record.healthInsuranceOptionId] : [],
+    ),
+    findOptionLabels(
+      "hospitalization_reason",
+      record.hospitalizationReasonOptionIds,
+    ),
+    findOptionLabels(
+      "uncontrolled_symptom",
+      record.uncontrolledSymptomOptionIds,
+    ),
+    findUserNames(
+      [
+        record.createdByUserId,
+        record.updatedByUserId,
+        record.annulledByUserId,
+      ].flatMap((userId) => (userId ? [userId] : [])),
+    ),
+  ]);
+
+  return {
+    id: record.id,
+    clinicalRecordNumber: record.clinicalRecordNumber,
+    fullName: `${record.firstName} ${record.lastName}`,
+    firstName: record.firstName,
+    lastName: record.lastName,
+    birthDate: record.birthDate,
+    dni: record.dni,
+    address: record.address,
+    healthInsuranceLabel: healthInsuranceLabels[0] ?? null,
+    healthInsuranceMemberNumber: record.healthInsuranceMemberNumber,
+    hospitalizationDate: record.hospitalizationDate,
+    hospitalizationReasonLabels,
+    otherHospitalizationReason: record.otherHospitalizationReason,
+    uncontrolledSymptomLabels,
+    origin: record.origin,
+    admissionInterviewId: record.admissionInterviewId,
+    createdAt: record.createdAt,
+    createdByName: nameOf(userNames, record.createdByUserId),
+    updatedAt: record.updatedAt,
+    updatedByName: nameOf(userNames, record.updatedByUserId),
+    annulment:
+      record.annulledAt && record.annulmentReason
+        ? {
+            annulledAt: record.annulledAt,
+            annulledByName: nameOf(userNames, record.annulledByUserId),
+            reason: record.annulmentReason,
+          }
+        : null,
+  };
+}
+
 export type InterviewGuest = {
+  guestId: string;
   clinicalRecordNumber: number;
   acceptedAt: Date;
 };
@@ -223,6 +350,7 @@ export async function findGuestOfInterview(
   const guest = await findActiveGuestOfInterview(getDatabase(), interviewId);
   return guest
     ? {
+        guestId: guest.id,
         clinicalRecordNumber: guest.clinicalRecordNumber,
         acceptedAt: guest.createdAt,
       }

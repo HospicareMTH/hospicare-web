@@ -241,6 +241,7 @@ describe("huéspedes: alta manual", () => {
     await expect(checkGuestDniAction("11.222.333")).resolves.toEqual({
       hasActiveGuest: true,
       hasPendingInterview: false,
+      pendingInterviewHref: null,
     });
 
     await getDatabase()
@@ -251,6 +252,7 @@ describe("huéspedes: alta manual", () => {
     await expect(checkGuestDniAction("11222333")).resolves.toEqual({
       hasActiveGuest: false,
       hasPendingInterview: false,
+      pendingInterviewHref: null,
     });
   });
 

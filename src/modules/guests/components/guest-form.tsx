@@ -27,6 +27,7 @@ import {
 } from "../actions";
 import {
   type GuestDetailsInput,
+  buildGuestPath,
   type GuestField,
   GUESTS_PATH,
   OTHER_HOSPITALIZATION_REASON_MAX_LENGTH,
@@ -42,6 +43,7 @@ const FIELD_GROUP_CLASS_NAME =
 const NO_DNI_MATCHES: GuestDniCheck = {
   hasActiveGuest: false,
   hasPendingInterview: false,
+  pendingInterviewHref: null,
 };
 
 const INVALID_FORM_MESSAGE =
@@ -151,7 +153,7 @@ function GuestFormContent({
       if (result?.status !== "success") {
         return;
       }
-      router.push(GUESTS_PATH);
+      router.push(buildGuestPath(result.guestId));
     });
   }
 
@@ -205,6 +207,17 @@ function GuestFormContent({
               Hay una entrevista de admisión con este DNI que todavía no se
               aceptó. Si es la misma persona, aceptá esa entrevista en lugar de
               crear el huésped sin entrevista.
+              {dniMatches.pendingInterviewHref && (
+                <>
+                  {" "}
+                  <Link
+                    href={dniMatches.pendingInterviewHref}
+                    className="font-medium text-primary underline underline-offset-4"
+                  >
+                    Ver la entrevista
+                  </Link>
+                </>
+              )}
             </DniNotice>
           )}
         </div>

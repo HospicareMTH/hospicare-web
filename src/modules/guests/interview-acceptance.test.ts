@@ -185,13 +185,14 @@ describe("huéspedes: aceptar una entrevista", () => {
     await expect(countGuests()).resolves.toBe(0);
   });
 
-  it("RF-HUE-03: el alta manual avisa una entrevista vigente sin aceptar con el mismo DNI", async () => {
+  it("RF-HUE-03: el alta manual avisa una entrevista vigente sin aceptar con el mismo DNI y enlaza a ella", async () => {
     const actorUserId = await signInAsSuperUser();
     const interviewId = await insertFictitiousInterviewId();
 
     await expect(checkGuestDniAction("11.222.333")).resolves.toEqual({
       hasActiveGuest: false,
       hasPendingInterview: true,
+      pendingInterviewHref: `/admisiones/${interviewId}`,
     });
 
     await acceptAdmissionInterview(actorUserId, interviewId);
@@ -199,6 +200,25 @@ describe("huéspedes: aceptar una entrevista", () => {
     await expect(checkGuestDniAction("11.222.333")).resolves.toEqual({
       hasActiveGuest: true,
       hasPendingInterview: false,
+      pendingInterviewHref: null,
+    });
+  });
+
+  it("RF-HUE-03: con varias entrevistas pendientes, el enlace lleva a Admisiones filtrado por DNI; sin permiso de verlas, no hay enlace", async () => {
+    await signInAsSuperUser();
+    await insertFictitiousInterviewId();
+    await insertFictitiousInterviewId();
+
+    await expect(checkGuestDniAction("11.222.333")).resolves.toMatchObject({
+      hasPendingInterview: true,
+      pendingInterviewHref: "/admisiones?buscar=11222333",
+    });
+
+    await restrictSignedInUserTo(["guests.records.manual_create"]);
+
+    await expect(checkGuestDniAction("11.222.333")).resolves.toMatchObject({
+      hasPendingInterview: true,
+      pendingInterviewHref: null,
     });
   });
 });

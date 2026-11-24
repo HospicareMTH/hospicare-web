@@ -29,6 +29,39 @@ import {
   guestUncontrolledSymptoms,
 } from "./tables";
 
+export type GuestRecord = typeof guests.$inferSelect & {
+  hospitalizationReasonOptionIds: string[];
+  uncontrolledSymptomOptionIds: string[];
+};
+
+export async function findGuestRecord(
+  guestId: string,
+): Promise<GuestRecord | null> {
+  const database = getDatabase();
+  const [guest] = await database
+    .select()
+    .from(guests)
+    .where(eq(guests.id, guestId));
+  if (!guest) {
+    return null;
+  }
+  const [reasons, symptoms] = await Promise.all([
+    database
+      .select({ id: guestHospitalizationReasons.hospitalizationReasonOptionId })
+      .from(guestHospitalizationReasons)
+      .where(eq(guestHospitalizationReasons.guestId, guestId)),
+    database
+      .select({ id: guestUncontrolledSymptoms.uncontrolledSymptomOptionId })
+      .from(guestUncontrolledSymptoms)
+      .where(eq(guestUncontrolledSymptoms.guestId, guestId)),
+  ]);
+  return {
+    ...guest,
+    hospitalizationReasonOptionIds: reasons.map(({ id }) => id),
+    uncontrolledSymptomOptionIds: symptoms.map(({ id }) => id),
+  };
+}
+
 export type GuestListRecord = {
   id: string;
   clinicalRecordNumber: number;

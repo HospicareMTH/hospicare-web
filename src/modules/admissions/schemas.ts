@@ -10,6 +10,7 @@ import {
   requiredTextSchema,
 } from "@/platform/field-validation";
 import {
+  LIST_PARAMETERS,
   type ListQuery,
   type ListSort,
   parseListQuery,
@@ -22,6 +23,10 @@ export const NEW_ADMISSION_INTERVIEW_PATH = "/admisiones/nueva";
 
 export function buildAdmissionInterviewPath(interviewId: string): string {
   return `${ADMISSIONS_PATH}/${interviewId}`;
+}
+
+export function buildAdmissionInterviewSearchPath(search: string): string {
+  return `${ADMISSIONS_PATH}?${new URLSearchParams({ [LIST_PARAMETERS.search]: search })}`;
 }
 
 export function buildEditAdmissionInterviewPath(interviewId: string): string {

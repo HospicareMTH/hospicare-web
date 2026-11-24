@@ -7,6 +7,10 @@ export { AdmissionInterviewsScreen } from "./components/admission-interviews-scr
 export { EditAdmissionInterviewScreen } from "./components/edit-admission-interview-screen";
 export { NewAdmissionInterviewScreen } from "./components/new-admission-interview-screen";
 export {
+  buildAdmissionInterviewPath,
+  buildAdmissionInterviewSearchPath,
+} from "./schemas";
+export {
   type AdmissionsReport,
   findActiveInterviewIdsWithDni,
   getAdmissionsReport,
