@@ -2,7 +2,7 @@ import { AlertCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { LoadingStatus } from "@/components/shared/loading-status";
@@ -23,11 +23,15 @@ import { AdmissionInterviewForm } from "./admission-interview-form";
 
 const EDIT_TITLE = "Editar entrevista";
 
+type EditAdmissionInterviewScreenProps = {
+  params: Promise<{ id: string }>;
+  renderEditNotice: (interviewId: string) => ReactNode;
+};
+
 async function EditAdmissionInterviewContent({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  renderEditNotice,
+}: EditAdmissionInterviewScreenProps) {
   const { access } = await requirePermission("admissions.interviews.update");
   const { id } = await params;
   const interview = await findAdmissionInterview(id);
@@ -62,6 +66,7 @@ async function EditAdmissionInterviewContent({
 
   return (
     <SectionSheet destination={ADMISSIONS_DESTINATION} title={EDIT_TITLE}>
+      {renderEditNotice(interview.id)}
       <AdmissionInterviewForm
         mode={{
           kind: "edit",
@@ -79,9 +84,8 @@ async function EditAdmissionInterviewContent({
 
 export function EditAdmissionInterviewScreen({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  renderEditNotice,
+}: EditAdmissionInterviewScreenProps) {
   return (
     <Suspense
       fallback={
@@ -90,7 +94,10 @@ export function EditAdmissionInterviewScreen({
         </SectionSheet>
       }
     >
-      <EditAdmissionInterviewContent params={params} />
+      <EditAdmissionInterviewContent
+        params={params}
+        renderEditNotice={renderEditNotice}
+      />
     </Suspense>
   );
 }

@@ -6,9 +6,11 @@ export {
 export { SIGN_IN_PATH } from "./routes";
 export {
   createFirstSuperUser,
+  findSigner,
   findUserIdsByName,
   findUserNames,
   type FirstSuperUserResult,
+  type Signer,
 } from "./users/service";
 export { requireSession } from "./auth/session";
 export {

@@ -2,6 +2,14 @@ import type { ComponentProps } from "react";
 
 import { FieldLabel } from "@/components/ui/field";
 
+export function RequiredMark() {
+  return (
+    <span aria-hidden="true" className="text-destructive">
+      *
+    </span>
+  );
+}
+
 export function RequiredFieldLabel({
   children,
   ...labelProps
@@ -9,9 +17,7 @@ export function RequiredFieldLabel({
   return (
     <FieldLabel {...labelProps}>
       {children}
-      <span aria-hidden="true" className="text-destructive">
-        *
-      </span>
+      <RequiredMark />
     </FieldLabel>
   );
 }

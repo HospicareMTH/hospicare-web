@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { EditAdmissionInterviewScreen } from "@/modules/admissions";
+import { AcceptedInterviewEditNotice } from "@/modules/guests";
 
 export const metadata: Metadata = {
   title: "Editar entrevista",
@@ -11,5 +12,12 @@ export const metadata: Metadata = {
 export default function EditAdmissionInterviewPage({
   params,
 }: PageProps<"/admisiones/[id]/editar">) {
-  return <EditAdmissionInterviewScreen params={params} />;
+  return (
+    <EditAdmissionInterviewScreen
+      params={params}
+      renderEditNotice={(interviewId) => (
+        <AcceptedInterviewEditNotice interviewId={interviewId} />
+      )}
+    />
+  );
 }

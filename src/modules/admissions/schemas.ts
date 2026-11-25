@@ -1,12 +1,18 @@
 import { z } from "zod";
 
 import {
+  ADDRESS_LIMITS,
   dniSchema,
+  HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
+  optionalOptionIdSchema,
   optionalTextSchema,
+  optionIdsSchema,
   pastOrTodayDateSchema,
+  PERSON_NAME_LIMITS,
   requiredTextSchema,
 } from "@/platform/field-validation";
 import {
+  LIST_PARAMETERS,
   type ListQuery,
   type ListSort,
   parseListQuery,
@@ -19,6 +25,10 @@ export const NEW_ADMISSION_INTERVIEW_PATH = "/admisiones/nueva";
 
 export function buildAdmissionInterviewPath(interviewId: string): string {
   return `${ADMISSIONS_PATH}/${interviewId}`;
+}
+
+export function buildAdmissionInterviewSearchPath(search: string): string {
+  return `${ADMISSIONS_PATH}?${new URLSearchParams({ [LIST_PARAMETERS.search]: search })}`;
 }
 
 export function buildEditAdmissionInterviewPath(interviewId: string): string {
@@ -61,30 +71,13 @@ function parseFilterId(value: string | undefined): string | null {
   return result.success ? result.data : null;
 }
 
-export const PERSON_NAME_LIMITS = { minLength: 2, maxLength: 80 };
-export const ADDRESS_LIMITS = { minLength: 3, maxLength: 200 };
 export const INTERVIEWEE_NAME_LIMITS = { minLength: 2, maxLength: 120 };
 export const SHORT_TEXT_MAX_LENGTH = 40;
 export const RELIGION_DETAIL_MAX_LENGTH = 120;
 export const CLINICAL_TEXT_MAX_LENGTH = 2000;
-export const ANNULMENT_REASON_LIMITS = { minLength: 10, maxLength: 500 };
-
-export const annulmentSchema = z.object({
-  reason: requiredTextSchema("El motivo", ANNULMENT_REASON_LIMITS),
-});
-
-export type AnnulmentInput = z.input<typeof annulmentSchema>;
-
-const INVALID_OPTION_MESSAGE =
-  "La opción elegida no es válida. Actualizá la pantalla.";
-
 function requiredOptionIdSchema(missingMessage: string) {
   return z.uuid({ error: missingMessage });
 }
-
-const optionalOptionIdSchema = z
-  .union([z.literal(""), z.uuid()], { error: INVALID_OPTION_MESSAGE })
-  .transform((optionId) => optionId || null);
 
 function clinicalTextSchema(fieldLabel: string) {
   return optionalTextSchema(fieldLabel, CLINICAL_TEXT_MAX_LENGTH);
@@ -101,7 +94,7 @@ export const admissionInterviewDetailsSchema = z
     healthInsuranceOptionId: optionalOptionIdSchema,
     healthInsuranceMemberNumber: optionalTextSchema(
       "El número de afiliado",
-      SHORT_TEXT_MAX_LENGTH,
+      HEALTH_INSURANCE_MEMBER_NUMBER_MAX_LENGTH,
     ),
     informationAwarenessOptionId: requiredOptionIdSchema(
       "Elegí la información general.",
@@ -133,7 +126,7 @@ export const admissionInterviewDetailsSchema = z
       "Elegí el tratamiento oncológico específico.",
     ),
     nonOncologicalDisease: clinicalTextSchema("La enfermedad no oncológica"),
-    surgeryOptionIds: z.array(z.uuid({ error: INVALID_OPTION_MESSAGE })),
+    surgeryOptionIds: optionIdsSchema,
     radiotherapy: clinicalTextSchema("La radioterapia"),
     chemotherapy: clinicalTextSchema("La quimioterapia"),
     hemotherapy: clinicalTextSchema("La hemoterapia"),

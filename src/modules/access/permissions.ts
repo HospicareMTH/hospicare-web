@@ -83,6 +83,11 @@ export const PERMISSION_GROUPS = [
     label: "Reportes del inicio",
     permissions: [
       { key: "dashboard.admissions.view", label: "Admisiones" },
+      { key: "dashboard.guests.view", label: "Huéspedes" },
+      {
+        key: "dashboard.clinical_follow_up.view",
+        label: "Seguimiento clínico",
+      },
       { key: "dashboard.data_quality.view", label: "Calidad de datos" },
       { key: "dashboard.accesses.view", label: "Accesos" },
     ],
@@ -100,6 +105,56 @@ export const PERMISSION_GROUPS = [
       { key: "admissions.interviews.create", label: "Crear entrevistas" },
       { key: "admissions.interviews.update", label: "Modificar entrevistas" },
       { key: "admissions.interviews.annul", label: "Anular entrevistas" },
+    ],
+  },
+  {
+    key: "guests",
+    label: "Huéspedes",
+    permissions: [
+      { key: "guests.records.view", label: "Ver huéspedes" },
+      {
+        key: "guests.records.create",
+        label: "Crear huéspedes desde entrevistas",
+      },
+      {
+        key: "guests.records.manual_create",
+        label: "Crear huéspedes sin entrevista",
+      },
+      { key: "guests.records.update", label: "Modificar huéspedes" },
+      { key: "guests.records.annul", label: "Anular huéspedes" },
+      { key: "guests.cam_evaluations.view", label: "Ver evaluaciones CAM" },
+      {
+        key: "guests.cam_evaluations.create",
+        label: "Crear evaluaciones CAM",
+      },
+      {
+        key: "guests.cam_evaluations.update",
+        label: "Modificar evaluaciones CAM",
+      },
+      {
+        key: "guests.physical_evaluations.view",
+        label: "Ver evaluaciones físicas de ingreso",
+      },
+      {
+        key: "guests.physical_evaluations.create",
+        label: "Crear evaluaciones físicas de ingreso",
+      },
+      {
+        key: "guests.physical_evaluations.update",
+        label: "Modificar evaluaciones físicas de ingreso",
+      },
+      { key: "guests.daily_evolutions.view", label: "Ver evoluciones" },
+      { key: "guests.daily_evolutions.create", label: "Crear evoluciones" },
+      { key: "guests.daily_evolutions.update", label: "Modificar evoluciones" },
+      { key: "guests.daily_evolutions.annul", label: "Anular evoluciones" },
+    ],
+  },
+  {
+    key: "system_settings",
+    label: "Configuración",
+    permissions: [
+      { key: "admin.system_settings.view", label: "Ver" },
+      { key: "admin.system_settings.update", label: "Modificar" },
     ],
   },
   {

@@ -33,6 +33,13 @@ describe("secciones de Administración", () => {
     expect(listSectionLabels(["admin.roles.view"])).toEqual(["Roles"]);
   });
 
+  it("RF-CFG-04, RF-ROL-09: muestra Configuración solo con su permiso de ver", () => {
+    expect(listSectionLabels(["admin.system_settings.view"])).toEqual([
+      "Configuración",
+    ]);
+    expect(listSectionLabels(["admin.system_settings.update"])).toEqual([]);
+  });
+
   it("RF-ROL-09: oculta Catálogos sin permiso de ver catálogos", () => {
     expect(
       listSectionLabels(["admin.roles.view", "admin.surgery_options.create"]),

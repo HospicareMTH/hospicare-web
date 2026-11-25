@@ -38,6 +38,21 @@ const CATALOG_SEED_STATEMENTS: readonly MigrationStatement[] = [
     migration: `${MIGRATIONS_FOLDER}/0017_admission_interviews_audit.sql`,
     statementStart: 'UPDATE "catalog_options" SET "system_key"',
   },
+  {
+    migration: `${MIGRATIONS_FOLDER}/0024_physical_admission_evaluations_audit.sql`,
+    statementStart: 'UPDATE "catalog_options" SET "system_key"',
+  },
+];
+
+const SYSTEM_SETTINGS_SEED_STATEMENTS: readonly MigrationStatement[] = [
+  {
+    migration: `${MIGRATIONS_FOLDER}/0020_guests_and_settings_audit.sql`,
+    statementStart: 'INSERT INTO "system_settings"',
+  },
+  {
+    migration: `${MIGRATIONS_FOLDER}/0026_daily_evolutions_audit.sql`,
+    statementStart: 'INSERT INTO "system_settings"',
+  },
 ];
 
 async function readMigrationStatement({
@@ -104,9 +119,12 @@ export function resetTestDatabase(): Promise<void> {
     );
     await pool.query(`DELETE FROM "roles" WHERE "system_key" IS NULL`);
     await pool.query(SEED_ROLE_PERMISSIONS_SQL);
-    // CASCADE también vacía catalog_options y admission_interviews, que referencian a users.
+    // CASCADE también vacía catalog_options, admission_interviews, guests, sus evaluaciones, sus evoluciones y system_settings, que referencian a users.
     await pool.query(`TRUNCATE ${tableList} RESTART IDENTITY CASCADE`);
     for (const seedStatement of CATALOG_SEED_STATEMENTS) {
+      await pool.query(await readMigrationStatement(seedStatement));
+    }
+    for (const seedStatement of SYSTEM_SETTINGS_SEED_STATEMENTS) {
       await pool.query(await readMigrationStatement(seedStatement));
     }
     await pool.query(`TRUNCATE "audit_log" RESTART IDENTITY`);

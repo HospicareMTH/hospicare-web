@@ -3,7 +3,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createAdmissionInterviewAction } from "../actions";
 import { buildEmptyInterview } from "../schemas";
-import type { CatalogFieldData, InterviewCatalogFields } from "../service";
+import type { CatalogFieldData } from "@/modules/catalogs";
+
+import type { InterviewCatalogFields } from "../service";
 import { AdmissionInterviewForm } from "./admission-interview-form";
 
 const push = vi.fn();

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
 
-import { YesNoField } from "./interview-fields";
+import { YesNoField } from "./form-fields";
 
 function YesNoHarness() {
   const [value, setValue] = useState(false);

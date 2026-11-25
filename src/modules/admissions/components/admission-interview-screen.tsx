@@ -2,12 +2,13 @@ import { AlertCircleIcon, PencilEdit02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 import { LoadingStatus } from "@/components/shared/loading-status";
 import { ADMISSIONS_DESTINATION } from "@/components/shared/navigation";
 import { SectionSheet } from "@/components/shared/section-sheet";
+import { describeRecordAuthor } from "@/components/shared/record-author";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { hasPermission, requirePermission } from "@/modules/access";
@@ -23,30 +24,35 @@ import { AdmissionInterviewDetail } from "./admission-interview-detail";
 import { AnnulInterviewButton } from "./annul-interview-button";
 
 const INTERVIEW_TITLE = "Entrevista de admisión";
-const FORMER_USER_LABEL = "una persona que ya no tiene cuenta";
-
-function describeAuthor(name: string | null): string {
-  return name ?? FORMER_USER_LABEL;
-}
-
 function RecordHistory({ interview }: { interview: AdmissionInterviewView }) {
   const wasUpdated =
     interview.updatedAt.getTime() !== interview.createdAt.getTime();
   return (
     <p className="text-base text-muted-foreground">
       Cargada el {formatDateTime(interview.createdAt)} por{" "}
-      {describeAuthor(interview.createdByName)}.
+      {describeRecordAuthor(interview.createdByName)}.
       {wasUpdated &&
-        ` Última modificación el ${formatDateTime(interview.updatedAt)} por ${describeAuthor(interview.updatedByName)}.`}
+        ` Última modificación el ${formatDateTime(interview.updatedAt)} por ${describeRecordAuthor(interview.updatedByName)}.`}
     </p>
   );
 }
 
+export type InterviewAcceptanceSlot = {
+  interviewId: string;
+  isAnnulled: boolean;
+  guestFullName: string;
+  guestDni: string;
+};
+
+type AdmissionInterviewScreenProps = {
+  params: Promise<{ id: string }>;
+  renderAcceptance: (interview: InterviewAcceptanceSlot) => ReactNode;
+};
+
 async function AdmissionInterviewContent({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  renderAcceptance,
+}: AdmissionInterviewScreenProps) {
   const { access } = await requirePermission("admissions.interviews.view");
   const { id } = await params;
   const interview = await findAdmissionInterview(id);
@@ -96,14 +102,20 @@ async function AdmissionInterviewContent({
           )}
         </div>
       </div>
+      {renderAcceptance({
+        interviewId: interview.id,
+        isAnnulled: interview.isAnnulled,
+        guestFullName,
+        guestDni: interview.details.guestDni,
+      })}
       {interview.annulment && (
         <Alert>
           <HugeiconsIcon icon={AlertCircleIcon} aria-hidden="true" />
           <AlertDescription className="flex flex-col gap-1 text-base">
             <span>
               Anulada el {formatDateTime(interview.annulment.annulledAt)} por{" "}
-              {describeAuthor(interview.annulment.annulledByName)}. Se puede
-              consultar, pero ya no se puede modificar.
+              {describeRecordAuthor(interview.annulment.annulledByName)}. Se
+              puede consultar, pero ya no se puede modificar.
             </span>
             <span className="whitespace-pre-line">
               Motivo: {interview.annulment.reason}
@@ -122,9 +134,8 @@ async function AdmissionInterviewContent({
 
 export function AdmissionInterviewScreen({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+  renderAcceptance,
+}: AdmissionInterviewScreenProps) {
   return (
     <Suspense
       fallback={
@@ -136,7 +147,10 @@ export function AdmissionInterviewScreen({
         </SectionSheet>
       }
     >
-      <AdmissionInterviewContent params={params} />
+      <AdmissionInterviewContent
+        params={params}
+        renderAcceptance={renderAcceptance}
+      />
     </Suspense>
   );
 }

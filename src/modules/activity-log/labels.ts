@@ -33,6 +33,19 @@ export const RESOURCE_LABELS = {
   healthcare_professional: "Profesional de salud",
   admission_interview: "Entrevista de admisión",
   admission_interview_surgery: "Cirugía de entrevista",
+  guest: "Huésped",
+  guest_hospitalization_reason: "Motivo de internación",
+  guest_uncontrolled_symptom: "Síntoma no controlado",
+  cam_evaluation: "Evaluación CAM",
+  physical_evaluation: "Evaluación física de ingreso",
+  physical_evaluation_hygiene: "Higiene de la evaluación física",
+  physical_evaluation_mouth: "Boca de la evaluación física",
+  physical_evaluation_catarsis: "Catarsis de la evaluación física",
+  physical_evaluation_catarsis_consistency:
+    "Consistencia de catarsis de la evaluación física",
+  daily_evolution: "Evolución diaria",
+  daily_evolution_clarification: "Nota aclaratoria",
+  system_setting: "Configuración",
 } as const;
 
 export type AuditResource = keyof typeof RESOURCE_LABELS;
@@ -92,6 +105,40 @@ const ACTION_LABELS = {
   "admission_interview_surgery.created": "Cirugía agregada",
   "admission_interview_surgery.updated": "Cirugía actualizada",
   "admission_interview_surgery.deleted": "Cirugía quitada",
+  "guest.created_from_admission": "Huésped creado desde admisión",
+  "guest.created_manually": "Huésped creado sin entrevista",
+  "guest.updated": "Huésped actualizado",
+  "guest.annulled": "Huésped anulado",
+  "guest_hospitalization_reason.created": "Motivo de internación agregado",
+  "guest_hospitalization_reason.updated": "Motivo de internación actualizado",
+  "guest_hospitalization_reason.deleted": "Motivo de internación quitado",
+  "guest_uncontrolled_symptom.created": "Síntoma no controlado agregado",
+  "guest_uncontrolled_symptom.updated": "Síntoma no controlado actualizado",
+  "guest_uncontrolled_symptom.deleted": "Síntoma no controlado quitado",
+  "cam_evaluation.created": "Evaluación CAM creada",
+  "cam_evaluation.updated": "Evaluación CAM actualizada",
+  "physical_evaluation.created": "Evaluación física de ingreso creada",
+  "physical_evaluation.updated": "Evaluación física de ingreso actualizada",
+  "physical_evaluation_hygiene.created": "Higiene agregada",
+  "physical_evaluation_hygiene.updated": "Higiene actualizada",
+  "physical_evaluation_hygiene.deleted": "Higiene quitada",
+  "physical_evaluation_mouth.created": "Boca agregada",
+  "physical_evaluation_mouth.updated": "Boca actualizada",
+  "physical_evaluation_mouth.deleted": "Boca quitada",
+  "physical_evaluation_catarsis.created": "Catarsis agregada",
+  "physical_evaluation_catarsis.updated": "Catarsis actualizada",
+  "physical_evaluation_catarsis.deleted": "Catarsis quitada",
+  "physical_evaluation_catarsis_consistency.created":
+    "Consistencia de catarsis agregada",
+  "physical_evaluation_catarsis_consistency.updated":
+    "Consistencia de catarsis actualizada",
+  "physical_evaluation_catarsis_consistency.deleted":
+    "Consistencia de catarsis quitada",
+  "daily_evolution.created": "Evolución creada",
+  "daily_evolution.updated": "Evolución actualizada",
+  "daily_evolution.annulled": "Evolución anulada",
+  "daily_evolution_clarification.created": "Nota aclaratoria creada",
+  "system_setting.updated": "Parámetros actualizados",
 } as const;
 
 const ACTION_LABELS_BY_CODE: ReadonlyMap<string, string> = new Map(

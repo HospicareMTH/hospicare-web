@@ -1,11 +1,12 @@
 import { findUserNames, type UserAccess } from "@/modules/access";
 import {
   canCreateCatalogEntries,
+  type CatalogFieldData,
   type CatalogKey,
   findReligionOtherOptionId,
   HEALTHCARE_PROFESSIONALS_PICKER,
-  type PickerCatalog,
   listSelectableCatalogOptions,
+  loadCatalogField,
   listSelectableHealthcareProfessionals,
   type SelectableCatalogEntry,
   validateCatalogSelection,
@@ -33,6 +34,7 @@ import {
   findAdmissionInterviewRecord,
   hasActiveInterviewWithDni,
   insertAdmissionInterview,
+  listActiveInterviewIdsWithDni,
   listAdmissionInterviewRecords,
   listUsedFilterIds,
   lockAdmissionInterviewRecord,
@@ -292,6 +294,43 @@ export function isDniInActiveInterview(
   return hasActiveInterviewWithDni(dni, excludedInterviewId);
 }
 
+export function findActiveInterviewIdsWithDni(dni: string): Promise<string[]> {
+  return listActiveInterviewIdsWithDni(dni);
+}
+
+export type InterviewToAccept = {
+  id: string;
+  isAnnulled: boolean;
+  firstName: string;
+  lastName: string;
+  birthDate: string;
+  dni: string;
+  address: string;
+  healthInsuranceOptionId: string | null;
+  healthInsuranceMemberNumber: string | null;
+};
+
+export async function lockInterviewToAccept(
+  transaction: DatabaseTransaction,
+  interviewId: string,
+): Promise<InterviewToAccept | null> {
+  const record = await lockAdmissionInterviewRecord(transaction, interviewId);
+  if (!record) {
+    return null;
+  }
+  return {
+    id: record.id,
+    isAnnulled: record.annulledAt !== null,
+    firstName: record.guestFirstName,
+    lastName: record.guestLastName,
+    birthDate: record.guestBirthDate,
+    dni: record.guestDni,
+    address: record.guestAddress,
+    healthInsuranceOptionId: record.healthInsuranceOptionId,
+    healthInsuranceMemberNumber: record.healthInsuranceMemberNumber,
+  };
+}
+
 export type AdmissionInterviewView = {
   id: string;
   details: AdmissionInterviewDetailsInput;
@@ -493,12 +532,6 @@ export async function searchAdmissionInterviews(
   };
 }
 
-export type CatalogFieldData = {
-  catalog: PickerCatalog;
-  options: SelectableCatalogEntry[];
-  canCreate: boolean;
-};
-
 export type InterviewCatalogFields = Record<
   | "healthInsurance"
   | "informationAwareness"
@@ -519,18 +552,6 @@ export type InterviewFormOptions = {
 
 function toSavedIds(optionId: string | undefined): string[] {
   return optionId ? [optionId] : [];
-}
-
-async function loadCatalogField(
-  access: UserAccess,
-  catalog: CatalogKey,
-  savedIds: string[],
-): Promise<CatalogFieldData> {
-  return {
-    catalog,
-    options: await listSelectableCatalogOptions(catalog, savedIds),
-    canCreate: canCreateCatalogEntries(access, catalog),
-  };
 }
 
 async function loadPrimaryDoctorField(
@@ -614,18 +635,24 @@ export async function loadInterviewFormOptions(
 export type AdmissionsReport = {
   windowDays: number;
   createdInWindowCount: number;
+  activeCount: number;
+  acceptedCount: number;
   pendingDecisionCount: number;
 };
 
 export async function getAdmissionsReport(
+  acceptedInterviewIds: readonly string[],
   now: Date = new Date(),
 ): Promise<AdmissionsReport> {
   const counts = await countAdmissionInterviewsForReport(
     getReportWindowStart(now),
+    acceptedInterviewIds,
   );
   return {
     windowDays: REPORT_WINDOW_DAYS,
     createdInWindowCount: counts.createdSinceCount,
-    pendingDecisionCount: counts.pendingDecisionCount,
+    activeCount: counts.activeCount,
+    acceptedCount: counts.acceptedCount,
+    pendingDecisionCount: counts.activeCount - counts.acceptedCount,
   };
 }

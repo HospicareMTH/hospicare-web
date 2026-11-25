@@ -30,6 +30,7 @@ import { SUPER_USER_SYSTEM_KEY } from "../authorization/repository";
 import type { UserAccess } from "../authorization/service";
 import {
   deleteUserSessions,
+  findSignerRecord,
   findUserIdsWithNameContaining,
   findUserNamesByIds,
   hasPendingInvitation,
@@ -38,6 +39,7 @@ import {
   listUsers as listUserRecords,
   lockUser,
   updateAccessRevocation,
+  type SignerRecord,
   updateUserRole,
   type UserSummary,
 } from "./repository";
@@ -321,4 +323,10 @@ export async function findUserNames(
 
 export function findUserIdsByName(searchTerm: string): Promise<string[]> {
   return findUserIdsWithNameContaining(searchTerm);
+}
+
+export type Signer = SignerRecord;
+
+export function findSigner(userId: string): Promise<Signer | null> {
+  return findSignerRecord(userId);
 }

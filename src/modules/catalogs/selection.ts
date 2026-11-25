@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { PickerCatalog } from "./definitions";
+
 import {
   type OperationResult,
   reject,
@@ -10,6 +12,12 @@ export type SelectableCatalogEntry = {
   id: string;
   label: string;
   isActive: boolean;
+};
+
+export type CatalogFieldData = {
+  catalog: PickerCatalog;
+  options: SelectableCatalogEntry[];
+  canCreate: boolean;
 };
 
 const entryIdSchema = z.uuid();

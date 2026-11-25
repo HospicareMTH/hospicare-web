@@ -7,7 +7,11 @@ import {
   hasPermission,
   requirePermission,
 } from "@/modules/access";
-import { dniSchema } from "@/platform/field-validation";
+import {
+  annulmentSchema,
+  type AnnulmentInput,
+  dniSchema,
+} from "@/platform/field-validation";
 import {
   type ActionResult,
   refreshOnSuccess,
@@ -19,8 +23,6 @@ import {
   admissionInterviewDetailsSchema,
   type AdmissionInterviewDetailsInput,
   admissionInterviewIdSchema,
-  annulmentSchema,
-  type AnnulmentInput,
 } from "./schemas";
 import {
   annulAdmissionInterview,

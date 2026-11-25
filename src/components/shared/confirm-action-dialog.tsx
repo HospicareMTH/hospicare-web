@@ -19,7 +19,12 @@ import type { ActionResult } from "@/platform/operation-result";
 import { runAction } from "@/components/shared/run-action";
 import { DIALOG_BUTTON_CLASS_NAME } from "@/components/shared/form-styles";
 
-export function ConfirmActionDialog({
+type SuccessResult<Result extends ActionResult> = Extract<
+  Result,
+  { status: "success" }
+>;
+
+export function ConfirmActionDialog<Result extends ActionResult>({
   icon,
   title,
   description,
@@ -35,9 +40,9 @@ export function ConfirmActionDialog({
   description: string;
   confirmLabel: string;
   pendingLabel: string;
-  successMessage: string;
+  successMessage: string | ((result: SuccessResult<Result>) => string);
   isDestructive: boolean;
-  action: () => Promise<ActionResult>;
+  action: () => Promise<Result>;
   onClose: () => void;
 }) {
   const [isRunning, startRunning] = useTransition();

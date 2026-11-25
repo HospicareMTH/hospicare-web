@@ -6,8 +6,9 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { getDatabase } from "@/platform/database/client";
 import { resetTestDatabase } from "@/platform/database/test-database";
+import { annulmentSchema } from "@/platform/field-validation";
 
-import { annulmentSchema, DEFAULT_ADMISSION_INTERVIEW_SORT } from "./schemas";
+import { DEFAULT_ADMISSION_INTERVIEW_SORT } from "./schemas";
 import {
   ADMISSION_INTERVIEW_REJECTION_MESSAGES,
   annulAdmissionInterview,

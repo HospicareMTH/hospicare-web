@@ -43,10 +43,14 @@ describe("manual funcional", () => {
       "mi-cuenta",
       "inicio",
       "admisiones",
+      "huespedes",
+      "evaluaciones",
+      "evolucion-diaria",
       "usuarios",
       "roles",
       "invitaciones",
       "catalogos",
+      "configuracion",
       "registro-de-actividad",
     ]);
   });
@@ -81,6 +85,42 @@ describe("manual funcional", () => {
     ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "registro-de-actividad"]);
     expect(
       listSectionIds(["documentation.app.view", "dashboard.accesses.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "inicio"]);
+  });
+
+  it("RF-MAN-02: Huéspedes, Evaluaciones, Evolución diaria y Configuración se ven con su permiso de ver", () => {
+    expect(
+      listSectionIds(["documentation.app.view", "guests.records.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "huespedes"]);
+    expect(
+      listSectionIds(["documentation.app.view", "guests.cam_evaluations.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "evaluaciones"]);
+    expect(
+      listSectionIds([
+        "documentation.app.view",
+        "guests.physical_evaluations.view",
+      ]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "evaluaciones"]);
+    expect(
+      listSectionIds([
+        "documentation.app.view",
+        "guests.daily_evolutions.view",
+      ]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "evolucion-diaria"]);
+    expect(
+      listSectionIds(["documentation.app.view", "admin.system_settings.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "configuracion"]);
+  });
+
+  it("RF-MAN-02: Inicio se ve con el reporte Huéspedes o con Seguimiento clínico", () => {
+    expect(
+      listSectionIds(["documentation.app.view", "dashboard.guests.view"]),
+    ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "inicio"]);
+    expect(
+      listSectionIds([
+        "documentation.app.view",
+        "dashboard.clinical_follow_up.view",
+      ]),
     ).toEqual(["como-se-usa", "ingreso", "mi-cuenta", "inicio"]);
   });
 

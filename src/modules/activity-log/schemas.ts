@@ -52,6 +52,19 @@ export const RESOURCE_PARAMETERS: Record<AuditResource, string> = {
   healthcare_professional: "profesional-de-salud",
   admission_interview: "entrevista-de-admision",
   admission_interview_surgery: "cirugia-de-entrevista",
+  guest: "huesped",
+  guest_hospitalization_reason: "motivo-de-internacion",
+  guest_uncontrolled_symptom: "sintoma-no-controlado",
+  cam_evaluation: "evaluacion-cam",
+  physical_evaluation: "evaluacion-fisica",
+  physical_evaluation_hygiene: "higiene-de-evaluacion-fisica",
+  physical_evaluation_mouth: "boca-de-evaluacion-fisica",
+  physical_evaluation_catarsis: "catarsis-de-evaluacion-fisica",
+  physical_evaluation_catarsis_consistency:
+    "consistencia-de-catarsis-de-evaluacion-fisica",
+  daily_evolution: "evolucion-diaria",
+  daily_evolution_clarification: "nota-aclaratoria",
+  system_setting: "configuracion",
 };
 
 export const ACTIVITY_LOG_SORT_KEYS = ["occurredAt"] as const;
