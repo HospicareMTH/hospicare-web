@@ -292,6 +292,8 @@ describe("huéspedes: base", () => {
       "guests.physical_evaluations.update",
       "guests.daily_evolutions.view",
       "guests.daily_evolutions.create",
+      "guests.daily_evolutions.update",
+      "guests.daily_evolutions.annul",
     ]);
   });
 });

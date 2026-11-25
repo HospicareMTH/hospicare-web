@@ -44,6 +44,7 @@ export const RESOURCE_LABELS = {
   physical_evaluation_catarsis_consistency:
     "Consistencia de catarsis de la evaluación física",
   daily_evolution: "Evolución diaria",
+  daily_evolution_clarification: "Nota aclaratoria",
   system_setting: "Configuración",
 } as const;
 
@@ -135,6 +136,8 @@ const ACTION_LABELS = {
     "Consistencia de catarsis quitada",
   "daily_evolution.created": "Evolución creada",
   "daily_evolution.updated": "Evolución actualizada",
+  "daily_evolution.annulled": "Evolución anulada",
+  "daily_evolution_clarification.created": "Nota aclaratoria creada",
   "system_setting.updated": "Parámetros actualizados",
 } as const;
 

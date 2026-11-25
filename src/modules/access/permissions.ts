@@ -140,6 +140,8 @@ export const PERMISSION_GROUPS = [
       },
       { key: "guests.daily_evolutions.view", label: "Ver evoluciones" },
       { key: "guests.daily_evolutions.create", label: "Crear evoluciones" },
+      { key: "guests.daily_evolutions.update", label: "Modificar evoluciones" },
+      { key: "guests.daily_evolutions.annul", label: "Anular evoluciones" },
     ],
   },
   {

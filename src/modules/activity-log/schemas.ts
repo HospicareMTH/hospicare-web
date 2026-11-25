@@ -63,6 +63,7 @@ export const RESOURCE_PARAMETERS: Record<AuditResource, string> = {
   physical_evaluation_catarsis_consistency:
     "consistencia-de-catarsis-de-evaluacion-fisica",
   daily_evolution: "evolucion-diaria",
+  daily_evolution_clarification: "nota-aclaratoria",
   system_setting: "configuracion",
 };
 

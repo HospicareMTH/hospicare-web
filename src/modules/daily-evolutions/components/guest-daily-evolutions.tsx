@@ -1,32 +1,63 @@
 import { describeRecordAuthor } from "@/components/shared/record-author";
-import { getCurrentUser, hasPermission } from "@/modules/access";
+import {
+  getCurrentUser,
+  hasPermission,
+  type UserAccess,
+} from "@/modules/access";
 import type { GuestTabSlot } from "@/modules/guests";
 import { formatDateTime } from "@/platform/dates";
 
 import {
   type DailyEvolutionView,
+  isWithinEditWindow,
   listDailyEvolutions,
   resolveSignature,
 } from "../service";
 import { DailyEvolutionComposer } from "./daily-evolution-composer";
+import {
+  DailyEvolutionEntry,
+  type DailyEvolutionEntryData,
+} from "./daily-evolution-entry";
 
-function DailyEvolutionItem({ evolution }: { evolution: DailyEvolutionView }) {
-  return (
-    <li className="flex flex-col gap-2 border-t py-4 first:border-t-0">
-      <p className="text-sm text-muted-foreground">
-        <time
-          dateTime={evolution.registeredAt.toISOString()}
-          className="font-medium text-foreground tabular-nums"
-        >
-          {formatDateTime(evolution.registeredAt)}
-        </time>{" "}
-        · {describeRecordAuthor(evolution.authorName)} · {evolution.signature}
-      </p>
-      <p className="max-w-prose text-base whitespace-pre-line">
-        {evolution.text}
-      </p>
-    </li>
-  );
+function toEntryData(
+  evolution: DailyEvolutionView,
+  access: UserAccess,
+  isGuestAnnulled: boolean,
+  clarificationSignature: string | null,
+  now: Date,
+): DailyEvolutionEntryData {
+  const isWithinWindow = isWithinEditWindow(evolution, now);
+  const isAuthor = evolution.authorUserId === access.userId;
+  const canChange = !isGuestAnnulled && isAuthor && isWithinWindow;
+  const wasModified =
+    evolution.updatedAt.getTime() !== evolution.registeredAt.getTime();
+  return {
+    id: evolution.id,
+    version: evolution.version,
+    text: evolution.text,
+    timeLabel: formatDateTime(evolution.registeredAt),
+    timeIso: evolution.registeredAt.toISOString(),
+    authorLabel: describeRecordAuthor(evolution.authorName),
+    signature: evolution.signature,
+    isLocked: !isWithinWindow,
+    editableUntilLabel: canChange
+      ? formatDateTime(evolution.editableUntil)
+      : null,
+    modifiedAtLabel: wasModified ? formatDateTime(evolution.updatedAt) : null,
+    clarifications: evolution.clarifications.map((clarification) => ({
+      id: clarification.id,
+      text: clarification.text,
+      timeLabel: formatDateTime(clarification.createdAt),
+      timeIso: clarification.createdAt.toISOString(),
+      authorLabel: describeRecordAuthor(clarification.authorName),
+      signature: clarification.signature,
+    })),
+    canEdit:
+      canChange && hasPermission(access, "guests.daily_evolutions.update"),
+    canAnnul:
+      canChange && hasPermission(access, "guests.daily_evolutions.annul"),
+    clarificationSignature,
+  };
 }
 
 export async function GuestDailyEvolutions({ guest }: { guest: GuestTabSlot }) {
@@ -34,13 +65,14 @@ export async function GuestDailyEvolutions({ guest }: { guest: GuestTabSlot }) {
   if (!hasPermission(access, "guests.daily_evolutions.view")) {
     return null;
   }
-  const canRegister =
+  const canWrite =
     !guest.isAnnulled &&
     hasPermission(access, "guests.daily_evolutions.create");
   const [evolutions, signature] = await Promise.all([
     listDailyEvolutions(guest.id),
-    canRegister ? resolveSignature(access.userId) : null,
+    canWrite ? resolveSignature(access.userId) : null,
   ]);
+  const now = new Date();
 
   return (
     <div className="flex flex-col gap-6">
@@ -52,7 +84,16 @@ export async function GuestDailyEvolutions({ guest }: { guest: GuestTabSlot }) {
       {evolutions.length > 0 ? (
         <ol className="flex flex-col">
           {evolutions.map((evolution) => (
-            <DailyEvolutionItem key={evolution.id} evolution={evolution} />
+            <DailyEvolutionEntry
+              key={`${evolution.id}-${evolution.version}-${evolution.clarifications.length}`}
+              evolution={toEntryData(
+                evolution,
+                access,
+                guest.isAnnulled,
+                signature,
+                now,
+              )}
+            />
           ))}
         </ol>
       ) : (
