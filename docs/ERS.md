@@ -443,10 +443,10 @@ Todas las ventanas temporales son de 7 días y se calculan en hora de Buenos Air
 | Reporte | Indicadores |
 | --- | --- |
 | Operación general | Huéspedes activos, admisiones pendientes, carga de 7 días |
-| Admisiones | Entrevistas registradas, conversión a huésped, pendientes de decisión |
-| Huéspedes | Huéspedes vigentes, altas desde admisión, cobertura cargada, carpetas impresas |
+| Admisiones | Entrevistas registradas en 7 días; conversión a huésped: porcentaje de entrevistas vigentes con huésped vigente; pendientes de decisión: entrevistas vigentes sin huésped vigente |
+| Huéspedes | Huéspedes vigentes; vigentes que ingresaron desde una entrevista; vigentes con obra social cargada, en cantidad y porcentaje; carpetas impresas |
 | Epicrisis | Activas, emitidas en 7 días, anuladas |
-| Seguimiento clínico | Evaluaciones CAM con delirium probable y evaluaciones físicas de ingreso con úlceras, sobre huéspedes vigentes; promedio de cada síntoma de la ESAS, sobre huéspedes vigentes; evoluciones registradas en 7 días |
+| Seguimiento clínico | Evaluaciones CAM con delirium probable y evaluaciones físicas de ingreso con úlceras, sobre huéspedes vigentes evaluados; promedio de cada síntoma de la ESAS, sobre huéspedes vigentes; evoluciones registradas en 7 días, sin anuladas ni de huéspedes anulados |
 | Calidad de datos | Completitud de cobertura, adjuntos clínicos, opciones activas por catálogo |
 | Accesos | Usuarios activos, multifactor activo, roles, invitaciones pendientes, actividad de 7 días |
 

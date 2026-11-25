@@ -14,11 +14,15 @@ import { getCurrentUser } from "@/modules/access";
 import {
   getAccessesReportFor,
   getAdmissionsReportFor,
+  getClinicalFollowUpReportFor,
   getDataQualityReport,
+  getGuestsReportFor,
 } from "../service";
 import { AccessesReportSection } from "./accesses-report";
 import { AdmissionsReportSection } from "./admissions-report";
+import { ClinicalFollowUpReportSection } from "./clinical-follow-up-report";
 import { DataQualityReportSection } from "./data-quality-report";
+import { GuestsReportSection } from "./guests-report";
 
 function NoReportsEmptyState() {
   return (
@@ -44,19 +48,36 @@ function NoReportsEmptyState() {
 
 async function DashboardReportsContent() {
   const { access } = await getCurrentUser();
-  const [admissionsReport, dataQualityReport, accessesReport] =
-    await Promise.all([
-      getAdmissionsReportFor(access),
-      getDataQualityReport(access),
-      getAccessesReportFor(access),
-    ]);
-  if (!admissionsReport && !dataQualityReport && !accessesReport) {
+  const [
+    admissionsReport,
+    guestsReport,
+    clinicalFollowUpReport,
+    dataQualityReport,
+    accessesReport,
+  ] = await Promise.all([
+    getAdmissionsReportFor(access),
+    getGuestsReportFor(access),
+    getClinicalFollowUpReportFor(access),
+    getDataQualityReport(access),
+    getAccessesReportFor(access),
+  ]);
+  if (
+    !admissionsReport &&
+    !guestsReport &&
+    !clinicalFollowUpReport &&
+    !dataQualityReport &&
+    !accessesReport
+  ) {
     return <NoReportsEmptyState />;
   }
   return (
     <div className="flex flex-col gap-10">
       {admissionsReport && (
         <AdmissionsReportSection report={admissionsReport} />
+      )}
+      {guestsReport && <GuestsReportSection report={guestsReport} />}
+      {clinicalFollowUpReport && (
+        <ClinicalFollowUpReportSection report={clinicalFollowUpReport} />
       )}
       {dataQualityReport && (
         <DataQualityReportSection report={dataQualityReport} />

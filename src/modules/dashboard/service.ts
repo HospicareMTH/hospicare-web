@@ -10,6 +10,16 @@ import {
   countActiveCatalogEntries,
   listVisibleCatalogs,
 } from "@/modules/catalogs";
+import { countRecentDailyEvolutions } from "@/modules/daily-evolutions";
+import {
+  type EvaluationFindingsReport,
+  getEvaluationFindingsReport,
+} from "@/modules/evaluations";
+import {
+  getGuestsReport,
+  type GuestsReport,
+  listAcceptedInterviewIds,
+} from "@/modules/guests";
 import { getReportWindowStart, REPORT_WINDOW_DAYS } from "@/platform/dates";
 
 export type ActiveCatalogEntryRow = {
@@ -75,7 +85,42 @@ export async function getAdmissionsReportFor(
     return null;
   }
   return {
-    ...(await getAdmissionsReport()),
+    ...(await getAdmissionsReport(await listAcceptedInterviewIds())),
     canViewInterviews: hasPermission(access, "admissions.interviews.view"),
+  };
+}
+
+export type GuestsReportView = GuestsReport & {
+  canViewGuests: boolean;
+};
+
+export async function getGuestsReportFor(
+  access: UserAccess,
+): Promise<GuestsReportView | null> {
+  if (!hasPermission(access, "dashboard.guests.view")) {
+    return null;
+  }
+  return {
+    ...(await getGuestsReport()),
+    canViewGuests: hasPermission(access, "guests.records.view"),
+  };
+}
+
+export type ClinicalFollowUpReport = EvaluationFindingsReport & {
+  windowDays: number;
+  recentDailyEvolutionCount: number;
+};
+
+export async function getClinicalFollowUpReportFor(
+  access: UserAccess,
+  now: Date = new Date(),
+): Promise<ClinicalFollowUpReport | null> {
+  if (!hasPermission(access, "dashboard.clinical_follow_up.view")) {
+    return null;
+  }
+  return {
+    ...(await getEvaluationFindingsReport()),
+    windowDays: REPORT_WINDOW_DAYS,
+    recentDailyEvolutionCount: await countRecentDailyEvolutions(now),
   };
 }

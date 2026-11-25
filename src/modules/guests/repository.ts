@@ -433,3 +433,46 @@ export async function listUsedHealthInsuranceOptionIds(): Promise<string[]> {
     );
   return rows.flatMap(({ id }) => (id ? [id] : []));
 }
+
+export type GuestReportCounts = {
+  activeCount: number;
+  fromAdmissionCount: number;
+  withHealthInsuranceCount: number;
+};
+
+export async function countGuestsForReport(): Promise<GuestReportCounts> {
+  const [counts] = await getDatabase()
+    .select({
+      activeCount: count(),
+      fromAdmissionCount:
+        sql<number>`count(*) filter (where ${guests.origin} = 'admission')`.mapWith(
+          Number,
+        ),
+      withHealthInsuranceCount: count(guests.healthInsuranceOptionId),
+    })
+    .from(guests)
+    .where(isNull(guests.annulledAt));
+  return {
+    activeCount: counts?.activeCount ?? 0,
+    fromAdmissionCount: counts?.fromAdmissionCount ?? 0,
+    withHealthInsuranceCount: counts?.withHealthInsuranceCount ?? 0,
+  };
+}
+
+export async function listAllInterviewIdsWithActiveGuest(): Promise<string[]> {
+  const rows = await getDatabase()
+    .select({ id: guests.admissionInterviewId })
+    .from(guests)
+    .where(
+      and(isNull(guests.annulledAt), isNotNull(guests.admissionInterviewId)),
+    );
+  return rows.flatMap(({ id }) => (id ? [id] : []));
+}
+
+export async function listActiveGuestRecordIds(): Promise<string[]> {
+  const rows = await getDatabase()
+    .select({ id: guests.id })
+    .from(guests)
+    .where(isNull(guests.annulledAt));
+  return rows.map(({ id }) => id);
+}

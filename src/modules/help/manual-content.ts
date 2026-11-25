@@ -208,8 +208,24 @@ export const HOME_SECTION: ManualSection = {
     {
       title: "Admisiones",
       paragraphs: [
-        "Muestra cuántas entrevistas se cargaron en los últimos 7 días y cuántas esperan una decisión sobre el ingreso. Las anuladas no se cuentan.",
+        "Muestra cuántas entrevistas se cargaron en los últimos 7 días, qué parte de las entrevistas vigentes pasó a huésped y cuántas esperan una decisión sobre el ingreso. Una entrevista pasó a huésped cuando se aceptó y su huésped sigue vigente. Las anuladas no se cuentan.",
         "Si tu rol puede ver entrevistas, «Ver entrevistas» abre el listado.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Huéspedes",
+      paragraphs: [
+        "Muestra cuántos huéspedes vigentes hay, cuántos de ellos ingresaron desde una entrevista de admisión y cuántos tienen la obra social cargada, con su porcentaje. Los huéspedes anulados no se cuentan.",
+        "Si tu rol puede ver huéspedes, «Ver huéspedes» abre el listado.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Seguimiento clínico",
+      paragraphs: [
+        "Entre los huéspedes vigentes que tienen evaluación CAM, muestra cuántos tienen delirium probable. Entre los que tienen evaluación física de ingreso, cuántos tienen úlceras por presión.",
+        "También muestra cuántas evoluciones diarias se registraron en los últimos 7 días. Las evoluciones anuladas y las de huéspedes anulados no se cuentan.",
       ],
       steps: [],
     },
@@ -504,9 +520,9 @@ export const ADMISSIONS_SECTION: ManualSection = {
   id: "admisiones",
   title: "Admisiones",
   summary:
-    "Cómo cargar, buscar, consultar, editar y anular las entrevistas de admisión.",
+    "Cómo cargar, buscar, consultar, editar, aceptar y anular las entrevistas de admisión.",
   audience:
-    "Quienes tengan permiso para ver entrevistas. Cargar, editar y anular piden permisos propios.",
+    "Quienes tengan permiso para ver entrevistas. Cargar, editar, aceptar y anular piden permisos propios.",
   topics: [
     {
       title: "Buscar una entrevista",
@@ -546,6 +562,21 @@ export const ADMISSIONS_SECTION: ManualSection = {
       steps: [],
     },
     {
+      title: "Aceptar una entrevista",
+      paragraphs: [
+        "Al aceptar una entrevista se crea el huésped con sus datos: nombre, apellido, fecha de nacimiento, DNI, obra social y dirección. La fecha de internación es la de hoy y el número de historia clínica lo asigna el sistema.",
+        "Si ya hay otro huésped vigente con el mismo DNI, la confirmación lo avisa para que revises que no sea la misma persona.",
+        "La entrevista aceptada muestra «Aceptada», con la fecha y el número de historia clínica del huésped. Si tu rol puede ver huéspedes, el número abre su ficha.",
+        "Los cambios que guardes después en la entrevista no se pasan a los datos del huésped.",
+        "Si el huésped se anula, la entrevista vuelve a quedar sin aceptar. Si la aceptás de nuevo, se crea otro huésped con otro número.",
+      ],
+      steps: [
+        "Abrí la entrevista.",
+        "Tocá «Aceptar entrevista».",
+        "Confirmá con «Aceptar entrevista».",
+      ],
+    },
+    {
       title: "Anular una entrevista",
       paragraphs: [
         "«Anular», en el detalle o en el menú de la fila, pide un motivo de 10 a 500 caracteres.",
@@ -558,7 +589,12 @@ export const ADMISSIONS_SECTION: ManualSection = {
     {
       name: "Pendiente",
       description:
-        "Entrevista vigente que espera una decisión sobre el ingreso. Se puede editar y anular.",
+        "Entrevista vigente que espera una decisión sobre el ingreso. Se puede editar, aceptar y anular.",
+    },
+    {
+      name: "Aceptada",
+      description:
+        "Tiene un huésped vigente. Se puede editar y anular, pero los cambios no se pasan al huésped.",
     },
     {
       name: "Anulada",
@@ -569,11 +605,288 @@ export const ADMISSIONS_SECTION: ManualSection = {
   rules: [
     "Las entrevistas no se borran: se anulan con un motivo.",
     "Cargar, editar y anular piden permisos distintos. Si tu rol no los tiene, no ves esos botones y el sistema rechaza la acción.",
+    "Aceptar pide el permiso «Crear huéspedes desde entrevistas».",
+    "Una entrevista tiene como máximo un huésped vigente. Solo se puede aceptar de nuevo si ese huésped se anuló.",
     "En una entrevista nueva no se pueden elegir opciones desactivadas.",
     "Cada alta, cambio y anulación queda en el registro de actividad, con el dato anterior y el nuevo.",
   ],
   decisions: [
     "El aviso de DNI repetido no bloquea el guardado porque una misma persona puede tener más de una entrevista, por ejemplo si vuelve a ingresar.",
     "Las entrevistas se anulan en lugar de borrarse para no perder lo que se registró.",
+    "Los cambios en una entrevista aceptada no se pasan al huésped: la entrevista es el registro de la admisión y el huésped tiene sus propios datos.",
+  ],
+};
+
+export const GUESTS_SECTION: ManualSection = {
+  id: "huespedes",
+  title: "Huéspedes",
+  summary:
+    "Cómo buscar, crear, consultar, editar y anular huéspedes, y cómo se asigna su número de historia clínica.",
+  audience:
+    "Quienes tengan permiso para ver huéspedes. Crear sin entrevista, editar y anular piden permisos propios.",
+  topics: [
+    {
+      title: "Buscar un huésped",
+      paragraphs: [
+        "El listado muestra los huéspedes vigentes, de la fecha de internación más reciente a la más antigua. Podés buscar por nombre, DNI, número de historia clínica u obra social. Si escribís solo números, encuentra la historia clínica con ese número exacto y los DNI que contienen esos números.",
+        "Con el filtro de origen ves solo los que ingresaron desde una entrevista («Admisión») o los que se crearon sin entrevista («Sin entrevista»). Para abrir la ficha, hacé doble clic en la fila o elegí «Ver huésped» en el menú de la fila.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Crear un huésped sin entrevista",
+      paragraphs: [
+        "Lo habitual es que el huésped se cree al aceptar su entrevista de admisión. Crealo sin entrevista solo cuando no la hay.",
+        "Si ya hay otro huésped vigente con ese DNI, o una entrevista con ese DNI que todavía no se aceptó, aparece un aviso. El aviso no impide guardar. Si es la misma persona de la entrevista, aceptá la entrevista en lugar de crear el huésped.",
+      ],
+      steps: [
+        "Tocá «Nuevo huésped».",
+        "Completá Datos personales e Internación. Los campos con asterisco son obligatorios.",
+        "Tocá «Guardar huésped». Se abre la ficha con el número de historia clínica asignado.",
+      ],
+    },
+    {
+      title: "Número de historia clínica",
+      paragraphs: [
+        "Cada huésped recibe un número al crearse: el último asignado más 1. No se edita ni se vuelve a usar, aunque el huésped se anule.",
+        "Administración puede cambiar el último número asignado desde Configuración, pero nunca a uno menor.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Ver la ficha",
+      paragraphs: [
+        "La pestaña Internación muestra los datos en dos grupos, Datos personales e Internación. Donde no se cargó nada, dice «Sin cargar». También figuran quién cargó al huésped y quién lo modificó por última vez.",
+        "El origen dice «Admisión» o «Sin entrevista». Si vino de una entrevista y tu rol puede ver entrevistas, «Ver la entrevista» la abre.",
+        "Según tus permisos, también ves las pestañas Evolución diaria y Evaluaciones.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Editar un huésped",
+      paragraphs: [
+        "«Editar», en la ficha o en el menú de la fila, abre el formulario con los datos guardados. Se puede cambiar todo, menos el número de historia clínica y el origen.",
+        "Si otra persona guardó cambios mientras editabas, tus cambios no se guardan y aparece un aviso. Actualizá la pantalla para ver la versión actual.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Anular un huésped",
+      paragraphs: [
+        "«Anular», en la ficha o en el menú de la fila, pide un motivo de 10 a 500 caracteres.",
+        "El huésped anulado sale del listado y ya no se puede modificar, ni cargarle evaluaciones o evoluciones. No se borra: su ficha muestra quién lo anuló, cuándo y por qué. Su número de historia clínica no se vuelve a usar. La anulación no se puede deshacer.",
+        "Si vino de una entrevista, la entrevista vuelve a quedar sin aceptar.",
+      ],
+      steps: [],
+    },
+  ],
+  states: [
+    {
+      name: "Vigente",
+      description:
+        "Aparece en el listado. Se puede editar y anular, y se le cargan evaluaciones y evoluciones.",
+    },
+    {
+      name: "Anulado",
+      description:
+        "Salió del listado. Se puede consultar, pero ya no se puede modificar.",
+    },
+  ],
+  rules: [
+    "Los huéspedes no se borran: se anulan con un motivo.",
+    "Ver, crear desde una entrevista, crear sin entrevista, editar y anular piden permisos distintos. Si tu rol no los tiene, no ves esos botones y el sistema rechaza la acción.",
+    "En un huésped no se pueden elegir opciones desactivadas. Si una opción ya elegida se desactiva después, se conserva.",
+    "Cada alta, cambio y anulación queda en el registro de actividad, con el dato anterior y el nuevo.",
+  ],
+  decisions: [
+    "El aviso de DNI repetido no bloquea el guardado: lo revisa quien carga.",
+    "El número de historia clínica no se vuelve a usar para que cada número identifique siempre a una sola persona.",
+    "Los huéspedes se anulan en lugar de borrarse para no perder lo que se registró.",
+  ],
+};
+
+export const EVALUATIONS_SECTION: ManualSection = {
+  id: "evaluaciones",
+  title: "Evaluaciones",
+  summary:
+    "Cómo cargar y modificar la evaluación CAM y la evaluación física de ingreso de un huésped.",
+  audience:
+    "Quienes tengan permiso para ver evaluaciones CAM o evaluaciones físicas de ingreso. Cargar y modificar piden permisos propios.",
+  topics: [
+    {
+      title: "Dónde están",
+      paragraphs: [
+        "En la ficha del huésped, pestaña Evaluaciones. Cada huésped tiene una sola evaluación CAM y una sola evaluación física de ingreso. Si hay que corregirlas, se modifican.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Evaluación CAM",
+      paragraphs: [
+        "Sirve para detectar delirium. Tiene cuatro criterios que se responden en orden: comienzo agudo, inatención, pensamiento desorganizado y conciencia alterada. Si no hay comienzo agudo o no hay inatención, la evaluación termina ahí.",
+        "El resultado se calcula mientras respondés: «Delirium probable» o «Sin delirium probable». La fecha viene con la de hoy y las observaciones admiten hasta 100 caracteres.",
+      ],
+      steps: [
+        "Tocá «Cargar evaluación CAM».",
+        "Respondé Sí o No a cada criterio que aparece.",
+        "Tocá «Guardar evaluación».",
+      ],
+    },
+    {
+      title: "Evaluación física de ingreso",
+      paragraphs: [
+        "Tiene dos partes: la Escala de síntomas (ESAS) y la Evaluación de ingreso de enfermería. Son obligatorios la fecha y los 10 puntajes de la ESAS, de 0 (nada) a 10 (mucho). El resto es opcional.",
+        "Algunos datos aparecen solo cuando hacen falta, y entonces son obligatorios: los del dolor si su puntaje es mayor que 0, el detalle de la lesión neurológica si esa es la causa de la deambulación, el estadio y el lugar si hay úlceras por presión, el lugar si hay edemas y el tipo si hay ostomías.",
+      ],
+      steps: [
+        "Tocá «Cargar evaluación física de ingreso».",
+        "Completá la ESAS y los bloques de enfermería.",
+        "Tocá «Guardar evaluación». Volvés a la pestaña Evaluaciones.",
+      ],
+    },
+    {
+      title: "Modificar una evaluación",
+      paragraphs: [
+        "«Modificar» abre la evaluación con lo guardado. Si otra persona la cambió mientras la editabas, tus cambios no se guardan y aparece un aviso. Actualizá la pantalla para ver la versión actual.",
+      ],
+      steps: [],
+    },
+  ],
+  states: [],
+  rules: [
+    "Cada huésped tiene una sola evaluación CAM y una sola evaluación física de ingreso.",
+    "Ver, cargar y modificar piden permisos distintos para cada evaluación. Si tu rol no los tiene, no ves esos botones y el sistema rechaza la acción.",
+    "A un huésped anulado no se le pueden cargar ni modificar evaluaciones. Las que ya tenía se siguen viendo.",
+    "Cada carga y cada cambio quedan en el registro de actividad, con el dato anterior y el nuevo.",
+  ],
+  decisions: [
+    "Los criterios de la CAM y los puntajes de la ESAS empiezan sin responder, para que nadie guarde un resultado sin haber evaluado.",
+    "Cuando un dato deja de hacer falta, por ejemplo porque el dolor vuelve a 0, se guarda vacío.",
+  ],
+};
+
+export const DAILY_EVOLUTIONS_SECTION: ManualSection = {
+  id: "evolucion-diaria",
+  title: "Evolución diaria",
+  summary:
+    "Cómo registrar, corregir, anular y aclarar las evoluciones diarias de un huésped.",
+  audience:
+    "Quienes tengan permiso para ver evoluciones. Registrar y agregar notas aclaratorias piden «Crear evoluciones»; corregir y anular, sus permisos propios.",
+  topics: [
+    {
+      title: "Registrar una evolución",
+      paragraphs: [
+        "Si no se puede registrar, el texto queda en el campo para que lo corrijas.",
+      ],
+      steps: [
+        "En la ficha del huésped, abrí la pestaña Evolución diaria.",
+        "Escribí en «Nueva evolución», entre 10 y 5000 caracteres.",
+        "Tocá «Registrar evolución». Aparece primera en la lista.",
+      ],
+    },
+    {
+      title: "La firma",
+      paragraphs: [
+        "Cada evolución se firma sola: con la especialidad del profesional de salud que tiene tu mismo correo o, si no lo hay, con el nombre de tu rol. Antes de registrar ves «Se firma como …».",
+        "La firma no cambia aunque después cambien tu rol o tu especialidad.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Ver las evoluciones",
+      paragraphs: [
+        "La lista muestra todas, de la más reciente a la más antigua, con fecha y hora, autor, firma y texto. «Modificada el …» indica que se corrigió. Las notas aclaratorias aparecen debajo de su evolución.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Corregir o anular una evolución",
+      paragraphs: [
+        "Solo quien la escribió puede corregirla o anularla, y solo dentro de la ventana de edición. Mientras se pueda, ves «Podés corregirla hasta el …». Después queda «Bloqueada».",
+        "«Editar» te deja cambiar el texto y guardarlo con «Guardar cambios».",
+        "«Anular» pide un motivo de 10 a 500 caracteres. La evolución sale del historial y ya no se puede modificar ni aclarar. No se borra: quedan registrados quién la anuló, cuándo y el motivo. No se puede deshacer.",
+      ],
+      steps: [],
+    },
+    {
+      title: "Agregar una nota aclaratoria",
+      paragraphs: [
+        "Sirve para completar o aclarar una evolución, también cuando ya está bloqueada. La puede agregar cualquiera con permiso para crear evoluciones. Las notas no se pueden corregir ni anular.",
+      ],
+      steps: [
+        "Tocá «Agregar nota aclaratoria» en la evolución.",
+        "Escribí la nota, entre 10 y 5000 caracteres.",
+        "Tocá «Guardar nota».",
+      ],
+    },
+  ],
+  states: [
+    {
+      name: "Editable",
+      description:
+        "Está dentro de la ventana de edición. Su autor puede corregirla o anularla.",
+    },
+    {
+      name: "Bloqueada",
+      description:
+        "Pasó la ventana de edición. Solo se le pueden agregar notas aclaratorias.",
+    },
+    {
+      name: "Anulada",
+      description: "Salió del historial. Consta en el registro de actividad.",
+    },
+  ],
+  rules: [
+    "Las evoluciones no se borran: se anulan con un motivo.",
+    "La ventana de edición se fija en Configuración y cada evolución toma la vigente al registrarse. Si la ventana cambia después, las evoluciones ya registradas conservan su límite.",
+    "A un huésped anulado no se le pueden registrar evoluciones.",
+    "Cada registro, corrección, anulación y nota queda en el registro de actividad.",
+  ],
+  decisions: [
+    "Solo el autor corrige su evolución, para que lo escrito responda siempre a quien lo firmó.",
+    "Las correcciones tienen un plazo para que el registro clínico quede firme. Después, lo que haga falta se agrega como nota aclaratoria.",
+  ],
+};
+
+export const SETTINGS_SECTION: ManualSection = {
+  id: "configuracion",
+  title: "Configuración",
+  summary:
+    "Cómo cambiar el último número de historia clínica asignado y la ventana de edición de las evoluciones diarias.",
+  audience:
+    "Quienes tengan permiso para ver la configuración. Cambiarla pide el permiso de modificar.",
+  topics: [
+    {
+      title: "Número de historia clínica",
+      paragraphs: [
+        "Muestra el último número asignado. El próximo huésped recibe ese número más 1.",
+        "No se puede guardar un número menor que el último asignado. Si guardás el mismo número, no hay cambios.",
+      ],
+      steps: [
+        "Escribí el nuevo último número asignado, solo con números.",
+        "Tocá «Guardar número».",
+        "Confirmá. Después no vas a poder volver a un número menor.",
+      ],
+    },
+    {
+      title: "Ventana de edición de evoluciones diarias",
+      paragraphs: [
+        "Define cuánto tiempo después de registrarla su autor puede corregir o anular una evolución. Con «Bloqueo inmediato» no se puede corregir nunca. Con «Durante un tiempo» elegís la cantidad y la unidad (minutos, horas o días), de 1 minuto a 30 días.",
+        "Vale para las evoluciones que se registren desde ahora: las anteriores conservan su límite.",
+      ],
+      steps: [
+        "Elegí el modo y, si corresponde, la cantidad y la unidad.",
+        "Tocá «Guardar ventana».",
+      ],
+    },
+  ],
+  states: [],
+  rules: [
+    "El número de historia clínica nunca baja: cada número se usa una sola vez.",
+    "Debajo de cada parámetro figura quién lo cambió por última vez y cuándo.",
+    "Cada cambio queda en el registro de actividad, con el valor anterior y el nuevo. Asignar un número al crear un huésped no cuenta como cambio de configuración.",
+  ],
+  decisions: [
+    "El número no puede bajar para que dos huéspedes nunca compartan historia clínica.",
   ],
 };

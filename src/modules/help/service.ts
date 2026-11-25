@@ -15,11 +15,15 @@ import {
   ACTIVITY_LOG_SECTION,
   ADMISSIONS_SECTION,
   CATALOGS_SECTION,
+  DAILY_EVOLUTIONS_SECTION,
+  EVALUATIONS_SECTION,
   GENERAL_USE_SECTION,
+  GUESTS_SECTION,
   HOME_SECTION,
   INVITATIONS_SECTION,
   type ManualSection,
   ROLES_SECTION,
+  SETTINGS_SECTION,
   SIGN_IN_SECTION,
   USERS_SECTION,
 } from "./manual-content";
@@ -39,6 +43,8 @@ const MANUAL_ENTRIES: readonly ManualEntry[] = [
     section: HOME_SECTION,
     isVisibleTo: (access) =>
       hasPermission(access, "dashboard.admissions.view") ||
+      hasPermission(access, "dashboard.guests.view") ||
+      hasPermission(access, "dashboard.clinical_follow_up.view") ||
       hasPermission(access, "dashboard.data_quality.view") ||
       hasPermission(access, "dashboard.accesses.view"),
   },
@@ -46,6 +52,21 @@ const MANUAL_ENTRIES: readonly ManualEntry[] = [
     section: ADMISSIONS_SECTION,
     isVisibleTo: (access) =>
       hasPermission(access, "admissions.interviews.view"),
+  },
+  {
+    section: GUESTS_SECTION,
+    isVisibleTo: (access) => hasPermission(access, "guests.records.view"),
+  },
+  {
+    section: EVALUATIONS_SECTION,
+    isVisibleTo: (access) =>
+      hasPermission(access, "guests.cam_evaluations.view") ||
+      hasPermission(access, "guests.physical_evaluations.view"),
+  },
+  {
+    section: DAILY_EVOLUTIONS_SECTION,
+    isVisibleTo: (access) =>
+      hasPermission(access, "guests.daily_evolutions.view"),
   },
   {
     section: USERS_SECTION,
@@ -62,6 +83,11 @@ const MANUAL_ENTRIES: readonly ManualEntry[] = [
   {
     section: CATALOGS_SECTION,
     isVisibleTo: (access) => listVisibleCatalogs(access).length > 0,
+  },
+  {
+    section: SETTINGS_SECTION,
+    isVisibleTo: (access) =>
+      hasPermission(access, "admin.system_settings.view"),
   },
   {
     section: ACTIVITY_LOG_SECTION,

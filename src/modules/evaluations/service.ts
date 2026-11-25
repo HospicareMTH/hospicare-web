@@ -6,7 +6,11 @@ import {
   loadCatalogField,
   validateCatalogSelection,
 } from "@/modules/catalogs";
-import { guestIdSchema, lockGuestForClinicalChange } from "@/modules/guests";
+import {
+  guestIdSchema,
+  listActiveGuestIds,
+  lockGuestForClinicalChange,
+} from "@/modules/guests";
 import {
   type DatabaseTransaction,
   runInTransactionAs,
@@ -19,6 +23,8 @@ import {
 } from "@/platform/operation-result";
 
 import {
+  countCamEvaluationsForReport,
+  countPhysicalEvaluationsForReport,
   findCamEvaluationRecordOfGuest,
   findPhysicalEvaluationRecordOfGuest,
   insertCamEvaluation,
@@ -491,4 +497,24 @@ export async function loadPhysicalEvaluationCatalogs(
     findNeurologicalLesionCauseOptionId(),
   ]);
   return { fields, neurologicalLesionCauseOptionId };
+}
+
+export type EvaluationFindingsReport = {
+  camEvaluatedCount: number;
+  deliriumLikelyCount: number;
+  physicalEvaluatedCount: number;
+  pressureUlcerCount: number;
+};
+
+export async function getEvaluationFindingsReport(): Promise<EvaluationFindingsReport> {
+  const activeGuestIds = await listActiveGuestIds();
+  const camCounts = await countCamEvaluationsForReport(activeGuestIds);
+  const physicalCounts =
+    await countPhysicalEvaluationsForReport(activeGuestIds);
+  return {
+    camEvaluatedCount: camCounts.evaluatedCount,
+    deliriumLikelyCount: camCounts.deliriumLikelyCount,
+    physicalEvaluatedCount: physicalCounts.evaluatedCount,
+    pressureUlcerCount: physicalCounts.pressureUlcerCount,
+  };
 }

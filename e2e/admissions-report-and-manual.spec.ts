@@ -23,6 +23,11 @@ test("RF-DAS-02: el inicio muestra el reporte Admisiones y lleva al listado", as
     }),
   ).toBeVisible();
   await expect(
+    report.getByRole("row", {
+      name: /Pasaron a huésped (\d+\s%\s\(\d+ de \d+\)|Sin entrevistas)/,
+    }),
+  ).toBeVisible();
+  await expect(
     report.getByRole("row", { name: /Pendientes de decisión \d+/ }),
   ).toBeVisible();
 
@@ -66,6 +71,9 @@ test("RF-MAN-02: el manual tiene la sección Admisiones", async ({ page }) => {
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Cargar una entrevista" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Aceptar una entrevista" }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Anular una entrevista" }),

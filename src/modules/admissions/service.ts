@@ -635,18 +635,24 @@ export async function loadInterviewFormOptions(
 export type AdmissionsReport = {
   windowDays: number;
   createdInWindowCount: number;
+  activeCount: number;
+  acceptedCount: number;
   pendingDecisionCount: number;
 };
 
 export async function getAdmissionsReport(
+  acceptedInterviewIds: readonly string[],
   now: Date = new Date(),
 ): Promise<AdmissionsReport> {
   const counts = await countAdmissionInterviewsForReport(
     getReportWindowStart(now),
+    acceptedInterviewIds,
   );
   return {
     windowDays: REPORT_WINDOW_DAYS,
     createdInWindowCount: counts.createdSinceCount,
-    pendingDecisionCount: counts.pendingDecisionCount,
+    activeCount: counts.activeCount,
+    acceptedCount: counts.acceptedCount,
+    pendingDecisionCount: counts.activeCount - counts.acceptedCount,
   };
 }

@@ -12,7 +12,11 @@ export {
 } from "./schemas";
 export {
   findGuestSummary,
+  getGuestsReport,
   GUEST_REJECTION_MESSAGES,
+  type GuestsReport,
   type GuestSummary,
+  listAcceptedInterviewIds,
+  listActiveGuestIds,
   lockGuestForClinicalChange,
 } from "./service";

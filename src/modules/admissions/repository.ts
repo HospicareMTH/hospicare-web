@@ -335,11 +335,13 @@ export async function listUsedFilterIds(): Promise<UsedFilterIds> {
 
 export type AdmissionInterviewCounts = {
   createdSinceCount: number;
-  pendingDecisionCount: number;
+  activeCount: number;
+  acceptedCount: number;
 };
 
 export async function countAdmissionInterviewsForReport(
   windowStart: Date,
+  acceptedInterviewIds: readonly string[],
 ): Promise<AdmissionInterviewCounts> {
   const [counts] = await getDatabase()
     .select({
@@ -347,12 +349,17 @@ export async function countAdmissionInterviewsForReport(
         sql<number>`count(*) filter (where ${admissionInterviews.createdAt} >= ${windowStart})`.mapWith(
           Number,
         ),
-      pendingDecisionCount: count(),
+      activeCount: count(),
+      acceptedCount:
+        sql<number>`count(*) filter (where ${inArray(admissionInterviews.id, [...acceptedInterviewIds])})`.mapWith(
+          Number,
+        ),
     })
     .from(admissionInterviews)
     .where(isNull(admissionInterviews.annulledAt));
   return {
     createdSinceCount: counts?.createdSinceCount ?? 0,
-    pendingDecisionCount: counts?.pendingDecisionCount ?? 0,
+    activeCount: counts?.activeCount ?? 0,
+    acceptedCount: counts?.acceptedCount ?? 0,
   };
 }

@@ -1,6 +1,10 @@
 import { findSigner, findUserNames } from "@/modules/access";
 import { findActiveProfessionalSpecialty } from "@/modules/catalogs";
-import { guestIdSchema, lockGuestForClinicalChange } from "@/modules/guests";
+import {
+  guestIdSchema,
+  listActiveGuestIds,
+  lockGuestForClinicalChange,
+} from "@/modules/guests";
 import {
   computeEditableUntil,
   getDailyEvolutionEditWindow,
@@ -9,6 +13,7 @@ import {
   type DatabaseTransaction,
   runInTransactionAs,
 } from "@/platform/database/client";
+import { getReportWindowStart } from "@/platform/dates";
 import {
   type OperationResult,
   type RejectedOperation,
@@ -18,6 +23,7 @@ import {
 
 import {
   annulDailyEvolutionRecord,
+  countActiveDailyEvolutionsSince,
   type DailyEvolutionRecord,
   findDailyEvolutionGuestId,
   insertClarification,
@@ -267,4 +273,13 @@ export async function listDailyEvolutions(
         createdAt: clarification.createdAt,
       })),
   }));
+}
+
+export async function countRecentDailyEvolutions(
+  now: Date = new Date(),
+): Promise<number> {
+  return countActiveDailyEvolutionsSince(
+    getReportWindowStart(now),
+    await listActiveGuestIds(),
+  );
 }

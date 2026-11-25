@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, count, desc, eq, gte, inArray, isNull } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -124,4 +124,21 @@ export function listClarificationRecords(
       asc(dailyEvolutionClarifications.createdAt),
       asc(dailyEvolutionClarifications.id),
     );
+}
+
+export async function countActiveDailyEvolutionsSince(
+  windowStart: Date,
+  guestIds: readonly string[],
+): Promise<number> {
+  const [counts] = await getDatabase()
+    .select({ total: count() })
+    .from(dailyEvolutions)
+    .where(
+      and(
+        isNull(dailyEvolutions.annulledAt),
+        gte(dailyEvolutions.createdAt, windowStart),
+        inArray(dailyEvolutions.guestId, [...guestIds]),
+      ),
+    );
+  return counts?.total ?? 0;
 }

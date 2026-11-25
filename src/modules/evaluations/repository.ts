@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
 
 import {
   type DatabaseTransaction,
@@ -226,4 +226,52 @@ export async function updatePhysicalEvaluationRecord(
     .set({ ...columns, updatedByUserId: actorUserId, updatedAt: sql`now()` })
     .where(eq(physicalAdmissionEvaluations.id, saved.id));
   await saveSelectionChanges(transaction, saved.guestId, saved, selections);
+}
+
+export type CamEvaluationReportCounts = {
+  evaluatedCount: number;
+  deliriumLikelyCount: number;
+};
+
+export async function countCamEvaluationsForReport(
+  guestIds: readonly string[],
+): Promise<CamEvaluationReportCounts> {
+  const [counts] = await getDatabase()
+    .select({
+      evaluatedCount: count(),
+      deliriumLikelyCount:
+        sql<number>`count(*) filter (where ${camEvaluations.isDeliriumLikely})`.mapWith(
+          Number,
+        ),
+    })
+    .from(camEvaluations)
+    .where(inArray(camEvaluations.guestId, [...guestIds]));
+  return {
+    evaluatedCount: counts?.evaluatedCount ?? 0,
+    deliriumLikelyCount: counts?.deliriumLikelyCount ?? 0,
+  };
+}
+
+export type PhysicalEvaluationReportCounts = {
+  evaluatedCount: number;
+  pressureUlcerCount: number;
+};
+
+export async function countPhysicalEvaluationsForReport(
+  guestIds: readonly string[],
+): Promise<PhysicalEvaluationReportCounts> {
+  const [counts] = await getDatabase()
+    .select({
+      evaluatedCount: count(),
+      pressureUlcerCount:
+        sql<number>`count(*) filter (where ${physicalAdmissionEvaluations.hasPressureUlcers})`.mapWith(
+          Number,
+        ),
+    })
+    .from(physicalAdmissionEvaluations)
+    .where(inArray(physicalAdmissionEvaluations.guestId, [...guestIds]));
+  return {
+    evaluatedCount: counts?.evaluatedCount ?? 0,
+    pressureUlcerCount: counts?.pressureUlcerCount ?? 0,
+  };
 }

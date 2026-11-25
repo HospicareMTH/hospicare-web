@@ -35,13 +35,17 @@ import {
 import {
   annulGuestRecord,
   countGuestRecords,
+  countGuestsForReport,
   findActiveGuestOfInterview,
   findGuestRecord,
   findLatestAnnulledGuestOfInterview,
   type GuestRecord,
+  type GuestReportCounts,
   type GuestSearch,
   hasActiveGuestWithDni,
   insertGuest,
+  listActiveGuestRecordIds,
+  listAllInterviewIdsWithActiveGuest,
   listGuestRecords,
   listInterviewIdsWithActiveGuest,
   listUsedHealthInsuranceOptionIds,
@@ -653,4 +657,18 @@ export async function searchGuests(
     pageCount: window.pageCount,
     pageSize: query.pageSize,
   };
+}
+
+export type GuestsReport = GuestReportCounts;
+
+export function getGuestsReport(): Promise<GuestsReport> {
+  return countGuestsForReport();
+}
+
+export function listAcceptedInterviewIds(): Promise<string[]> {
+  return listAllInterviewIdsWithActiveGuest();
+}
+
+export function listActiveGuestIds(): Promise<string[]> {
+  return listActiveGuestRecordIds();
 }
